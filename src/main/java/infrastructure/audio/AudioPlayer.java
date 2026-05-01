@@ -16,6 +16,7 @@ public class AudioPlayer {
         if (track == null) return;
         Path path = track.getFilePath();
         currentTrack = track;
+        queue.setCurrentTrack(currentTrack);
         engine.play(path,this::playNext);
         state = PlaybackState.PLAYING;
         queue.printStatus();
@@ -61,6 +62,14 @@ public class AudioPlayer {
         }
     }
 
+    public void playPrev(){
+        if (engine.getProgress()==0f) {
+            if (currentTrack != null) {
+                Track track = queue.prev();
+                play(track);
+            }
+        }else engine.setProgress(0f);
+    }
 
     public void enqueueAll(List<Track> tracks) {
         if (tracks == null || tracks.isEmpty()) return;
@@ -71,17 +80,10 @@ public class AudioPlayer {
         queue.clear();
     }
 
-    public void playPrev(){
-        if (currentTrack != null) {
-            Track track = queue.prev();
-            play(track);
-        }
-    }
-
     public void pause() {
         if (state == PlaybackState.PLAYING) {
-            state = PlaybackState.PAUSED;
             engine.pause();
+            state = PlaybackState.PAUSED;
         }
     }
 
@@ -99,6 +101,40 @@ public class AudioPlayer {
             engine.resume();
         }
     }
+
+    public void setVolume(int volume){
+        if (volume<0) engine.setVolume(0);
+        engine.setVolume(volume);
+    }
+
+    public void seek(float position){
+        engine.seek(position);
+    }
+
+    public int getVolume (){
+        return engine.getVolume();
+    }
+
+    public float getProgress(){
+        return engine.getProgress();
+    }
+
+    public String getCurrentTimeStr(){
+        return formatTime(engine.getCurrentTime());
+    }
+
+    public String getTotalTimeStr(){
+        return formatTime(engine.getTotalTime());
+    }
+
+    public void skipForWard(int seconds){
+        engine.skipForwards(seconds);
+    }
+
+    public void skipBackward(int seconds){
+        engine.skipBackwards(seconds);
+    }
+
 
     public RepeatMode getRepeatMode() {
         return repeatMode;
@@ -127,5 +163,12 @@ public class AudioPlayer {
 
     public boolean isShuffle() {
         return queue.isShuffleEnabled();
+    }
+
+    private String formatTime(long ms) {
+        long seconds = ms / 1000;
+        long mins = seconds / 60;
+        long secs = seconds % 60;
+        return String.format("%02d:%02d", mins, secs);
     }
 }

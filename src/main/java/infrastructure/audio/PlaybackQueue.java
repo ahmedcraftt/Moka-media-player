@@ -89,7 +89,7 @@ public class PlaybackQueue {
     }
 
     public void remove(Track track) {
-        boolean removed = trackQueue.remove(track);
+        trackQueue.remove(track);
         originalOrder.remove(track);
         history.remove(track);
         trackSet.remove(track);
@@ -102,6 +102,10 @@ public class PlaybackQueue {
 
     public Track getCurrentTrack() {
         return currentTrack;
+    }
+
+    public void setCurrentTrack(Track track){
+        this.currentTrack=track;
     }
 
     public void setShuffle(boolean enable) {
@@ -117,6 +121,10 @@ public class PlaybackQueue {
 
     public Deque<Track> getHistory() {
         return history;
+    }
+
+    public void clearHistory(){
+        history.clear();
     }
 
     public void removeFromQueue(Track t){
