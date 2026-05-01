@@ -3,9 +3,15 @@ package ui.controllers;
 import application.LibraryService;
 import application.MediaService;
 import entities.Track;
-
 import infrastructure.audio.AudioPlayer;
-import infrastructure.audio.RepeatMode;
+import infrastructure.audio.PlaybackState;
+import javafx.animation.Animation;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
+import javafx.util.Duration;
+import mediaLibrary.Library;
+
+
 import javafx.concurrent.Task;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -13,7 +19,7 @@ import javafx.scene.Parent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
-import mediaLibrary.Library;
+
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
@@ -37,26 +43,35 @@ public class MainViewController {
     @FXML private Button btnRepeatAndStop ;
     @FXML private Button btnArtists;
     @FXML private Button btnGenres;
+    @FXML private Button btnFastForward;
+    @FXML private Button btnFastBackward;
+    @FXML private Button btnFavorite;
 
     @FXML private Label currentTrack;
 
     @FXML private Slider volumeSlider;
+    @FXML private Slider progressSlider;
 
-    @FXML private AnchorPane contentArea ;
+    @FXML private AnchorPane contentArea;
 
     private MediaService mediaService ;
     private AudioPlayer player;
-    private PlayerService playerService;
+    private ControllerServer controllerServer;
     private LibraryService libraryService;
 
     private MediaListViewController controller;
 
-    public void setPlayerService(PlayerService playerService) {
-        this.playerService = playerService;
+    private Timeline timeline;
+    private int volume ; //not yet used
+    private int skipSeconds = 10; //planing to have user change it from settings which is not yet implemented
+
+    public void setPlayerService(ControllerServer controllerServer) {
+        this.controllerServer = controllerServer;
     }
 
     public void setPlayer(AudioPlayer player) {
         this.player = player;
+        volume = player.getVolume();
         System.out.println(player.getRepeatMode());
     }
 
@@ -95,8 +110,18 @@ public class MainViewController {
         btnGenres.setOnAction(event -> loadCategoryView());
 
         btnPlay.setOnAction(event -> {
-                    player.play(playerService.getCurrentTrack());
-                    setupLabel(playerService.getCurrentTrack());
+                    if (player.getState()==PlaybackState.STOPPED) {
+                        Track track = controllerServer.getSelectedTrack();
+                        player.play(track);
+                        setupLabel(track);
+                        updatePlayButton();
+                    }else if (player.getState()== PlaybackState.PLAYING){
+                        player.pause();
+                        updatePlayButton();
+                    }else if (player.getState() == PlaybackState.PAUSED){
+                        player.resume();
+                        updatePlayButton();
+                    }
                 }
         );
 
@@ -104,16 +129,29 @@ public class MainViewController {
 
         btnPrev.setOnAction(event -> player.playPrev());
 
+        setUpVolumeSlider();
+
+        setUpProgressSlider();
+
+        btnFastForward.setOnAction(event -> player.skipForWard(skipSeconds));
+
+        btnFastBackward.setOnAction(event -> player.skipBackward(skipSeconds));
+
+        btnFavorite.setOnAction(event -> {
+            if (!controllerServer.getSelectedTrack().isFavorite()){
+                controllerServer.getSelectedTrack().setFavorite(true);
+                btnFavorite.setText("♥\uFE0F");
+            }else {
+                controllerServer.getSelectedTrack().setFavorite(false);
+                btnFavorite.setText("♥");
+            }
+        });
+
+        if (player!= null) setupLabel(player.getCurrentTrack());
+
         Thread thread = new Thread(task);
         thread.setDaemon(true);
         thread.start();
-    }
-
-   public void setupLabel(Track track){
-        if (track!=null){
-            currentTrack.setText(track.getMetadata().getTitle());
-        }
-        currentTrack.setText("---");
     }
 
     @NotNull
@@ -121,7 +159,7 @@ public class MainViewController {
         Task<Void> task = new Task<>() {
             @Override
             protected Void call() {
-                mediaService.loadActiveLibrary();
+                initializeLibrary();
                 player.enqueueAll(mediaService.getTracks());
                 return null;
             }
@@ -139,6 +177,14 @@ public class MainViewController {
         return task;
     }
 
+    public void setupLabel(Track track){
+        if (track != null){
+            currentTrack.setText(track.getMetadata().getTitle());
+        } else {
+            currentTrack.setText("---");
+        }
+    }
+
     private void setButtonsEnabled(boolean enabled) {
         btnTracks.setDisable(enabled);
         btnSongs.setDisable(enabled);
@@ -147,13 +193,36 @@ public class MainViewController {
         btnPlaylist.setDisable(enabled);
     }
 
-    private void switchView(List<Track> tracks, ViewMode mode) {
-        loadMediaView(tracks,mode);
-        if (controller == null) {
-            loadMediaView(tracks, mode);
-            return;
-        }
+    private void setUpVolumeSlider(){
+        volumeSlider.valueProperty().addListener((obs, oldVal, newVal) -> {
+            player.setVolume((int)(newVal.doubleValue() * 100));
+        });
+    }
 
+    private void setUpProgressSlider() {
+
+        timeline = new Timeline(
+                new KeyFrame(Duration.millis(200), e -> {
+                    if (!progressSlider.isValueChanging()) {
+                        if (player.getState()!=PlaybackState.STOPPED) {
+                            progressSlider.setValue(player.getProgress() * 100);
+                        }
+                    }
+                })
+        );
+
+        timeline.setCycleCount(Animation.INDEFINITE);
+        timeline.play();
+
+        progressSlider.valueProperty().addListener((obs, oldVal, newVal) -> {
+            if (progressSlider.isValueChanging()) {
+                player.seek(newVal.floatValue() / 100f);
+            }
+        });
+    }
+
+    private void switchView(List<Track> tracks, ViewMode mode) {
+        loadMediaView(tracks, mode);
         controller.setData(tracks);
         controller.setMode(mode);
     }
@@ -167,8 +236,8 @@ public class MainViewController {
             if (player != null) {
                 controller.setPlayer(player);
             }
-            if (playerService != null){
-                controller.setPlayerService(playerService);
+            if (controllerServer != null){
+                controller.setPlayerService(controllerServer);
             }
 
         } catch (IOException e) {
@@ -233,20 +302,19 @@ public class MainViewController {
 
         return loader;
     }
+
+    private void updatePlayButton() {
+        switch (player.getState()) {
+            case PLAYING -> btnPlay.setText("⏸");
+            case PAUSED, STOPPED -> btnPlay.setText("▶");
+        }
+    }
+
     private void initializeLibrary() {
 
         if (!libraryService.hasLibraries() || !libraryService.hasActiveLibrary()) {
 
-            Alert alert = new Alert(Alert.AlertType.WARNING);
-            alert.setTitle("No Libraries Found");
-            alert.setHeaderText("No music libraries available");
-            alert.setContentText("Please create your first library.");
-            alert.showAndWait();
-
-            TextInputDialog pathDialog = new TextInputDialog();
-            pathDialog.setTitle("Library Setup");
-            pathDialog.setHeaderText("Enter Music Folder Path");
-            Optional<String> pathResult = pathDialog.showAndWait();
+            Optional<String> pathResult = getResult();
 
             if (pathResult.isEmpty()) return;
 
@@ -266,6 +334,7 @@ public class MainViewController {
             libraryService.setActiveLibrary(lib);
 
             mediaService.loadActiveLibrary();
+
             return;
         }
 
@@ -278,4 +347,18 @@ public class MainViewController {
         mediaService.loadActiveLibrary();
 
     }
+
+    private static Optional<String> getResult() {
+        Alert alert = new Alert(Alert.AlertType.WARNING);
+        alert.setTitle("No Libraries Found");
+        alert.setHeaderText("No music libraries available");
+        alert.setContentText("Please create your first library.");
+        alert.showAndWait();
+
+        TextInputDialog pathDialog = new TextInputDialog();
+        pathDialog.setTitle("Library Setup");
+        pathDialog.setHeaderText("Enter Music Folder Path");
+        return pathDialog.showAndWait();
+    }
+
 }

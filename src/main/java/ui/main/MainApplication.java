@@ -13,7 +13,7 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 import mediaLibrary.MediaLibrary;
 import ui.controllers.MainViewController;
-import ui.controllers.PlayerService;
+import ui.controllers.ControllerServer;
 
 
 import java.io.IOException;
@@ -25,24 +25,24 @@ public class MainApplication extends Application {
     private final MediaLibrary library = new MediaLibrary();
     private final LibraryService libraryService = new LibraryService();
     private final MediaService mediaService = new MediaService(scanner,library,libraryService);
-    private final PlayerService playerService = new PlayerService();
+    private final ControllerServer controllerServer = new ControllerServer();
     @Override
     public void start(Stage stage) throws IOException {
         FXMLLoader loader = new FXMLLoader(MainApplication.class.getResource("/mainView.fxml"));
         Parent root = loader.load();
             MainViewController controller = loader.getController();
             controller.setPlayer(player);
-            controller.setPlayerService(playerService);
+            controller.setPlayerService(controllerServer);
             controller.setMediaService(mediaService);
             controller.setLibraryService(libraryService);
 
         Scene scene = new Scene(root,1000,750);
-        controller.setupLabel(playerService.getCurrentTrack());
+
         scene.setOnKeyPressed(event -> {
             switch (event.getCode()){
                 case P ->{
-                    if (playerService.getCurrentTrack()!=null) {
-                        player.play(playerService.getCurrentTrack());
+                    if (controllerServer.getSelectedTrack()!=null) {
+                        player.play(controllerServer.getSelectedTrack());
                     }
                 }
                 case SPACE -> player.pause();

@@ -41,7 +41,7 @@ public class TrackFactory {
         trackMetadata.setDurationInSeconds(durationSeconds);
         trackMetadata.setGenre(genre);
         trackMetadata.setTitle(title);
-        //trackMetadata.setChapterCount(Integer.parseInt(trackNumber));
+        trackMetadata.setChapterCount(safeParseInt(trackNumber));
 
         if (!trackNumber.equalsIgnoreCase("unknown") || !trackNumber.isEmpty()){
             abookScore+=2;
@@ -54,6 +54,7 @@ public class TrackFactory {
 
         if (durationSeconds <= 300) {
             songBoost += 6;
+            abookBoost-=1;
         } else if (durationSeconds <= 600) {
             songBoost += 3;
             abookBoost += 3;
@@ -93,7 +94,6 @@ public class TrackFactory {
         podcastScore += evalTokens(genre,PODCAST_KEYWORDS);
         abookScore += evalTokens(genre,AUDIOBOOK_GENRES);
 
-
         if (SONG_PATTERN.matcher(filename).matches()) songScore += 3;
         if (PODCAST_PATTERN.matcher(filename).matches()) podcastScore += 3;
         if (AUDIOBOOK_PATTERN.matcher(filename).matches()) abookScore += 3;
@@ -126,4 +126,13 @@ public class TrackFactory {
     private static Set<String> getTokens(String string) {
         return new HashSet<>(Arrays.asList(normalize(string).split("\\s+")));
     }
+
+    private static int safeParseInt(String value) {
+        try {
+            return (value == null || value.isBlank()) ? 0 : Integer.parseInt(value);
+        } catch (NumberFormatException e) {
+            return 0;
+        }
+    }
+
 }

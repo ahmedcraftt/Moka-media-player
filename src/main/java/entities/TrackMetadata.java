@@ -2,7 +2,7 @@ package entities;
 
 import java.time.Year;
 
-public class TrackMetadata { //not used yet
+public class TrackMetadata {
 
     private String genre;
     private String title;

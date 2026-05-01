@@ -27,7 +27,6 @@
                   <Button fx:id="btnAlbum" mnemonicParsing="false" text="Album" />
                   <Button fx:id="btnGenres" mnemonicParsing="false" text="Genres" />
                   <Button fx:id="btnPlaylist" mnemonicParsing="false" text="Playlist" />
-                  <Button fx:id="btnGenres1" layoutX="21.0" layoutY="273.0" mnemonicParsing="false" text="Genres" />
                </children>
                <padding>
                   <Insets top="5.0" />
@@ -59,9 +58,9 @@
    <bottom>
       <VBox alignment="CENTER" spacing="8.0" BorderPane.alignment="CENTER">
          <children>
-            <Label fx:id="currentTrack" alignment="CENTER" prefHeight="16.0" prefWidth="168.0" text="Label" />
+            <Label fx:id="currentTrack" alignment="CENTER" prefHeight="16.0" prefWidth="168.0" text="---" />
 
-            <Slider fx:id="trackSlider" maxWidth="1.7976931348623157E308" />
+            <Slider fx:id="progressSlider" maxWidth="1.7976931348623157E308" />
             <HBox alignment="CENTER" spacing="20.0">
                <children>
                   <HBox alignment="CENTER_LEFT" spacing="10.0" HBox.hgrow="ALWAYS">
@@ -77,7 +76,7 @@
                         <Button fx:id="btnPrev" text="⏮" />
                         <Button fx:id="btnPlay" text="▶" />
                         <Button fx:id="btnNext" text="⏭" />
-                        <Button fx:id="btnFastBackwards" text="+10s ⏩" />
+                        <Button fx:id="btnFastBackward" text="+10s ⏩" />
                      </children>
                      <padding>
                         <Insets top="5.0" />
@@ -87,7 +86,7 @@
                   <HBox alignment="CENTER_RIGHT" spacing="10.0" HBox.hgrow="ALWAYS">
                      <children>
                         <Button fx:id="btnFavorite" text="❤" />
-                        <Slider fx:id="volumeSlider" prefWidth="100.0" min="0.0" max="1.0" value="0.5"/>
+                        <Slider fx:id="volumeSlider" max="1.0" min="0.0" prefWidth="100.0" value="0.5" />
                      </children>
                      <padding>
                         <Insets top="5.0" />

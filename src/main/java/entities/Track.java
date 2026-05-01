@@ -21,6 +21,7 @@ public class Track {
         this.fileName=fileName;
         this.metadata=metadata;
         this.filePath = filePath;
+        favorite = false;
     }
 
     public boolean isFavorite() {

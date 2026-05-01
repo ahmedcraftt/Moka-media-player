@@ -4,18 +4,18 @@ import entities.Track;
 
 import infrastructure.audio.AudioPlayer;
 
-public class PlayerService {
+public class ControllerServer {
 
-    private Track currentTrack;
+    private Track selectedTrack;
     private AudioPlayer player;
 
-    public Track getCurrentTrack() {
+    public Track getSelectedTrack() {
         System.out.println("get track");
-        return currentTrack;
+        return selectedTrack;
     }
 
-    public void setCurrentTrack(Track track) {
+    public void setSelectedTrack(Track track) {
         System.out.println("set track:"+track.getMetadata().getTitle());
-        this.currentTrack=track;
+        this.selectedTrack =track;
     }
 }
