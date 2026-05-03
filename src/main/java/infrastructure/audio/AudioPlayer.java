@@ -22,6 +22,30 @@ public class AudioPlayer {
         queue.printStatus();
     }
 
+public void playFromList(Track selected, List<Track> list) {
+    if (selected == null || list == null || list.isEmpty()) return;
+
+    queue.clear();
+
+    int index = list.indexOf(selected);
+    if (index == -1) return;
+
+    // Set current
+    queue.setCurrentTrack(selected);
+
+    // Future (queue)
+    for (int i = index + 1; i < list.size(); i++) {
+        queue.add(list.get(i));
+    }
+
+    // Past (history)
+    for (int i = index - 1; i >= 0; i--) {
+        queue.pushHistory(list.get(i));
+    }
+
+    play(selected);
+}
+
     public void playNext() {
         System.out.println("playing next");
         switch (repeatMode) {
