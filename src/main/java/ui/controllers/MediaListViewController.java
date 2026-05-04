@@ -20,32 +20,16 @@ public class MediaListViewController {
 
     private List<Track> currentData;
     private AudioPlayer player;
-    private ControllerServer controllerServer;
+    private PlaybackContext playbackContext;
 
     public void setPlayer(AudioPlayer player) {
         this.player = player;
     }
 
-    public void setPlayerService(ControllerServer controllerServer) {
-        this.controllerServer = controllerServer;
+    public void setPlaybackContext(PlaybackContext selectionModel) {
+        this.playbackContext = selectionModel;
     }
 
-    public void setData(List<Track> tracks) {
-        this.currentData = tracks;
-        contentList.getItems().setAll(tracks);
-    }
-
-    public void setMode(ViewMode mode) {
-
-        btnListPlay.setText(
-                switch (mode) {
-                    case BOOKS -> "Read";
-                    case PODCASTS -> "Play Episode";
-                    case PLAYLISTS -> "Open";
-                    default -> "Play";
-                }
-        );
-    }
 
     @FXML
     private void initialize() {
@@ -56,15 +40,6 @@ public class MediaListViewController {
         setupRefresh();
     }
 
-    private void setupListView() {
-        contentList.setCellFactory(lv -> new MyListCell());
-        contentList.setOnMouseClicked(e -> {
-            Track selected = contentList.getSelectionModel().getSelectedItem();
-            if (selected != null) {
-                controllerServer.setSelectedTrack(selected);
-            }
-        });
-    }
 
     private void sort(SortByModes mode) {
         List<Track> items = new ArrayList<>(contentList.getItems());
@@ -109,6 +84,38 @@ public class MediaListViewController {
         }
     }
 
+    public void setData(List<Track> tracks) {
+        this.currentData = tracks;
+        contentList.getItems().setAll(tracks);
+
+        if (playbackContext != null) {
+            playbackContext.setCurrentList(tracks);
+        }
+    }
+
+    public void setMode(ViewMode mode) {
+
+        btnListPlay.setText(
+                switch (mode) {
+                    case BOOKS -> "Read";
+                    case PODCASTS -> "Play Episode";
+                    case PLAYLISTS -> "Open";
+                    default -> "Play";
+                }
+        );
+    }
+
+    private void setupListView() {
+        contentList.setCellFactory(lv -> new MyListCell());
+        contentList.setOnMouseClicked(e -> {
+            Track selected = contentList.getSelectionModel().getSelectedItem();
+            if (selected != null) {
+                playbackContext.setSelectedTrack(selected);
+            }
+        });
+    }
+
+
     private void setupSearch() {
         searchBar.textProperty().addListener((obs, oldVal, newVal) -> {
             if (newVal.isBlank()) {
@@ -130,12 +137,9 @@ public class MediaListViewController {
 
     private void setupPlay() {
         btnListPlay.setOnAction(e -> {
-            Track first = contentList.getItems().getFirst();
-
-            if (first != null && player != null) {
-                player.play(first);
+            if (!contentList.getItems().isEmpty()) {
+                player.playFromList(playbackContext.getSelectedTrack(), playbackContext.getCurrentList());
             }
-
         });
     }
 
