@@ -1,6 +1,8 @@
 package mediaLibrary;
 
+import entities.MediaType;
 import entities.Track;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -23,7 +25,7 @@ public class MediaLibrary {
         return new ArrayList<>(tracks.values());
     }
 
-    public void removeTrack(Track track) {
+    public void removeTrack(@NotNull Track track) {
         tracks.remove(track.getFilePath().toString());
     }
 
@@ -34,20 +36,20 @@ public class MediaLibrary {
     // ===== QUERY LAYER =====
 
     public List<Track> getSongs() {
-        return filterByType("SONG");
+        return filterByType(MediaType.SONG);
     }
 
     public List<Track> getPodcasts() {
-        return filterByType("PODCAST");
+        return filterByType(MediaType.PODCAST);
     }
 
     public List<Track> getAudiobooks() {
-        return filterByType("AUDIOBOOK");
+        return filterByType(MediaType.AUDIOBOOK);
     }
 
-    private List<Track> filterByType(String type) {
+    private List<Track> filterByType(MediaType type) {
         return tracks.values().stream()
-                .filter(t -> t.getType().name().equals(type))
+                .filter(t -> t.getType()==type)
                 .collect(Collectors.toList());
     }
 

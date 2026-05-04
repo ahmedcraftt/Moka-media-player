@@ -90,6 +90,6 @@ public class Track {
 
     @Override
     public String toString() {
-        return String.format("%s (%ds)%n", getMetadata().getTitle(), getMetadata().getDurationInSeconds());
+        return String.format("%s (%ds)%n + is favorite: %s", getMetadata().getTitle(), getMetadata().getDurationInSeconds(),favorite);
     }
 }

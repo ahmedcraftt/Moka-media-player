@@ -129,5 +129,12 @@ public class VLCJAudioEngine implements AudioEngine {
         mediaPlayer.controls().setTime(newTime);
     }
 
-
+    @Override
+    public String toString() {
+        return "VLCJAudioEngine{" +
+                "\ncurrentOnFinished=" + currentOnFinished +
+                ", \nmediaPlayer=" + mediaPlayer +
+                ", \nfactory=" + factory +
+                '}';
+    }
 }

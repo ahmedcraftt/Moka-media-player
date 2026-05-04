@@ -149,7 +149,7 @@ public class CliApp {
 
         Track selected = tracks.get(index);
 
-        player.play(selected);
+        player.playFromList(selected,tracks);
 
         System.out.println("▶ Playing: " + selected.getMetadata().getTitle());
     }

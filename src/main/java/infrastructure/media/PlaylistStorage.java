@@ -15,7 +15,7 @@ public class PlaylistStorage {
 
     private static final MetaDataManager metaData = new JaudiotaggerManager();
     private static final Gson gson = new GsonBuilder().setPrettyPrinting().create();
-    private static final Path base = Path.of(System.getProperty("user.home"), ".moka_music_player", "playlists");
+    private static final Path base = Path.of(System.getProperty("user.home"), ".moka_music_player", "playlists.json");
 
     public static void save(Playlist playlist) throws IOException {
 

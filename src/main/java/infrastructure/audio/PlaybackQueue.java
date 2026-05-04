@@ -13,29 +13,26 @@ public class PlaybackQueue {
     private boolean shuffle = false;
     private boolean loopQueue = false;
 
-    public void printStatus(){
-        System.out.println("main queue:"+trackQueue);
-        System.out.println("history queue:"+history);
-        System.out.println("order list:"+originalOrder);
-        System.out.println("track set:"+trackSet);
-        System.out.println("shuffle:"+shuffle);
-        System.out.println("loop:"+loopQueue);
-        String current =(currentTrack!=null)?currentTrack.getMetadata().getTitle():"none";
-        System.out.println("Current track:" + current);
-    }
-
     public void add(Track track) {
         if (track == null) return;
-        trackQueue.add(track);
-        originalOrder.add(track);
+        if (!trackSet.contains(track)) {
+            trackQueue.add(track);
+            originalOrder.add(track);
+            if (trackSet.isEmpty()){
+                trackSet.add(track);
+            }
+        }
     }
 
     public void addAll(List<Track> tracks) {
         if (tracks == null || tracks.isEmpty()) return;
         for (Track t : tracks) {
-            if (trackSet.add(t)) {
+            if (!trackSet.contains(t)) {
                 trackQueue.add(t);
                 originalOrder.add(t);
+                if (trackSet.isEmpty()){
+                    trackSet.addAll(tracks);
+                }
             }
         }
     }
@@ -127,6 +124,10 @@ public class PlaybackQueue {
         history.clear();
     }
 
+    public void pushHistory(Track track){
+        history.push(track);
+    }
+
     public void removeFromQueue(Track t){
         trackQueue.remove(t);
     }
@@ -165,4 +166,16 @@ public class PlaybackQueue {
        return trackQueue.peekFirst();
     }
 
+    @Override
+    public String toString() {
+        return "PlaybackQueue{" +
+                "\ncurrentTrack=" + currentTrack +
+                ", \ntrackQueue=" + trackQueue +
+                ", \nhistory=" + history +
+                ", \noriginalOrder=" + originalOrder +
+                ", \ntrackSet=" + trackSet +
+                ", \nshuffle=" + shuffle +
+                ", \nloopQueue=" + loopQueue +
+                '}';
+    }
 }

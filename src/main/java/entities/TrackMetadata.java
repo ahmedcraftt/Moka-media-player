@@ -4,8 +4,8 @@ import java.time.Year;
 
 public class TrackMetadata {
 
-    private String genre;
     private String title;
+    private String genre;
     private int durationInSeconds;
     private byte[] coverArt;
     private Year year;
@@ -169,5 +169,9 @@ public class TrackMetadata {
 
     public void setSampleRate(int sampleRate) {
         this.sampleRate = sampleRate;
+    }
+
+    public String toString(){
+        return String.format("Meta data:[%s ,%s ,%s, %d",title,genre,description,durationInSeconds); //later
     }
 }

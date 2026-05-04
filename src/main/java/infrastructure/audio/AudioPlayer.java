@@ -6,11 +6,20 @@ import java.nio.file.Path;
 import java.util.List;
 
 public class AudioPlayer {
+
     private Track currentTrack;
     private final PlaybackQueue queue = new PlaybackQueue();
-    private final AudioEngine engine = new VLCJAudioEngine();
+    private final AudioEngine engine;
     private PlaybackState state = PlaybackState.STOPPED;
     private RepeatMode repeatMode = RepeatMode.STOP_WHEN_QUEUE_END;
+
+    public AudioPlayer(AudioEngine engine){
+        this.engine=engine;
+    }
+
+    public void printStatus(){
+        System.out.println(toString());
+    }
 
     public void play(Track track){
         if (track == null) return;
@@ -19,15 +28,38 @@ public class AudioPlayer {
         queue.setCurrentTrack(currentTrack);
         engine.play(path,this::playNext);
         state = PlaybackState.PLAYING;
-        queue.printStatus();
+        printStatus();
+    }
+
+    public void playFromList(Track selected, List<Track> list) {
+        if (selected == null || list == null || list.isEmpty()) return;
+
+        queue.clear();
+
+        int index = list.indexOf(selected);
+        if (index == -1) return;
+
+        queue.setCurrentTrack(selected);
+
+        for (int i = index + 1; i < list.size(); i++) {
+            queue.add(list.get(i));
+        }
+
+        for (int i = index - 1; i >= 0; i--) {
+            queue.pushHistory(list.get(i));
+        }
+
+        play(selected);
     }
 
     public void playNext() {
         System.out.println("playing next");
         switch (repeatMode) {
             case LOOP_CURRENT_ONE -> {
-                System.out.println("looping "+ currentTrack.getMetadata().getTitle());
-                if (currentTrack != null) play(currentTrack);
+                if (currentTrack!=null) {
+                    System.out.println("looping " + currentTrack);
+                    play(currentTrack);
+                }
             }
 
             case PLAY_ONE ->{
@@ -37,7 +69,8 @@ public class AudioPlayer {
 
             case STOP_WHEN_QUEUE_END -> {
                 Track nextTrack = queue.next();
-                System.out.println("playing "+ nextTrack.getMetadata().getTitle());
+                if (nextTrack!=null)
+                    System.out.println("playing "+ nextTrack);
                 if (nextTrack != null) {
                     play(nextTrack);
                 } else {
@@ -47,7 +80,8 @@ public class AudioPlayer {
 
             case LOOP_CURRENT_QUEUE -> {
                 Track nextTrack = queue.next();
-                System.out.println("playing "+ nextTrack.getMetadata().getTitle());
+                if (nextTrack!=null)
+                    System.out.println("playing "+ nextTrack);
                 if (nextTrack == null) {
                     queue.reset();
                     nextTrack = queue.next();
@@ -56,7 +90,7 @@ public class AudioPlayer {
                 if (nextTrack != null) {
                     play(nextTrack);
                 } else {
-                    stop(); // Only hits if the queue is physically empty
+                    stop();
                 }
             }
         }
@@ -65,8 +99,11 @@ public class AudioPlayer {
     public void playPrev(){
         if (engine.getProgress()==0f) {
             if (currentTrack != null) {
-                Track track = queue.prev();
-                play(track);
+                Track prevTrack = queue.prev();
+                if (prevTrack!=null) {
+                    System.out.println("playing: "+prevTrack);
+                    play(prevTrack);
+                }
             }
         }else engine.setProgress(0f);
     }
@@ -163,6 +200,17 @@ public class AudioPlayer {
 
     public boolean isShuffle() {
         return queue.isShuffleEnabled();
+    }
+
+    @Override
+    public String toString() {
+        return "\nAudioPlayer{" +
+                "\ncurrentTrack= " + currentTrack +
+                ", \nqueue= " + queue +
+                ", \nengine= " + engine +
+                ", \nstate= " + state +
+                ", \nrepeatMode= " + repeatMode +
+                '}';
     }
 
     private String formatTime(long ms) {

@@ -12,6 +12,7 @@ module org.example.moka_music_player {
     requires annotations;
     requires com.google.gson;
     requires AhmedUtilsV2;
+    requires org.slf4j;
 
     // Export packages that need to be accessed by other modules or the JVM
     exports ui.main;

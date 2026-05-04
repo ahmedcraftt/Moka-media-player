@@ -25,4 +25,72 @@ class TrackTest {
     @Test
     void setDurationInSeconds() {
     }
+
+    @Test
+    void testIsFavorite() {
+    }
+
+    @Test
+    void setFavorite() {
+    }
+
+    @Test
+    void getDateCreated() {
+    }
+
+    @Test
+    void setDateCreated() {
+    }
+
+    @Test
+    void getDateModified() {
+    }
+
+    @Test
+    void setDateModified() {
+    }
+
+    @Test
+    void getFileSize() {
+    }
+
+    @Test
+    void setFileSize() {
+    }
+
+    @Test
+    void getFilePath() {
+    }
+
+    @Test
+    void setFilePath() {
+    }
+
+    @Test
+    void getFileName() {
+    }
+
+    @Test
+    void setFileName() {
+    }
+
+    @Test
+    void getType() {
+    }
+
+    @Test
+    void setType() {
+    }
+
+    @Test
+    void getMetadata() {
+    }
+
+    @Test
+    void setMetadata() {
+    }
+
+    @Test
+    void testToString() {
+    }
 }

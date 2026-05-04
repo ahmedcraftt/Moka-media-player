@@ -3,5 +3,7 @@ package entities;
 public enum MediaType {
     SONG,
     PODCAST,
-    AUDIOBOOK
+    AUDIOBOOK,
+    LECTURE, //not integrated yet
+    VIDEO    //not integrated yet
 }

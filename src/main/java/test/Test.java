@@ -1,12 +1,10 @@
 package test;
 
 import entities.Track;
+import infrastructure.audio.*;
 import infrastructure.media.JaudiotaggerManager;
 import infrastructure.media.MetaDataManager;
 import infrastructure.media.TrackFactory;
-import infrastructure.audio.AudioPlayer;
-import infrastructure.audio.PlaybackState;
-import infrastructure.audio.RepeatMode;
 import config.VlcBootstrap;
 
 import java.nio.file.Path;
@@ -16,7 +14,8 @@ import java.util.List;
 import java.util.Scanner;
 
 public class Test {
-    static AudioPlayer player = new AudioPlayer();
+    static AudioEngine engine = new VLCJAudioEngine();
+    static AudioPlayer player = new AudioPlayer(engine);
     static MetaDataManager metaData = new JaudiotaggerManager();
 
     public static void main(String[] ignoredArgs) {
