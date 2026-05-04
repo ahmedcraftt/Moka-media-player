@@ -2,7 +2,9 @@ package ui.main;
 
 import application.LibraryService;
 import application.MediaService;
+import infrastructure.audio.AudioEngine;
 import infrastructure.audio.AudioPlayer;
+import infrastructure.audio.VLCJAudioEngine;
 import infrastructure.media.JaudiotaggerManager;
 import infrastructure.media.MediaScanner;
 import infrastructure.media.MetaDataManager;
@@ -13,26 +15,27 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 import mediaLibrary.MediaLibrary;
 import ui.controllers.MainViewController;
-import ui.controllers.ControllerServer;
+import ui.controllers.PlaybackContext;
 
 
 import java.io.IOException;
 
 public class MainApplication extends Application {
-    private final AudioPlayer player = new AudioPlayer();
+    private final AudioEngine engine = new VLCJAudioEngine();
+    private final AudioPlayer player = new AudioPlayer(engine);
     private final MetaDataManager metaDataManger = new JaudiotaggerManager();
     private final MediaScanner scanner = new MediaScanner(metaDataManger);
     private final MediaLibrary library = new MediaLibrary();
     private final LibraryService libraryService = new LibraryService();
     private final MediaService mediaService = new MediaService(scanner,library,libraryService);
-    private final ControllerServer controllerServer = new ControllerServer();
+    private final PlaybackContext controllerServer = new PlaybackContext();
     @Override
     public void start(Stage stage) throws IOException {
         FXMLLoader loader = new FXMLLoader(MainApplication.class.getResource("/mainView.fxml"));
         Parent root = loader.load();
             MainViewController controller = loader.getController();
             controller.setPlayer(player);
-            controller.setPlayerService(controllerServer);
+        controller.setPlaybackContext(controllerServer);
             controller.setMediaService(mediaService);
             controller.setLibraryService(libraryService);
 

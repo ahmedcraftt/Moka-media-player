@@ -56,17 +56,16 @@ public class MainViewController {
 
     private MediaService mediaService ;
     private AudioPlayer player;
-    private ControllerServer controllerServer;
+    private PlaybackContext playbackContext;
     private LibraryService libraryService;
 
     private MediaListViewController controller;
 
-    private Timeline timeline;
     private int volume ; //not yet used
-    private int skipSeconds = 10; //planing to have user change it from settings which is not yet implemented
+    private final int skipSeconds = 10; //planing to have user change it from settings which is not yet implemented
 
-    public void setPlayerService(ControllerServer controllerServer) {
-        this.controllerServer = controllerServer;
+    public void setPlaybackContext(PlaybackContext selectionModel) {
+        this.playbackContext = selectionModel;
     }
 
     public void setPlayer(AudioPlayer player) {
@@ -111,10 +110,9 @@ public class MainViewController {
 
         btnPlay.setOnAction(event -> {
                     if (player.getState()==PlaybackState.STOPPED) {
-                        Track track = controllerServer.getSelectedTrack();
-                        player.play(track);
-                        setupLabel(track);
+                        player.playFromList(playbackContext.getSelectedTrack(), playbackContext.getCurrentList());
                         updatePlayButton();
+                        setupLabel();
                     }else if (player.getState()== PlaybackState.PLAYING){
                         player.pause();
                         updatePlayButton();
@@ -125,9 +123,17 @@ public class MainViewController {
                 }
         );
 
-        btnNext.setOnAction(event -> player.playNext());
+        btnNext.setOnAction(event -> {
+            player.playNext();
+            updatePlayButton();
+            setupLabel();
+        });
 
-        btnPrev.setOnAction(event -> player.playPrev());
+        btnPrev.setOnAction(event -> {
+            player.playPrev();
+            updatePlayButton();
+            setupLabel();
+        });
 
         setUpVolumeSlider();
 
@@ -137,17 +143,7 @@ public class MainViewController {
 
         btnFastBackward.setOnAction(event -> player.skipBackward(skipSeconds));
 
-        btnFavorite.setOnAction(event -> {
-            if (!controllerServer.getSelectedTrack().isFavorite()){
-                controllerServer.getSelectedTrack().setFavorite(true);
-                btnFavorite.setText("♥\uFE0F");
-            }else {
-                controllerServer.getSelectedTrack().setFavorite(false);
-                btnFavorite.setText("♥");
-            }
-        });
-
-        if (player!= null) setupLabel(player.getCurrentTrack());
+        btnFavorite.setOnAction(event -> playbackContext.getSelectedTrack().setFavorite(!playbackContext.getSelectedTrack().isFavorite()));
 
         Thread thread = new Thread(task);
         thread.setDaemon(true);
@@ -160,6 +156,7 @@ public class MainViewController {
             @Override
             protected Void call() {
                 initializeLibrary();
+                mediaService.loadActiveLibrary();
                 player.enqueueAll(mediaService.getTracks());
                 return null;
             }
@@ -177,9 +174,9 @@ public class MainViewController {
         return task;
     }
 
-    public void setupLabel(Track track){
-        if (track != null){
-            currentTrack.setText(track.getMetadata().getTitle());
+    public void setupLabel() {
+        if (player != null && player.getCurrentTrack() != null) {
+            currentTrack.setText(player.getCurrentTrack().getMetadata().getTitle());
         } else {
             currentTrack.setText("---");
         }
@@ -201,10 +198,10 @@ public class MainViewController {
 
     private void setUpProgressSlider() {
 
-        timeline = new Timeline(
+        Timeline timeline = new Timeline(
                 new KeyFrame(Duration.millis(200), e -> {
                     if (!progressSlider.isValueChanging()) {
-                        if (player.getState()!=PlaybackState.STOPPED) {
+                        if (player.getState() != PlaybackState.STOPPED) {
                             progressSlider.setValue(player.getProgress() * 100);
                         }
                     }
@@ -236,8 +233,8 @@ public class MainViewController {
             if (player != null) {
                 controller.setPlayer(player);
             }
-            if (controllerServer != null){
-                controller.setPlayerService(controllerServer);
+            if (playbackContext != null) {
+                controller.setPlaybackContext(playbackContext);
             }
 
         } catch (IOException e) {
@@ -345,7 +342,6 @@ public class MainViewController {
         }
 
         mediaService.loadActiveLibrary();
-
     }
 
     private static Optional<String> getResult() {
