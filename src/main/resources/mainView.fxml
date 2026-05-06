@@ -72,11 +72,11 @@
 
                   <HBox alignment="CENTER" spacing="10.0">
                      <children>
-                        <Button fx:id="btnFastForward" text="⏪ -10s" />
+                        <Button fx:id="btnFastBackward" text="⏪ -10s"/>
                         <Button fx:id="btnPrev" text="⏮" />
                         <Button fx:id="btnPlay" text="▶" />
                         <Button fx:id="btnNext" text="⏭" />
-                        <Button fx:id="btnFastBackward" text="+10s ⏩" />
+                        <Button fx:id="btnFastForward" text="+10s ⏩"/>
                      </children>
                      <padding>
                         <Insets top="5.0" />

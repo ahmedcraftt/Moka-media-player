@@ -9,6 +9,7 @@ import infrastructure.media.JaudiotaggerManager;
 import infrastructure.media.MediaScanner;
 import infrastructure.media.MetaDataManager;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -28,14 +29,14 @@ public class MainApplication extends Application {
     private final MediaLibrary library = new MediaLibrary();
     private final LibraryService libraryService = new LibraryService();
     private final MediaService mediaService = new MediaService(scanner,library,libraryService);
-    private final PlaybackContext controllerServer = new PlaybackContext();
+    private final PlaybackContext playbackContext = new PlaybackContext();
     @Override
     public void start(Stage stage) throws IOException {
         FXMLLoader loader = new FXMLLoader(MainApplication.class.getResource("/mainView.fxml"));
         Parent root = loader.load();
             MainViewController controller = loader.getController();
             controller.setPlayer(player);
-        controller.setPlaybackContext(controllerServer);
+        controller.setPlaybackContext(playbackContext);
             controller.setMediaService(mediaService);
             controller.setLibraryService(libraryService);
 
@@ -44,20 +45,38 @@ public class MainApplication extends Application {
         scene.setOnKeyPressed(event -> {
             switch (event.getCode()){
                 case P ->{
-                    if (controllerServer.getSelectedTrack()!=null) {
-                        player.play(controllerServer.getSelectedTrack());
+                    if (playbackContext.getSelectedTrack() != null) {
+                        player.play(playbackContext.getSelectedTrack());
+                        controller.updatePlayButton();
                     }
                 }
                 case SPACE -> player.pause();
                 case RIGHT -> player.playNext();
                 case LEFT -> player.playPrev();
+                case UP -> player.setVolume(10);
+                case DOWN -> player.setVolume(-10);
+                case M -> player.setVolume(0);
+                case F -> {
+                    if (playbackContext.getSelectedTrack() != null) {
+                        playbackContext.getSelectedTrack()
+                                .setFavorite(!playbackContext
+                                        .getSelectedTrack()
+                                        .isFavorite());
+                    }
+                }
             }
         });
 
         stage.setTitle("Moka Player ☕");
         stage.setScene(scene);
         stage.centerOnScreen();
-        stage.setOnCloseRequest(_ -> System.out.println("Closing app..."));
+        stage.setOnCloseRequest(
+                event -> {
+                    System.out.println("Closing app...");
+                    engine.release();
+                    event.consume();
+                    Platform.exit();
+                });
         stage.show();
 
     }
