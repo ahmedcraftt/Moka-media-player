@@ -83,6 +83,13 @@ public class MainViewController {
         initializeLibrary();
     }
 
+    public void updatePlayButton() {
+        switch (player.getState()) {
+            case PLAYING -> btnPlay.setText("⏸");
+            case PAUSED, STOPPED -> btnPlay.setText("▶");
+        }
+    }
+
     @FXML
     private void initialize() {
 
@@ -139,11 +146,14 @@ public class MainViewController {
 
         setUpProgressSlider();
 
-        btnFastForward.setOnAction(event -> player.skipForWard(skipSeconds));
+        btnFastForward.setOnAction(event -> player.skipForward(skipSeconds));
 
         btnFastBackward.setOnAction(event -> player.skipBackward(skipSeconds));
 
-        btnFavorite.setOnAction(event -> playbackContext.getSelectedTrack().setFavorite(!playbackContext.getSelectedTrack().isFavorite()));
+        btnFavorite.setOnAction(event -> playbackContext.getSelectedTrack()
+                .setFavorite(!playbackContext
+                        .getSelectedTrack()
+                        .isFavorite()));
 
         Thread thread = new Thread(task);
         thread.setDaemon(true);
@@ -298,13 +308,6 @@ public class MainViewController {
         AnchorPane.setRightAnchor(view, 0.0);
 
         return loader;
-    }
-
-    private void updatePlayButton() {
-        switch (player.getState()) {
-            case PLAYING -> btnPlay.setText("⏸");
-            case PAUSED, STOPPED -> btnPlay.setText("▶");
-        }
     }
 
     private void initializeLibrary() {

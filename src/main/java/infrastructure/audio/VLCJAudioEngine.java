@@ -5,11 +5,21 @@ import uk.co.caprica.vlcj.player.base.MediaPlayer;
 import uk.co.caprica.vlcj.player.base.MediaPlayerEventAdapter;
 
 import java.nio.file.Path;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class VLCJAudioEngine implements AudioEngine {
+
     private final MediaPlayer mediaPlayer;
     private final MediaPlayerFactory factory;
     private Runnable currentOnFinished;
+
+    private final ExecutorService callbackExecutor = Executors.newSingleThreadExecutor(r -> {
+        Thread t = new Thread(r);
+        t.setName("audio-finished-callback-thread");
+        t.setDaemon(true);
+        return t;
+    });
 
     public VLCJAudioEngine() {
         factory = new MediaPlayerFactory();
@@ -19,37 +29,48 @@ public class VLCJAudioEngine implements AudioEngine {
             @Override
             public void finished(MediaPlayer mediaPlayer) {
                 System.out.println("FINISHED EVENT FIRED");
-                if (currentOnFinished != null) {
-                    new Thread(() -> {
-                        try {
-                            Thread.sleep(50);
-                            currentOnFinished.run();
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                    }).start();
+
+                Runnable callback = currentOnFinished; // snapshot
+
+                if (callback != null) {
+                    callbackExecutor.submit(callback);
                 }
             }
         });
 
     }
 
+    /**
+     * Starts playback of the given media file.
+     *
+     * @param path            audio file path
+     * @param onTrackFinished callback triggered when playback completes
+     */
     @Override
     public void play(Path path, Runnable onTrackFinished) {
         this.currentOnFinished = onTrackFinished;
         mediaPlayer.media().play(path.toAbsolutePath().toString());
     }
 
+    /**
+     * Pauses current playback.
+     */
     @Override
     public void pause() {
         mediaPlayer.controls().pause();
     }
 
+    /**
+     * Stops playback and resets media state.
+     */
     @Override
     public void stop() {
         mediaPlayer.controls().stop();
     }
 
+    /**
+     * Resumes playback if paused.
+     */
     @Override
     public void resume() {
         mediaPlayer.controls().play();
@@ -98,10 +119,16 @@ public class VLCJAudioEngine implements AudioEngine {
         return mediaPlayer.status().length();
     }
 
+    /**
+     * Releases VLCJ resources.
+     *
+     * <p>Must be called when shutting down the application to avoid native memory leaks.</p>
+     */
     @Override
     public void release() {
         mediaPlayer.release();
         factory.release();
+        callbackExecutor.shutdown();
     }
 
     @Override
@@ -123,7 +150,6 @@ public class VLCJAudioEngine implements AudioEngine {
 
         long newTime = current - (seconds * 1000L);
 
-        // Clamp to 0
         if (newTime < 0) newTime = 0;
 
         mediaPlayer.controls().setTime(newTime);

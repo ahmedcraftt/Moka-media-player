@@ -41,6 +41,15 @@ public class AudioPlayer {
      *   <li>Queue maintains both forward tracks and history for navigation.</li>
      *   <li>{@link #playFromList(Track, List)} reconstructs queue context around a selected track.</li>
      * </ul>
+     *      * <h2>⚠ Important Behavior</h2>
+     *      * AudioEngine automatically invokes {@link #playNext()} when playback completes.
+     *      *
+     *      * This creates a chained playback flow.
+     *      *
+     *      * Improper changes to play() or playNext() may:
+     *      * - Break queue progression
+     *      * - Cause infinite loops
+     *      * - Skip tracks unexpectedly
      */
 
     private Track currentTrack;
@@ -144,6 +153,7 @@ public class AudioPlayer {
                 Track nextTrack = queue.next();
                 if (nextTrack != null)
                     System.out.println("playing " + nextTrack);
+
                 if (nextTrack != null) {
                     play(nextTrack);
                 } else {
@@ -153,8 +163,10 @@ public class AudioPlayer {
 
             case LOOP_CURRENT_QUEUE -> {
                 Track nextTrack = queue.next();
+
                 if (nextTrack != null)
                     System.out.println("playing " + nextTrack);
+
                 if (nextTrack == null) {
                     queue.reset();
                     nextTrack = queue.next();
@@ -187,6 +199,9 @@ public class AudioPlayer {
         }else engine.setProgress(0f);
     }
 
+    /**
+     * Adds multiple tracks to the playback queue.
+     */
     public void enqueueAll(List<Track> tracks) {
         if (tracks == null || tracks.isEmpty()) return;
         queue.addAll(tracks);
@@ -196,6 +211,9 @@ public class AudioPlayer {
         queue.clear();
     }
 
+    /**
+     * Pauses playback if currently playing.
+     */
     public void pause() {
         if (state == PlaybackState.PLAYING) {
             engine.pause();
@@ -203,6 +221,9 @@ public class AudioPlayer {
         }
     }
 
+    /**
+     * Stops playback and clears the current track.
+     */
     public void stop() {
         if (state != PlaybackState.STOPPED) {
             engine.stop();
@@ -211,6 +232,9 @@ public class AudioPlayer {
         }
     }
 
+    /**
+     * Resumes playback if paused and a track is loaded.
+     */
     public void resume() {
         if (state == PlaybackState.PAUSED && currentTrack != null && !engine.isPlaying()) {
             state = PlaybackState.PLAYING;
@@ -224,12 +248,30 @@ public class AudioPlayer {
      * @param volume volume level (values below 0 are clamped to 0)
      */
     public void setVolume(int volume) {
-        if (volume < 0) volume=0;
-        engine.setVolume(volume);
+        engine.setVolume(Math.max(0, volume));
     }
 
+    /**
+     * Seeks to a specific position in the current track.
+     *
+     * @param position playback position (0.0 to 1.0)
+     */
     public void seek(float position){
         engine.seek(position);
+    }
+
+    /**
+     * Skips forward by a number of seconds.
+     */
+    public void skipForward(int seconds) {
+        engine.skipForwards(seconds);
+    }
+
+    /**
+     * Skips backward by a number of seconds.
+     */
+    public void skipBackward(int seconds) {
+        engine.skipBackwards(seconds);
     }
 
     public int getVolume (){
@@ -240,44 +282,60 @@ public class AudioPlayer {
         return engine.getProgress();
     }
 
+    /**
+     * @return formatted current playback time (mm:ss)
+     */
     public String getCurrentTimeStr(){
         return formatTime(engine.getCurrentTime());
     }
 
+    /**
+     * @return formatted total track duration (mm:ss)
+     */
     public String getTotalTimeStr(){
         return formatTime(engine.getTotalTime());
     }
-
-    public void skipForWard(int seconds){
-        engine.skipForwards(seconds);
-    }
-
-    public void skipBackward(int seconds){
-        engine.skipBackwards(seconds);
-    }
-
 
     public RepeatMode getRepeatMode() {
         return repeatMode;
     }
 
+    /**
+     * Sets the repeat mode for playback.
+     *
+     * <p>Also updates queue behavior when looping the entire queue.</p>
+     *
+     * @param mode the repeat mode
+     */
     public void setRepeatMode(RepeatMode mode) {
         this.repeatMode = mode;
         queue.setLoopQueue(mode == RepeatMode.LOOP_CURRENT_QUEUE);
     }
 
+    /**
+     * @return current playback state
+     */
     public PlaybackState getState() {
         return state;
     }
 
+    /**
+     * @return currently playing track
+     */
     public Track getCurrentTrack() {
         return currentTrack;
     }
 
+    /**
+     * @return playback queue instance
+     */
     public PlaybackQueue getQueue() {
         return queue;
     }
 
+    /**
+     * Enables or disables shuffle mode in the queue.
+     */
     public void setShuffle(boolean enable) {
         queue.setShuffle(enable);
     }
@@ -303,4 +361,5 @@ public class AudioPlayer {
         long secs = seconds % 60;
         return String.format("%02d:%02d", mins, secs);
     }
+
 }
