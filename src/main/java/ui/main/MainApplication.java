@@ -2,8 +2,10 @@ package ui.main;
 
 import application.LibraryService;
 import application.MediaService;
+import application.PlayerService;
 import infrastructure.audio.AudioEngine;
 import infrastructure.audio.AudioPlayer;
+import infrastructure.audio.PlaybackState;
 import infrastructure.audio.VLCJAudioEngine;
 import infrastructure.media.JaudiotaggerManager;
 import infrastructure.media.MediaScanner;
@@ -16,7 +18,6 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 import mediaLibrary.MediaLibrary;
 import ui.controllers.MainViewController;
-import ui.controllers.PlaybackContext;
 
 
 import java.io.IOException;
@@ -29,38 +30,58 @@ public class MainApplication extends Application {
     private final MediaLibrary library = new MediaLibrary();
     private final LibraryService libraryService = new LibraryService();
     private final MediaService mediaService = new MediaService(scanner,library,libraryService);
-    private final PlaybackContext playbackContext = new PlaybackContext();
+    private final PlayerService playerService = new PlayerService(player);
+    private final int startingVolume = 50;
+    private int oldVolume = startingVolume;
     @Override
     public void start(Stage stage) throws IOException {
         FXMLLoader loader = new FXMLLoader(MainApplication.class.getResource("/mainView.fxml"));
         Parent root = loader.load();
-            MainViewController controller = loader.getController();
-            controller.setPlayer(player);
-        controller.setPlaybackContext(playbackContext);
-            controller.setMediaService(mediaService);
-            controller.setLibraryService(libraryService);
+        MainViewController controller = loader.getController();
+
+        controller.setPlayer(player);
+        controller.setMediaService(mediaService);
+        controller.setLibraryService(libraryService);
+        controller.setPlayerService(playerService);
+
+        player.setVolume(startingVolume);
+
+        IO.println("ov" + oldVolume + "nv" + player.getVolume());
 
         Scene scene = new Scene(root,1000,750);
 
         scene.setOnKeyPressed(event -> {
             switch (event.getCode()){
                 case P ->{
-                    if (playbackContext.getSelectedTrack() != null) {
-                        player.play(playbackContext.getSelectedTrack());
-                        controller.updatePlayButton();
+                    if (playerService.getCurrentTrack() != null) {
+                        playerService.playFromList(playerService.getCurrentTrack(), playerService.getCurrentList());
                     }
                 }
-                case SPACE -> player.pause();
-                case RIGHT -> player.playNext();
-                case LEFT -> player.playPrev();
-                case UP -> player.setVolume(10);
-                case DOWN -> player.setVolume(-10);
-                case M -> player.setVolume(0);
+                case U -> {
+                    if (player.getState() == PlaybackState.PLAYING)
+                        playerService.pause();
+                    else playerService.resume();
+                }
+                case D -> playerService.playNext();
+                case A -> playerService.playPrev();
+                case W -> player.setVolume(player.getVolume() + 10);
+                case S -> player.setVolume(player.getVolume() - 10);
+                case M -> {
+                    if (player.getVolume() != 0) {
+                        oldVolume = player.getVolume();
+                        player.setVolume(0);
+                        IO.println("muted");
+                        IO.println("ov" + oldVolume + "nv" + player.getVolume());
+                    } else {
+                        player.setVolume(oldVolume);
+                        IO.println("unmuted");
+                        IO.println("ov" + oldVolume + "nv" + player.getVolume());
+                    }
+                }
                 case F -> {
-                    if (playbackContext.getSelectedTrack() != null) {
-                        playbackContext.getSelectedTrack()
-                                .setFavorite(!playbackContext
-                                        .getSelectedTrack()
+                    if (playerService.getCurrentTrack() != null) {
+                        playerService.getCurrentTrack()
+                                .setFavorite(!playerService.getCurrentTrack()
                                         .isFavorite());
                     }
                 }

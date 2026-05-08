@@ -3,6 +3,7 @@ package infrastructure.audio;
 import entities.Track;
 
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 
 public class AudioPlayer {
@@ -52,11 +53,13 @@ public class AudioPlayer {
      *      * - Skip tracks unexpectedly
      */
 
-    private Track currentTrack;
+    private final List<PlaybackListener> listeners = new ArrayList<>();
     private final PlaybackQueue queue = new PlaybackQueue();
     private final AudioEngine engine;
+    private Track currentTrack;
     private PlaybackState state = PlaybackState.STOPPED;
     private RepeatMode repeatMode = RepeatMode.STOP_WHEN_QUEUE_END;
+
 
     public AudioPlayer(AudioEngine engine) {
         this.engine = engine;
@@ -65,6 +68,10 @@ public class AudioPlayer {
     public void printStatus() {
         System.out.println(this);
     }
+
+    // =========================
+    // Playback Logic
+    // =========================
 
     /**
      * Starts playback of a specific track.
@@ -80,9 +87,10 @@ public class AudioPlayer {
         if (track == null) return;
         Path path = track.getFilePath();
         currentTrack = track;
-        queue.setCurrentTrack(currentTrack);
+        notifyTrackChanged();
         engine.play(path,this::playNext);
         state = PlaybackState.PLAYING;
+        notifyPlaybackStateChanged();
         printStatus();
     }
 
@@ -155,7 +163,8 @@ public class AudioPlayer {
                     System.out.println("playing " + nextTrack);
 
                 if (nextTrack != null) {
-                    play(nextTrack);
+                    currentTrack = nextTrack;
+                    play(currentTrack);
                 } else {
                     stop();
                 }
@@ -173,7 +182,8 @@ public class AudioPlayer {
                 }
 
                 if (nextTrack != null) {
-                    play(nextTrack);
+                    currentTrack = nextTrack;
+                    play(currentTrack);
                 } else {
                     stop();
                 }
@@ -200,24 +210,13 @@ public class AudioPlayer {
     }
 
     /**
-     * Adds multiple tracks to the playback queue.
-     */
-    public void enqueueAll(List<Track> tracks) {
-        if (tracks == null || tracks.isEmpty()) return;
-        queue.addAll(tracks);
-    }
-
-    public void clearQueue(){
-        queue.clear();
-    }
-
-    /**
      * Pauses playback if currently playing.
      */
     public void pause() {
         if (state == PlaybackState.PLAYING) {
             engine.pause();
             state = PlaybackState.PAUSED;
+            notifyPlaybackStateChanged();
         }
     }
 
@@ -229,6 +228,7 @@ public class AudioPlayer {
             engine.stop();
             currentTrack = null;
             state = PlaybackState.STOPPED;
+            notifyPlaybackStateChanged();
         }
     }
 
@@ -239,8 +239,37 @@ public class AudioPlayer {
         if (state == PlaybackState.PAUSED && currentTrack != null && !engine.isPlaying()) {
             state = PlaybackState.PLAYING;
             engine.resume();
+            notifyPlaybackStateChanged();
         }
     }
+
+    // =========================
+    // Queue methods
+    // =========================
+
+    /**
+     * Adds one track to the playback queue.
+     */
+    public void enqueue(Track track) {
+        if (track == null) return;
+        queue.add(track);
+    }
+
+    /**
+     * Adds multiple tracks to the playback queue.
+     */
+    public void enqueueAll(List<Track> tracks) {
+        if (tracks == null || tracks.isEmpty()) return;
+        queue.addAll(tracks);
+    }
+
+    public void clearQueue() {
+        queue.clear();
+    }
+
+    // =========================
+    // Track Controls
+    // =========================
 
     /**
      * Sets playback volume.
@@ -251,13 +280,21 @@ public class AudioPlayer {
         engine.setVolume(Math.max(0, volume));
     }
 
+    public int getVolume() {
+        return engine.getVolume();
+    }
+
     /**
      * Seeks to a specific position in the current track.
      *
      * @param position playback position (0.0 to 1.0)
      */
-    public void seek(float position){
-        engine.seek(position);
+    public void setProgress(float position) {
+        engine.setProgress(position);
+    }
+
+    public float getProgress() {
+        return engine.getProgress();
     }
 
     /**
@@ -274,14 +311,6 @@ public class AudioPlayer {
         engine.skipBackwards(seconds);
     }
 
-    public int getVolume (){
-        return engine.getVolume();
-    }
-
-    public float getProgress(){
-        return engine.getProgress();
-    }
-
     /**
      * @return formatted current playback time (mm:ss)
      */
@@ -295,6 +324,36 @@ public class AudioPlayer {
     public String getTotalTimeStr(){
         return formatTime(engine.getTotalTime());
     }
+
+    // =========================
+    // Listener Utils
+    // =========================
+
+    public void addPlaybackListener(PlaybackListener listener) {
+        listeners.add(listener);
+    }
+
+    public void removePlaybackListener(PlaybackListener listener) {
+        listeners.remove(listener);
+    }
+
+    private void notifyTrackChanged() {
+
+        for (PlaybackListener listener : listeners) {
+            listener.onTrackChanged(currentTrack);
+        }
+    }
+
+    private void notifyPlaybackStateChanged() {
+
+        for (PlaybackListener listener : listeners) {
+            listener.onPlaybackStateChanged(state);
+        }
+    }
+
+    // =========================
+    // Getters and Setters
+    // =========================
 
     public RepeatMode getRepeatMode() {
         return repeatMode;

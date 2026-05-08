@@ -1,8 +1,8 @@
 package ui.controllers;
 
+import application.PlayerService;
 import entities.Track;
 
-import infrastructure.audio.AudioPlayer;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 
@@ -19,15 +19,10 @@ public class MediaListViewController {
     @FXML private Button btnRefresh;
 
     private List<Track> currentData;
-    private AudioPlayer player;
-    private PlaybackContext playbackContext;
+    private PlayerService playerService;
 
-    public void setPlayer(AudioPlayer player) {
-        this.player = player;
-    }
-
-    public void setPlaybackContext(PlaybackContext selectionModel) {
-        this.playbackContext = selectionModel;
+    public void setPlayerService(PlayerService playerService) {
+        this.playerService = playerService;
     }
 
 
@@ -88,8 +83,8 @@ public class MediaListViewController {
         this.currentData = tracks;
         contentList.getItems().setAll(tracks);
 
-        if (playbackContext != null) {
-            playbackContext.setCurrentList(tracks);
+        if (playerService != null) {
+            playerService.setCurrentList(tracks);
         }
     }
 
@@ -110,9 +105,13 @@ public class MediaListViewController {
         contentList.setOnMouseClicked(e -> {
             Track selected = contentList.getSelectionModel().getSelectedItem();
             if (selected != null) {
-                playbackContext.setSelectedTrack(selected);
+                playerService.setCurrentTrack(selected);
+            }
+            if (e.getClickCount() == 2) {
+                playerService.playFromList(selected, contentList.getItems());
             }
         });
+
     }
 
 
@@ -138,7 +137,7 @@ public class MediaListViewController {
     private void setupPlay() {
         btnListPlay.setOnAction(e -> {
             if (!contentList.getItems().isEmpty()) {
-                player.playFromList(playbackContext.getSelectedTrack(), playbackContext.getCurrentList());
+                playerService.playFromList(playerService.getCurrentTrack(), playerService.getCurrentList());
             }
         });
     }
