@@ -100,11 +100,6 @@ public class VLCJAudioEngine implements AudioEngine {
     }
 
     @Override
-    public void seek(float position) {
-        mediaPlayer.controls().setPosition(position); // 0.0 to 1.0
-    }
-
-    @Override
     public void setRepeat(boolean repeat){
         mediaPlayer.media().setRepeat(repeat);
     }
@@ -154,6 +149,5 @@ public class VLCJAudioEngine implements AudioEngine {
 
         mediaPlayer.controls().setTime(newTime);
     }
-
 
 }

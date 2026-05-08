@@ -1,8 +1,17 @@
 package infrastructure.audio;
 
 public enum RepeatMode {
-    PLAY_ONE,
-    LOOP_CURRENT_ONE,
-    STOP_WHEN_QUEUE_END,
-    LOOP_CURRENT_QUEUE;
+    PLAY_ONE("Play 1"),
+    LOOP_CURRENT_ONE("Loop 1"),
+    STOP_WHEN_QUEUE_END("Play Queue"),
+    LOOP_CURRENT_QUEUE("Loop queue");
+    String title;
+
+    RepeatMode(String title) {
+        this.title = title;
+    }
+
+    public String getTitle() {
+        return title;
+    }
 }

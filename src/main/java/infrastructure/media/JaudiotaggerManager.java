@@ -98,7 +98,7 @@ public class JaudiotaggerManager implements MetaDataManager {
 
                 org.jaudiotagger.tag.images.Artwork artwork = tag.getFirstArtwork();
                 if (artwork != null && artwork.getBinaryData() != null) {
-                    metadata.setCoverArt(artwork.getBinaryData());
+                    metadata.setArtwork(artwork.getBinaryData());
                 }
                 track.setFileSize(attributes.size());
                 metadata.setSampleRate(header.getSampleRateAsNumber());
