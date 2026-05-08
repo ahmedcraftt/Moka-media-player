@@ -96,7 +96,7 @@
 }
 
 .label {
-    -fx-letter-spacing: 0.2px;
+    -fx-letter-spacing: 0px;
     -fx-text-fill: #f2e6d9;
     -fx-font-size: 13px;
     -fx-opacity: 0.95;
@@ -183,3 +183,92 @@
     -fx-background-color: transparent;
     -fx-cursor: default;
 }
+
+.track-container {
+    -fx-background-color: linear-gradient(to bottom, #3b2f2f, #1f1616);
+}
+
+.track-image {
+    .moka-art {
+        -fx-effect: dropshadow(gaussian, rgba(60, 30, 10, 0.45), 30, 0.3, 0, 8);
+    }
+
+    -fx-background-radius: 18;
+}
+
+.track-title {
+    -fx-text-fill: #f5e6d3;
+    -fx-font-size: 22px;
+    -fx-font-weight: bold;
+}
+
+.track-artist {
+    -fx-text-fill: #c9b29b;
+    -fx-font-size: 14px;
+}
+
+.more-button {
+
+    -fx-background-color: linear-gradient(
+            to bottom,
+            #f6d365 0%,
+            #f2c14e 35%,
+            #d4a24c 70%,
+            #b37a2a 100%
+    );
+
+    -fx-text-fill: #3b2413;
+
+    -fx-font-weight: bold;
+
+    -fx-font-size: 14px;
+
+    -fx-background-radius: 18;
+
+    -fx-border-radius: 18;
+
+    -fx-padding: 8 18 8 18;
+
+    -fx-effect: dropshadow(
+            gaussian,
+            rgba(90, 50, 10, 0.35),
+            10,
+            0.25,
+            0,
+            3
+    );
+
+    -fx-cursor: hand;
+}
+
+.more-button:hover {
+
+    -fx-background-color: linear-gradient(
+            to bottom,
+            #ffe08a 0%,
+            #f7c95c 35%,
+            #e0ad4d 70%,
+            #c48632 100%
+    );
+
+    -fx-effect: dropshadow(
+            gaussian,
+            rgba(120, 70, 20, 0.45),
+            16,
+            0.3,
+            0,
+            4
+    );
+}
+
+.more-button:pressed {
+
+    -fx-background-color: linear-gradient(
+            to bottom,
+            #c58d36,
+            #a56f22
+    );
+
+    -fx-translate-y: 1;
+}
+
