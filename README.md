@@ -73,7 +73,12 @@ Make sure you have the following installed:
 Java 17 or higher
 JavaFX SDK
 VLC Media Player (libVLC is required for playback)
-Important: VLC must be properly installed so that VLCJ can detect it.
+Important: VLC files {
+libvlc
+libvlccore
+and the plugins folder 
+all must be added to the (project folder)/natives/(yourOS) folder
+}.
 Configure JavaFX
 If you are running manually (without a build tool), you need to add JavaFX VM options:
 Example:
