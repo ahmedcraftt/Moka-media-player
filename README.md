@@ -80,6 +80,14 @@ mp3, flac, wav, m4a, ogg, aac, opus, wma, alac, aiff, amr, mid, ra
 - Improved queue management
 
 ---
+## 📥 How to Clone and Run
+
+### 1. Clone the repository
+```bash
+git clone https://github.com/your-username/moka-player.git
+cd moka-player
+```
+---
 
 ## 📜 License
 
