@@ -7,7 +7,7 @@ public class TrackMetadata {
     private String title;
     private String genre;
     private int durationInSeconds;
-    private byte[] coverArt;
+    private byte[] artwork;
     private Year year;
     private long bitrate;
     private int sampleRate;
@@ -139,12 +139,12 @@ public class TrackMetadata {
         this.durationInSeconds = durationInSeconds;
     }
 
-    public byte[] getCoverArt() {
-        return coverArt;
+    public byte[] getArtwork() {
+        return artwork;
     }
 
-    public void setCoverArt(byte[] coverArt) {
-        this.coverArt = coverArt;
+    public void setArtwork(byte[] artwork) {
+        this.artwork = artwork;
     }
 
     public Year getYear() {

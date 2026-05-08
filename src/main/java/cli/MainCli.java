@@ -13,7 +13,6 @@ import mediaLibrary.MediaLibrary;
 public class MainCli {
 
     public static void main(String[] args) {
-
         AudioEngine engine = new VLCJAudioEngine();
         AudioPlayer player = new AudioPlayer(engine);
         MetaDataManager metaDataManager = new JaudiotaggerManager();

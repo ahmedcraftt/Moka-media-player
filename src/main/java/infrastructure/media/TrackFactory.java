@@ -41,12 +41,6 @@ public class TrackFactory {
         trackMetadata.setDurationInSeconds(durationSeconds);
         trackMetadata.setGenre(genre);
         trackMetadata.setTitle(title);
-        trackMetadata.setChapterCount(safeParseInt(trackNumber));
-
-        if (!trackNumber.equalsIgnoreCase("unknown") || !trackNumber.isEmpty()){
-            abookScore+=2;
-            songScore-=2;
-        }
 
         double songBoost = 0;
         double abookBoost = 0;
@@ -59,7 +53,7 @@ public class TrackFactory {
             songBoost += 3;
             abookBoost += 3;
         } else {
-            songBoost -= 2;
+            songBoost -= 1;
         }
 
         if (durationSeconds >= 600 && durationSeconds <= 1800) {

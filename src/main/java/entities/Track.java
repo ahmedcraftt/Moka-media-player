@@ -30,6 +30,7 @@ public class Track {
 
     public void setFavorite(boolean favorite) {
         this.favorite = favorite;
+        System.out.println("is favorite:" + this.favorite);
     }
 
     public LocalDate getDateCreated() {

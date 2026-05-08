@@ -2,12 +2,16 @@ package ui.controllers;
 
 import application.LibraryService;
 import application.MediaService;
+import application.PlayerService;
+import entities.Playlist;
 import entities.Track;
 import infrastructure.audio.AudioPlayer;
 import infrastructure.audio.PlaybackState;
+import infrastructure.audio.RepeatMode;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
+import javafx.beans.binding.Bindings;
 import javafx.util.Duration;
 import mediaLibrary.Library;
 
@@ -40,12 +44,27 @@ public class MainViewController {
     @FXML private Button btnPlaylist ;
     @FXML private Button btnCurrentTrack ;
     @FXML private Button btnQueue ;
-    @FXML private Button btnRepeatAndStop ;
     @FXML private Button btnArtists;
     @FXML private Button btnGenres;
+    @FXML
+    private Button btnAlbum;
     @FXML private Button btnFastForward;
     @FXML private Button btnFastBackward;
     @FXML private Button btnFavorite;
+    @FXML
+    private Button btnShuffle;
+
+    @FXML
+    private MenuButton btnRepeatAndStop;
+
+    @FXML
+    private MenuItem miPlayOne;
+    @FXML
+    private MenuItem miLoopOne;
+    @FXML
+    private MenuItem miPlayQueue;
+    @FXML
+    private MenuItem miLoopQueue;
 
     @FXML private Label currentTrack;
 
@@ -56,22 +75,24 @@ public class MainViewController {
 
     private MediaService mediaService ;
     private AudioPlayer player;
-    private SelectionModel selectionModel;
     private LibraryService libraryService;
+    private PlayerService playerService;
 
     private MediaListViewController controller;
 
-    private int volume ; //not yet used
-    private int skipSeconds = 10; //planing to have user change it from settings which is not yet implemented
+    private final int skipSeconds = 10; //planing to have user change it from settings which is not yet implemented
 
-    public void setSelectionModel(SelectionModel selectionModel) {
-        this.selectionModel = selectionModel;
-    }
 
     public void setPlayer(AudioPlayer player) {
         this.player = player;
-        volume = player.getVolume();
         System.out.println(player.getRepeatMode());
+    }
+
+    public void setPlayerService(PlayerService playerService) {
+        this.playerService = playerService;
+        updatePlayButton();
+        setupLabel();
+
     }
 
     public void setMediaService(MediaService mediaService) {
@@ -83,6 +104,15 @@ public class MainViewController {
         initializeLibrary();
     }
 
+    public void updatePlayButton() {
+        playerService.playbackStateProperty().addListener((obs, oldState, newState) -> {
+            switch (newState) {
+                case PLAYING -> btnPlay.setText("⏸");
+                case PAUSED, STOPPED -> btnPlay.setText("▶");
+            }
+        });
+    }
+
     @FXML
     private void initialize() {
 
@@ -91,16 +121,16 @@ public class MainViewController {
         Task<Void> task = getVoidTask();
 
         btnTracks.setOnAction(e ->
-                switchView(new ArrayList<>(mediaService.getTracks()),ViewMode.TRACKS));
+                switchMediaView(new ArrayList<>(mediaService.getTracks()), ViewMode.TRACKS));
 
         btnSongs.setOnAction(e ->
-                switchView(new ArrayList<>(mediaService.getSongs()), ViewMode.SONGS));
+                switchMediaView(new ArrayList<>(mediaService.getSongs()), ViewMode.SONGS));
 
         btnBooks.setOnAction(e ->
-                switchView(new ArrayList<>(mediaService.getAudioBooks()), ViewMode.BOOKS));
+                switchMediaView(new ArrayList<>(mediaService.getAudioBooks()), ViewMode.BOOKS));
 
         btnPodcasts.setOnAction(e ->
-                switchView(new ArrayList<>(mediaService.getPodcasts()), ViewMode.PODCASTS));
+                switchMediaView(new ArrayList<>(mediaService.getPodcasts()), ViewMode.PODCASTS));
 
         btnPlaylist.setOnAction(e -> loadPlaylistView());
 
@@ -108,42 +138,57 @@ public class MainViewController {
 
         btnGenres.setOnAction(event -> loadCategoryView());
 
+        btnAlbum.setOnAction(event -> loadCategoryView());
+
+        btnCurrentTrack.setOnAction(event -> loadPlayingView());
+
         btnPlay.setOnAction(event -> {
-                    if (player.getState()==PlaybackState.STOPPED) {
-                        player.playFromList(selectionModel.getSelectedTrack(),selectionModel.getCurrentList());
-                        updatePlayButton();
-                        setupLabel();
-                    }else if (player.getState()== PlaybackState.PLAYING){
-                        player.pause();
-                        updatePlayButton();
-                    }else if (player.getState() == PlaybackState.PAUSED){
-                        player.resume();
-                        updatePlayButton();
+                    if (player.getState() == PlaybackState.STOPPED) {
+                        playerService.playFromList(playerService.getCurrentTrack(), playerService.getCurrentList());
+                    } else if (player.getState() == PlaybackState.PLAYING) {
+                        playerService.pause();
+                    } else if (player.getState() == PlaybackState.PAUSED) {
+                        playerService.resume();
                     }
                 }
         );
 
-        btnNext.setOnAction(event -> {
-            player.playNext();
-            updatePlayButton();
-            setupLabel();
-        });
+        btnNext.setOnAction(event -> playerService.playNext());
 
-        btnPrev.setOnAction(event -> {
-            player.playPrev();
-            updatePlayButton();
-            setupLabel();
-        });
+        btnPrev.setOnAction(event -> playerService.playPrev());
+
+        btnShuffle.setOnAction(event -> playerService.shuffle());
 
         setUpVolumeSlider();
 
         setUpProgressSlider();
 
-        btnFastForward.setOnAction(event -> player.skipForWard(skipSeconds));
+        btnFastForward.setOnAction(event -> player.skipForward(skipSeconds));
 
         btnFastBackward.setOnAction(event -> player.skipBackward(skipSeconds));
 
-        btnFavorite.setOnAction(event -> selectionModel.getSelectedTrack().setFavorite(!selectionModel.getSelectedTrack().isFavorite()));
+        btnFavorite.setOnAction(event -> playerService.getCurrentTrack()
+                .setFavorite(!playerService
+                        .getCurrentTrack()
+                        .isFavorite()));
+
+        miPlayOne.setOnAction(event -> {
+            player.setRepeatMode(RepeatMode.PLAY_ONE);
+            updateRepeatButton(RepeatMode.PLAY_ONE);
+        });
+        miLoopOne.setOnAction(event -> {
+            player.setRepeatMode(RepeatMode.LOOP_CURRENT_ONE);
+            updateRepeatButton(RepeatMode.LOOP_CURRENT_ONE);
+        });
+        miPlayQueue.setOnAction(event -> {
+            player.setRepeatMode(RepeatMode.STOP_WHEN_QUEUE_END);
+            updateRepeatButton(RepeatMode.STOP_WHEN_QUEUE_END);
+        });
+        miLoopQueue.setOnAction(event -> {
+            player.setRepeatMode(RepeatMode.LOOP_CURRENT_QUEUE);
+            updateRepeatButton(RepeatMode.LOOP_CURRENT_QUEUE);
+        });
+
 
         Thread thread = new Thread(task);
         thread.setDaemon(true);
@@ -174,12 +219,19 @@ public class MainViewController {
         return task;
     }
 
-    public void setupLabel(){
-        if (player!=null&&player.getCurrentTrack()!=null){
-            currentTrack.setText(player.getCurrentTrack().getMetadata().getTitle());
-        } else {
-            currentTrack.setText("---");
-        }
+    public void setupLabel() {
+        currentTrack.textProperty().bind(
+                Bindings.createStringBinding(() -> {
+                            Track track = playerService.getCurrentTrack();
+                            return track == null ? "---" : track.getMetadata().getTitle();
+                        }, playerService.currentTrackProperty()
+                )
+        );
+    }
+
+    private void updateRepeatButton(RepeatMode mode) {
+        btnRepeatAndStop.setText(mode.getTitle());
+        System.out.println(mode.getTitle());
     }
 
     private void setButtonsEnabled(boolean enabled) {
@@ -213,15 +265,20 @@ public class MainViewController {
 
         progressSlider.valueProperty().addListener((obs, oldVal, newVal) -> {
             if (progressSlider.isValueChanging()) {
-                player.seek(newVal.floatValue() / 100f);
+                player.setProgress(newVal.floatValue() / 100f);
             }
         });
     }
 
-    private void switchView(List<Track> tracks, ViewMode mode) {
+    private void switchMediaView(List<Track> tracks, ViewMode mode) {
         loadMediaView(tracks, mode);
         controller.setData(tracks);
         controller.setMode(mode);
+    }
+
+    private void switchCategoryView(List<Playlist> categoryList, ViewMode mode) {
+        loadCategoryView();
+
     }
 
     private void loadMediaView(List<Track> tracks, ViewMode mode) {
@@ -229,13 +286,7 @@ public class MainViewController {
             FXMLLoader loader = loadView("/mediaListView.fxml");
 
             controller = loader.getController();
-
-            if (player != null) {
-                controller.setPlayer(player);
-            }
-            if (selectionModel != null){
-                controller.setSelectionModel(selectionModel);
-            }
+            controller.setPlayerService(playerService);
 
         } catch (IOException e) {
             System.err.println("CRITICAL: Could not find or load mediaListView.fxml");
@@ -283,6 +334,22 @@ public class MainViewController {
         }
     }
 
+    private void loadPlayingView() {
+        try {
+            FXMLLoader loader = loadView("/playingTrackView.fxml");
+
+            PlayingTrackViewController playingTrackViewController = loader.getController();
+            playingTrackViewController.setPlayerService(playerService);
+
+        } catch (IOException e) {
+            System.err.println("CRITICAL: Could not find or load playingTrackView.fxml");
+            e.printStackTrace();
+        } catch (IllegalStateException e) {
+            System.err.println("FXML Error: Check if fx:controller is set correctly in playingTrackView.fxml");
+            e.printStackTrace();
+        }
+    }
+
     private FXMLLoader loadView(String resource) throws IOException {
         FXMLLoader loader = new FXMLLoader(
                 getClass().getResource(resource)
@@ -298,13 +365,6 @@ public class MainViewController {
         AnchorPane.setRightAnchor(view, 0.0);
 
         return loader;
-    }
-
-    private void updatePlayButton() {
-        switch (player.getState()) {
-            case PLAYING -> btnPlay.setText("⏸");
-            case PAUSED, STOPPED -> btnPlay.setText("▶");
-        }
     }
 
     private void initializeLibrary() {

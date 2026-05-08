@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Scanner;
 
 public class Test {
+
     static AudioEngine engine = new VLCJAudioEngine();
     static AudioPlayer player = new AudioPlayer(engine);
     static MetaDataManager metaData = new JaudiotaggerManager();
