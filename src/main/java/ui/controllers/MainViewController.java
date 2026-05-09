@@ -24,6 +24,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
 
+import mediaLibrary.LibraryFolder;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
@@ -48,6 +49,8 @@ public class MainViewController {
     @FXML private Button btnGenres;
     @FXML
     private Button btnAlbum;
+    @FXML
+    private Button btnFolders;
     @FXML private Button btnFastForward;
     @FXML private Button btnFastBackward;
     @FXML private Button btnFavorite;
@@ -129,10 +132,10 @@ public class MainViewController {
         btnBooks.setOnAction(e ->
                 switchMediaView(new ArrayList<>(mediaService.getAudioBooks()), ViewMode.BOOKS));
 
-        btnPodcasts.setOnAction(e ->
+        btnPodcasts.setOnAction(event ->
                 switchMediaView(new ArrayList<>(mediaService.getPodcasts()), ViewMode.PODCASTS));
 
-        btnPlaylist.setOnAction(e -> loadPlaylistView());
+        btnPlaylist.setOnAction(event -> loadPlaylistView());
 
         btnArtists.setOnAction(event -> loadCategoryView());
 
@@ -141,6 +144,8 @@ public class MainViewController {
         btnAlbum.setOnAction(event -> loadCategoryView());
 
         btnCurrentTrack.setOnAction(event -> loadPlayingView());
+
+        btnFolders.setOnAction(event -> loadFoldersView());
 
         btnPlay.setOnAction(event -> {
                     if (player.getState() == PlaybackState.STOPPED) {
@@ -350,6 +355,22 @@ public class MainViewController {
         }
     }
 
+    private void loadFoldersView() {
+        try {
+            FXMLLoader loader = loadView("/foldersView.fxml");
+
+            FoldersViewController foldersViewController = loader.getController();
+            foldersViewController.setLibraryService(libraryService);
+
+        } catch (IOException e) {
+            System.err.println("CRITICAL: Could not find or load foldersView.fxml");
+            e.printStackTrace();
+        } catch (IllegalStateException e) {
+            System.err.println("FXML Error: Check if fx:controller is set correctly in foldersView.fxml");
+            e.printStackTrace();
+        }
+    }
+
     private FXMLLoader loadView(String resource) throws IOException {
         FXMLLoader loader = new FXMLLoader(
                 getClass().getResource(resource)
@@ -369,35 +390,43 @@ public class MainViewController {
 
     private void initializeLibrary() {
 
-        if (!libraryService.hasLibraries() || !libraryService.hasActiveLibrary()) {
+        if (!libraryService.hasLibraries()) {
 
             Optional<String> pathResult = getResult();
 
-            if (pathResult.isEmpty()) return;
+            if (pathResult.isEmpty()) {
+                return;
+            }
 
-            TextInputDialog nameDialog = new TextInputDialog();
+            TextInputDialog nameDialog =
+                    new TextInputDialog();
+
             nameDialog.setTitle("Library Setup");
-            nameDialog.setHeaderText("Enter Library Name");
-            Optional<String> nameResult = nameDialog.showAndWait();
+            nameDialog.setHeaderText(
+                    "Enter Library Name"
+            );
 
-            if (nameResult.isEmpty()) return;
+            Optional<String> nameResult =
+                    nameDialog.showAndWait();
 
-            String path = pathResult.get();
-            String name = nameResult.get();
+            if (nameResult.isEmpty()) {
+                return;
+            }
 
-            Library lib = new Library(name, Path.of(path), true);
+            Library library =
+                    libraryService.createLibrary(
+                            nameResult.get(),
+                            Path.of(pathResult.get())
+                    );
 
-            libraryService.addLibrary(lib);
-            libraryService.setActiveLibrary(lib);
-
-            mediaService.loadActiveLibrary();
-
-            return;
+            libraryService.setActiveLibrary(library);
         }
 
         if (!libraryService.hasActiveLibrary()) {
+
             libraryService.setActiveLibrary(
-                    libraryService.getLibraries().getFirst()
+                    libraryService.getLibraries()
+                            .getFirst()
             );
         }
 

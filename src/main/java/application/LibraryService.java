@@ -2,7 +2,9 @@ package application;
 
 import infrastructure.media.LibraryStorage;
 import mediaLibrary.Library;
+import mediaLibrary.LibraryFolder;
 
+import java.nio.file.Path;
 import java.util.*;
 
 public class LibraryService {
@@ -19,6 +21,19 @@ public class LibraryService {
                     .findFirst()
                     .orElse(libraries.get(0));
         }
+    }
+
+    public Library createLibrary(String name, Path path) {
+
+        LibraryFolder folder =
+                new LibraryFolder(path, true, true);
+
+        Library library =
+                new Library(name, List.of(folder), true);
+
+        addLibrary(library);
+
+        return library;
     }
 
     public void addLibrary(Library library) {
@@ -39,7 +54,7 @@ public class LibraryService {
         return libraries;
     }
 
-    private void save() {
+    public void save() {
         LibraryStorage.save(libraries);
     }
 

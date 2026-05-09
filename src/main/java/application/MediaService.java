@@ -3,7 +3,11 @@ package application;
 import entities.Track;
 import infrastructure.media.MediaScanner;
 import mediaLibrary.MediaLibrary;
+
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class MediaService {
 
@@ -20,13 +24,18 @@ public class MediaService {
     }
 
     public List<Track> loadActiveLibrary() {
-        var path = libraryService.getActiveLibrary().getRootPath();
 
-        List<Track> tracks = scanner.scan(path);
+        Set<Track> tracks = new HashSet<>();
+
+        for (var path : libraryService
+                .getActiveLibrary()
+                .getRootPaths()) {
+
+            tracks.addAll(scanner.scan(path));
+        }
 
         library.clear();
-        library.addAll(tracks);
-
+        library.addAll(new ArrayList<>(tracks));
         return library.getTracks();
     }
 

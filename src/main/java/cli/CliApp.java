@@ -104,11 +104,13 @@ public class CliApp {
             String path = InputUtils.readString("Enter music folder path: ");
             String name = InputUtils.readString("Library name: ");
 
-            Library lib = new Library(name, Path.of(path), true);
+            Library library =
+                    libraryService.createLibrary(
+                            name,
+                            Path.of(path)
+                    );
 
-            libraryService.addLibrary(lib);
-            libraryService.setActiveLibrary(lib);
-
+            libraryService.setActiveLibrary(library);
             mediaService.loadActiveLibrary();
 
             return;

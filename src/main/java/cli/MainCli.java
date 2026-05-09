@@ -10,6 +10,8 @@ import infrastructure.media.MediaScanner;
 import infrastructure.media.MetaDataManager;
 import mediaLibrary.MediaLibrary;
 
+import java.util.Scanner;
+
 public class MainCli {
 
     public static void main(String[] args) {

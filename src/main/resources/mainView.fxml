@@ -38,9 +38,8 @@
             </VBox>
             <VBox id="utils" fx:id="vbUtils" spacing="10.0">
                <children>
-                  <Button fx:id="btnLocalMedia" mnemonicParsing="false" text="Local media" />
                   <Button fx:id="btnSettings" mnemonicParsing="false" text="Settings" />
-                  <Button fx:id="btnFolders" mnemonicParsing="false" text="Folders" />
+                  <Button fx:id="btnFolders" mnemonicParsing="false" text="My Folders"/>
                   <Button fx:id="btnStats" mnemonicParsing="false" text="Stats" />
                </children>
                <padding>
