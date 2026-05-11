@@ -1,5 +1,8 @@
 package config;
 
+import platform.OS;
+import platform.OSDetector;
+
 import java.nio.file.Files;
 import java.nio.file.Path;
 

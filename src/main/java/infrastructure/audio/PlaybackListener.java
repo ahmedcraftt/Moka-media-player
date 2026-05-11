@@ -1,6 +1,6 @@
 package infrastructure.audio;
 
-import entities.Track;
+import domain.model.Track;
 
 public interface PlaybackListener {
 

@@ -1,16 +1,14 @@
 package cli;
 
-import application.LibraryService;
-import application.MediaService;
+import application.sevice.LibraryService;
+import application.sevice.MediaService;
 import infrastructure.audio.AudioEngine;
 import infrastructure.audio.AudioPlayer;
 import infrastructure.audio.VLCJAudioEngine;
 import infrastructure.media.JaudiotaggerManager;
-import infrastructure.media.MediaScanner;
+import infrastructure.scanner.MediaScanner;
 import infrastructure.media.MetaDataManager;
-import mediaLibrary.MediaLibrary;
-
-import java.util.Scanner;
+import domain.library.MediaLibrary;
 
 public class MainCli {
 

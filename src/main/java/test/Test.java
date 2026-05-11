@@ -1,11 +1,11 @@
 package test;
 
-import entities.Track;
+import domain.model.Track;
 import infrastructure.audio.*;
 import infrastructure.media.JaudiotaggerManager;
 import infrastructure.media.MetaDataManager;
-import infrastructure.media.TrackFactory;
-import config.VlcBootstrap;
+import infrastructure.factory.TrackFactory;
+import bootstrap.VlcBootstrap;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -119,7 +119,7 @@ public class Test {
 
     private static Track makeTrack(String title) {
         Path path = Path.of("/home/Ahmed/test/CG5 - FNAF SL SONG ▶ ＂I Can't Fix You＂ (Remix⧸Cover feat. Chi-chi) [SFM] ｜ CG5.m4a");
-        Track t = TrackFactory.createTrack(path, metaData);
+        Track t = TrackFactory.create(path);
         t.setFilePath(path);
         return t;
     }

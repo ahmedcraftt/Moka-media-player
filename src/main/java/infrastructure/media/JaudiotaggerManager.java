@@ -1,9 +1,9 @@
 package infrastructure.media;
 
-import entities.MediaType;
-import entities.Track;
+import domain.model.MediaType;
+import domain.model.Track;
 
-import entities.TrackMetadata;
+import domain.model.TrackMetadata;
 import org.jaudiotagger.audio.AudioFileIO;
 import org.jaudiotagger.audio.AudioHeader;
 import org.jaudiotagger.audio.AudioFile;
@@ -14,6 +14,9 @@ import org.jaudiotagger.tag.FieldKey;
 import org.jaudiotagger.tag.Tag;
 import org.jaudiotagger.tag.TagException;
 
+import javax.sound.sampled.AudioFormat;
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -34,7 +37,12 @@ public class JaudiotaggerManager implements MetaDataManager {
             Tag tag = audioFile.getTagOrCreateAndSetDefault();
             TrackMetadata metadata = track.getMetadata();
 
-            safeSet(tag,FieldKey.TITLE, metadata.getTitle());
+            if (tag == null) {
+                tag = audioFile.createDefaultTag();
+                audioFile.setTag(tag);
+            }
+
+            safeSet(tag, FieldKey.TITLE, track.getTitle());
             safeSet(tag,FieldKey.GENRE,metadata.getGenre());
             safeSet(tag,FieldKey.YEAR, String.valueOf(metadata.getYear()));
             safeSet(tag,FieldKey.COMMENT,metadata.getDescription());
@@ -79,10 +87,10 @@ public class JaudiotaggerManager implements MetaDataManager {
                 if(title == null || title.isBlank() || title.equalsIgnoreCase("unknown")) {
                     title = file.getName();
                 }
-                metadata.setTitle(title.trim());
+                track.setTitle(title.trim());
                 metadata.setGenre(tag.getFirst(FieldKey.GENRE));
                 metadata.setYear(safeParseYear(tag.getFirst(FieldKey.YEAR)));
-                metadata.setDurationInSeconds(header.getTrackLength());
+                metadata.setDurationInSeconds(getFallbackDuration(path, header));
 
                 Integer br = null;
                 try {
@@ -130,30 +138,6 @@ public class JaudiotaggerManager implements MetaDataManager {
 
     }
 
-    public int getDuration(Path path) {
-        AudioFile audioFile = createAudioFile(path);
-        AudioHeader header = audioFile.getAudioHeader();
-        return header.getTrackLength();
-    }
-
-    public String getGenre(Path path){
-       AudioFile audioFile = createAudioFile(path);
-       Tag tag = audioFile.getTagOrCreateAndSetDefault();
-       return tag.getFirst(FieldKey.GENRE);
-    }
-
-    public String getTitle(Path path){
-        AudioFile audioFile = createAudioFile(path);
-        Tag tag = audioFile.getTagOrCreateAndSetDefault();
-        return tag.getFirst(FieldKey.TITLE);
-    }
-
-    public String getTrackNumber (Path path){
-        AudioFile audioFile = createAudioFile(path);
-        Tag tag = audioFile.getTagOrCreateAndSetDefault();
-        return tag.getFirst(FieldKey.TRACK);
-    }
-
     private AudioFile createAudioFile(Path path){
         File file = new File(path.toUri());
         AudioFile audioFile;
@@ -162,6 +146,28 @@ public class JaudiotaggerManager implements MetaDataManager {
             return audioFile;
         } catch (CannotReadException | IOException | TagException | ReadOnlyFileException | InvalidAudioFrameException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    private int getFallbackDuration(Path path, AudioHeader header) {
+        if (header != null) {
+            return header.getTrackLength();
+        } else {
+            try (AudioInputStream stream =
+                         AudioSystem.getAudioInputStream(path.toFile())) {
+
+                AudioFormat format = stream.getFormat();
+                long frames = stream.getFrameLength();
+
+                if (frames == AudioSystem.NOT_SPECIFIED) {
+                    return 0;
+                }
+
+                return (int) (frames / format.getFrameRate());
+
+            } catch (Exception e) {
+                return 0;
+            }
         }
     }
 
