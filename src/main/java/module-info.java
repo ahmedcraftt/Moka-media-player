@@ -42,4 +42,6 @@ module org.example.moka_music_player {
     opens infrastructure.factory to javafx.base;
     exports platform;
     exports bootstrap;
+    exports domain.audio;
+    opens domain.audio to javafx.base;
 }

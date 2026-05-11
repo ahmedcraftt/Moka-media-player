@@ -2,8 +2,8 @@ package application.sevice;
 
 import domain.model.Track;
 import infrastructure.audio.AudioPlayer;
-import infrastructure.audio.PlaybackListener;
-import infrastructure.audio.PlaybackState;
+import domain.audio.PlaybackListener;
+import domain.audio.PlaybackState;
 import javafx.application.Platform;
 import javafx.beans.property.*;
 

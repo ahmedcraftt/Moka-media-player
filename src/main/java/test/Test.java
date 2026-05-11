@@ -1,5 +1,7 @@
 package test;
 
+import domain.audio.PlaybackState;
+import domain.audio.RepeatMode;
 import domain.model.Track;
 import infrastructure.audio.*;
 import infrastructure.media.JaudiotaggerManager;

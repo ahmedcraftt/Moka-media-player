@@ -1,4 +1,4 @@
-package infrastructure.audio;
+package domain.audio;
 
 import domain.model.Track;
 

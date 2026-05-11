@@ -5,7 +5,7 @@ import application.sevice.MediaService;
 import com.ahmed.utils.InputUtils;
 import domain.model.Track;
 import infrastructure.audio.AudioPlayer;
-import infrastructure.audio.RepeatMode;
+import domain.audio.RepeatMode;
 import domain.library.Library;
 
 import java.nio.file.Path;

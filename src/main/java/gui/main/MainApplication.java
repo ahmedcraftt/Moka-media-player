@@ -5,7 +5,7 @@ import application.sevice.MediaService;
 import application.sevice.PlayerService;
 import infrastructure.audio.AudioEngine;
 import infrastructure.audio.AudioPlayer;
-import infrastructure.audio.PlaybackState;
+import domain.audio.PlaybackState;
 import infrastructure.audio.VLCJAudioEngine;
 import infrastructure.media.JaudiotaggerManager;
 import infrastructure.scanner.MediaScanner;
