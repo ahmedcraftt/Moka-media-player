@@ -227,7 +227,7 @@ public class MainViewController {
         currentTrack.textProperty().bind(
                 Bindings.createStringBinding(() -> {
                             Track track = playerService.getCurrentTrack();
-                            return track == null ? "---" : track.getMetadata().getTitle();
+                    return track == null ? "---" : track.getTitle();
                         }, playerService.currentTrackProperty()
                 )
         );

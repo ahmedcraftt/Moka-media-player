@@ -7,7 +7,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<AnchorPane stylesheets="@../styles/mainStyle.css" xmlns="http://javafx.com/javafx/25.0.1"
+<AnchorPane stylesheets="@../styles/main.css" xmlns="http://javafx.com/javafx/25.0.1"
             xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.controllers.FoldersViewController">
 
     <children>

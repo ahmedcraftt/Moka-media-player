@@ -3,8 +3,12 @@ package gui.controllers;
 import application.sevice.PlayerService;
 import domain.model.Track;
 
+import gui.utils.FXUtils;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -40,12 +44,12 @@ public class MediaListViewController {
         List<Track> items = new ArrayList<>(contentList.getItems());
 
         switch (mode) {
-            case TITLE -> items.sort(Comparator.comparing(track -> track.getMetadata().getTitle(), String.CASE_INSENSITIVE_ORDER));
+            case TITLE -> items.sort(Comparator.comparing(Track::getTitle, String.CASE_INSENSITIVE_ORDER));
             case FILE_NAME -> items.sort(Comparator.comparing(track -> track.getFilePath().getFileName().toString()));
             case ARTISTS -> items.sort(Comparator.comparing(track -> track.getMetadata().getArtist(), String.CASE_INSENSITIVE_ORDER));
             case DURATION -> items.sort(Comparator.comparingInt(track -> track.getMetadata().getDurationInSeconds()));
             case YEAR -> items.sort(Comparator.comparing(track -> track.getMetadata().getYear()));
-            case DATE_ADDED -> items.sort(Comparator.comparing(Track::getDateCreated));
+            case DATE_ADDED -> items.sort(Comparator.comparing(track -> track.getFileData().getDateCreated()));
             case DATE_MODIFIED -> items.sort(Comparator.comparing(t -> t.getFilePath().toFile().lastModified()));
         }
 
@@ -66,16 +70,66 @@ public class MediaListViewController {
 
     @FXML private void sortByDateModified() { sort(SortByModes.DATE_MODIFIED); }
 
+
+    private void setupListView() {
+        contentList.setCellFactory(lv -> new MyListCell());
+        contentList.setOnMouseClicked(e -> {
+            Track selected = contentList.getSelectionModel().getSelectedItem();
+
+            if (selected != null) {
+                playerService.setCurrentTrack(selected);
+            }
+            if (e.getClickCount() == 2) {
+                playerService.playFromList(selected, contentList.getItems());
+            }
+        });
+
+    }
+
     private static class MyListCell extends ListCell<Track> {
+
+        private final ImageView artworkView = new ImageView();
+        private final Label titleLabel = new Label();
+        private final Button infoButton = new Button("⋮");
+
+        private final HBox root = new HBox(10);
+        private final VBox textBox = new VBox(5);
+
+        public MyListCell() {
+            artworkView.setFitWidth(40);
+            artworkView.setFitHeight(40);
+            artworkView.setPreserveRatio(true);
+
+            textBox.getChildren().addAll(titleLabel);
+            root.getChildren().addAll(artworkView, textBox, infoButton);
+
+            infoButton.setOnAction(e -> {
+                Track track = getItem();
+                if (track != null) {
+                    System.out.println("Info: " + track.getTitle());
+                    // TODO: open side panel here
+                }
+            });
+        }
+
         @Override
         protected void updateItem(Track item, boolean empty) {
             super.updateItem(item, empty);
 
             if (empty || item == null) {
-                setText(null);
-            } else {
-                setText(item.getMetadata().getTitle()); // upgrade later with artist etc.
+                setGraphic(null);
+                return;
             }
+
+            titleLabel.setText(item.getTitle() + " " + item.getDuration());
+
+            if (item.getMetadata().getArtwork() != null) {
+                artworkView.setImage(FXUtils.convertToImage(item.getMetadata().getArtwork()));
+            } else {
+                artworkView.setImage(null);
+            }
+
+            setGraphic(root);
         }
     }
 
@@ -94,26 +148,10 @@ public class MediaListViewController {
                 switch (mode) {
                     case BOOKS -> "Read";
                     case PODCASTS -> "Play Episode";
-                    case PLAYLISTS -> "Open";
                     default -> "Play";
                 }
         );
     }
-
-    private void setupListView() {
-        contentList.setCellFactory(lv -> new MyListCell());
-        contentList.setOnMouseClicked(e -> {
-            Track selected = contentList.getSelectionModel().getSelectedItem();
-            if (selected != null) {
-                playerService.setCurrentTrack(selected);
-            }
-            if (e.getClickCount() == 2) {
-                playerService.playFromList(selected, contentList.getItems());
-            }
-        });
-
-    }
-
 
     private void setupSearch() {
         searchBar.textProperty().addListener((obs, oldVal, newVal) -> {

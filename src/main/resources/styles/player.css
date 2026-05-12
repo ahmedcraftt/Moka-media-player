@@ -1,0 +1,36 @@
+.media-controls, .utils-controls, .player-controls {
+    -fx-background-color: #2a1f1a;
+    -fx-background-radius: 10;
+    -fx-padding: 10;
+    -fx-border-color: #3a2a22;
+    -fx-border-radius: 10;
+}
+
+.media-controls, .utils-controls, .player-controls {
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.45), 14, 0.2, 0, 4);
+}
+
+.playing-track-label {
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+}
+
+.track-container {
+    -fx-background-color: linear-gradient(to bottom, #3b2f2f, #1f1616);
+}
+
+.track-image {
+    -fx-effect: dropshadow(gaussian, rgba(60, 30, 10, 0.45), 30, 0.3, 0, 8);
+    -fx-background-radius: 18;
+}
+
+.track-title {
+    -fx-text-fill: #f5e6d3;
+    -fx-font-size: 22px;
+    -fx-font-weight: bold;
+}
+
+.track-artist {
+    -fx-text-fill: #c9b29b;
+    -fx-font-size: 14px;
+}

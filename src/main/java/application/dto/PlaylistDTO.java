@@ -3,8 +3,8 @@ package application.dto;
 import java.util.List;
 
 public class PlaylistDTO {
-    public String title;
-    public boolean favorite;
+    private String title;
+    private boolean favorite;
     public List<String> trackPaths;
 
     public String getTitle() {

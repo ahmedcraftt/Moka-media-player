@@ -409,11 +409,13 @@ public class AudioPlayer {
     @Override
     public String toString() {
         return "\nAudioPlayer{" +
-                "\ncurrentTrack= " + currentTrack +
                 ", \nqueue= " + queue +
                 ", \nengine= " + engine +
                 ", \nstate= " + state +
                 ", \nrepeatMode= " + repeatMode +
+                ", \ncurrentTrack= " + currentTrack +
+                ", \nmetadat= " + currentTrack.getMetadata().toString() +
+                ", \nfiledata= " + currentTrack.getFileData().toString() +
                 '}';
     }
 

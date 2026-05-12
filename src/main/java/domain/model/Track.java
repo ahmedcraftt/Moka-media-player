@@ -1,25 +1,19 @@
 package domain.model;
 
 import java.nio.file.Path;
-import java.time.LocalDate;
 
 public class Track {
 
     private MediaType type;
-    private LocalDate dateCreated;
-    private LocalDate dateModified;
-    private long fileSize;
-    private Path filePath;
-    private String fileName;
+    private Filedata fileData;
+    private Metadata metadata;
     private boolean favorite;
-    private TrackMetadata metadata;
 
     public Track() {}
 
     public Track(String fileName, Path filePath) {
-        this.fileName=fileName;
-        this.filePath = filePath;
-        metadata = new TrackMetadata();
+        metadata = new Metadata();
+        fileData = new Filedata(filePath, fileName);
     }
 
     public boolean isFavorite() {
@@ -31,46 +25,6 @@ public class Track {
         System.out.println("is favorite:" + this.favorite);
     }
 
-    public LocalDate getDateCreated() {
-        return dateCreated;
-    }
-
-    public void setDateCreated(LocalDate dateCreated) {
-        this.dateCreated = dateCreated;
-    }
-
-    public LocalDate getDateModified() {
-        return dateModified;
-    }
-
-    public void setDateModified(LocalDate dateModified) {
-        this.dateModified = dateModified;
-    }
-
-    public long getFileSize() {
-        return fileSize;
-    }
-
-    public void setFileSize(long fileSize) {
-        this.fileSize = fileSize;
-    }
-
-    public Path getFilePath() {
-        return filePath;
-    }
-
-    public void setFilePath(Path filePath) {
-        this.filePath = filePath;
-    }
-
-    public String getFileName() {
-        return fileName;
-    }
-
-    public void setFileName(String fileName) {
-        this.fileName = fileName;
-    }
-
     public MediaType getType() {
         return type;
     }
@@ -79,28 +33,55 @@ public class Track {
         this.type = type;
     }
 
-    public TrackMetadata getMetadata() {
+    public Metadata getMetadata() {
         return metadata;
     }
 
-    public void setMetadata(TrackMetadata metadata) {
-        this.metadata = metadata;
+    public Filedata getFileData() {
+        return fileData;
     }
 
     public void setTitle(String title) {
         if (title != null) {
             metadata.setTitle(title);
-        } else metadata.setTitle(this.fileName);
+        } else metadata.setTitle(removeExtension(fileData.getFileName()));
     }
 
     public String getTitle() {
         if (metadata.getTitle() != null) {
             return metadata.getTitle();
-        } else return fileName;
+        } else return removeExtension(this.getFileName());
+    }
+
+    public Path getFilePath() {
+        return fileData.getFilePath();
+    }
+
+    public String getFileName() {
+        return fileData.getFileName();
+    }
+
+    public String getDuration() {
+        return formatTime(metadata.getDurationInSeconds());
     }
 
     @Override
     public String toString() {
-        return String.format("%s (%ds)%n + is favorite: %s", this.getTitle(), getMetadata().getDurationInSeconds(), favorite);
+        return String.format("%s (%s)%n + is favorite: %s", this.getTitle(), this.getDuration(), favorite);
+    }
+
+    private String removeExtension(String fileName) {
+        if (fileName == null) return null;
+
+        int lastDot = fileName.lastIndexOf('.');
+        if (lastDot == -1) return fileName; // no extension
+
+        return fileName.substring(0, lastDot);
+    }
+
+    private String formatTime(long seconds) {
+        long mins = seconds / 60;
+        long secs = seconds % 60;
+        return String.format("%02d:%02d", mins, secs);
     }
 }

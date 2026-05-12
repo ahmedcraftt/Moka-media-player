@@ -1,0 +1,28 @@
+.context-menu {
+    -fx-background-color: #2a1f1a;
+    -fx-background-radius: 10;
+    -fx-border-color: #3a2a22;
+    -fx-border-radius: 10;
+    -fx-padding: 5;
+}
+
+.menu-item {
+    -fx-background-color: transparent;
+    -fx-text-fill: #e8d8c3;
+    -fx-padding: 8 12;
+}
+
+.menu-item:hover {
+    -fx-background-color: #3a2a22;
+    -fx-text-fill: #f2e6d9;
+}
+
+.menu-item:focused {
+    -fx-background-color: #c89b6d;
+    -fx-text-fill: #1a1410;
+}
+
+.menu-button .arrow {
+    -fx-scale-x: 1.2;
+    -fx-scale-y: 1.2;
+}

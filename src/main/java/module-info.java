@@ -44,4 +44,5 @@ module org.example.moka_music_player {
     exports bootstrap;
     exports domain.audio;
     opens domain.audio to javafx.base;
+    opens gui.utils to javafx.fxml;
 }

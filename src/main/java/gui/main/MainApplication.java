@@ -7,9 +7,10 @@ import infrastructure.audio.AudioEngine;
 import infrastructure.audio.AudioPlayer;
 import domain.audio.PlaybackState;
 import infrastructure.audio.VLCJAudioEngine;
+import infrastructure.media.FiledataManager;
 import infrastructure.media.JaudiotaggerManager;
 import infrastructure.scanner.MediaScanner;
-import infrastructure.media.MetaDataManager;
+import infrastructure.media.MetadataManager;
 import domain.library.MediaLibrary;
 import gui.controllers.MainViewController;
 
@@ -18,16 +19,21 @@ import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
+import javafx.scene.input.KeyCode;
 import javafx.stage.Stage;
 
+import java.awt.*;
 import java.io.IOException;
+import java.util.Objects;
 
 public class MainApplication extends Application {
 
     private final AudioEngine engine = new VLCJAudioEngine();
     private final AudioPlayer player = new AudioPlayer(engine);
-    private final MetaDataManager metaDataManger = new JaudiotaggerManager();
-    private final MediaScanner scanner = new MediaScanner(metaDataManger);
+    private final MetadataManager metaDataManger = new JaudiotaggerManager();
+    private final FiledataManager filedataManager = new FiledataManager();
+    private final MediaScanner scanner = new MediaScanner(metaDataManger, filedataManager);
     private final MediaLibrary library = new MediaLibrary();
     private final LibraryService libraryService = new LibraryService();
     private final MediaService mediaService = new MediaService(scanner,library,libraryService);
@@ -49,6 +55,12 @@ public class MainApplication extends Application {
         player.setVolume(startingVolume);
 
         IO.println("ov" + oldVolume + "nv" + player.getVolume());
+
+        Image icon = new Image(
+                Objects.requireNonNull(
+                        getClass().getResourceAsStream("/assets/icons/app-icon.png")
+                )
+        );
 
         Scene scene = new Scene(root,1000,750);
 
@@ -87,10 +99,12 @@ public class MainApplication extends Application {
                                         .isFavorite());
                     }
                 }
+                case F11 -> stage.setFullScreen(!stage.isFullScreen());
             }
         });
 
         stage.setTitle("Moka Player ☕");
+        stage.getIcons().add(icon);
         stage.setScene(scene);
         stage.centerOnScreen();
         stage.setOnCloseRequest(
@@ -101,6 +115,9 @@ public class MainApplication extends Application {
                     Platform.exit();
                 });
         stage.show();
+
+        stage.setFullScreenExitHint("");
+
 
     }
 }

@@ -1,0 +1,10 @@
+.text-field {
+    -fx-background-color: #3a2a22;
+    -fx-text-fill: #f2e6d9;
+    -fx-padding: 8 12;
+    -fx-cursor: text;
+}
+
+.text-field:focused {
+    -fx-effect: dropshadow(gaussian, rgba(200, 155, 109, 0.25), 12, 0.3, 0, 0);
+}

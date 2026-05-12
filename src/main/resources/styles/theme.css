@@ -1,0 +1,26 @@
+.root {
+    -fx-background-color: linear-gradient(
+            to bottom right,
+            #1a1410,
+            #15100d
+    );
+}
+
+.hbox {
+    -fx-background-color: #221a16;
+}
+
+.label {
+    -fx-letter-spacing: 0px;
+    -fx-text-fill: #f2e6d9;
+    -fx-font-size: 13px;
+    -fx-opacity: 0.95;
+}
+
+#contentArea {
+    -fx-background-color: radial-gradient(center 30% 30%, radius 80%, #1a1410, #120e0b);
+}
+
+.separator {
+    -fx-background-color: #3a2a22;
+}

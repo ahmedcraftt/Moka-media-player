@@ -3,7 +3,9 @@ package infrastructure.scanner;
 import domain.model.MediaType;
 import domain.model.Track;
 import infrastructure.classifier.TrackClassifier;
-import infrastructure.media.MetaDataManager;
+import infrastructure.media.DataResolver;
+import infrastructure.media.FiledataManager;
+import infrastructure.media.MetadataManager;
 import infrastructure.factory.TrackFactory;
 
 import java.io.IOException;
@@ -16,11 +18,14 @@ public class MediaScanner {
             "mp3", "flac", "wav", "m4a", "ogg", "aac", "opus", "wma", "alac"
     );
 
-    private final MetaDataManager metadata;
+    private final MetadataManager metadata;
+    private final FiledataManager filedata;
     private final TrackClassifier classifier = new TrackClassifier();
+    private final DataResolver resolver = new DataResolver();
 
-    public MediaScanner(MetaDataManager metadata) {
+    public MediaScanner(MetadataManager metadata, FiledataManager filedata) {
         this.metadata = metadata;
+        this.filedata = filedata;
     }
 
     public List<Track> scan(Path root) {
@@ -33,10 +38,12 @@ public class MediaScanner {
                     .filter(this::isAudioFile)
                     .forEach(path -> {
 
-                        try {
-                            Track track = TrackFactory.create(path);
+                        Track track = TrackFactory.create(path);
 
-                            metadata.readMetadata(track);
+                        filedata.read(track);
+
+                        try {
+                            metadata.read(track);
 
                             MediaType type =
                                     classifier.classify(path, track.getMetadata());
@@ -48,6 +55,8 @@ public class MediaScanner {
                         } catch (Exception e) {
                             System.err.println("Skipping: " + path);
                         }
+                        track.getMetadata().setDurationInSeconds(resolver.resolveMissingDuration(track));
+                        track.getMetadata().setTitle(resolver.resolveMissingTitle(track));
                     });
 
         } catch (IOException e) {

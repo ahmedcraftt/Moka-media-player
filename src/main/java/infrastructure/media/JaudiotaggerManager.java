@@ -1,41 +1,33 @@
 package infrastructure.media;
 
+import domain.model.Filedata;
 import domain.model.MediaType;
 import domain.model.Track;
+import domain.model.Metadata;
 
-import domain.model.TrackMetadata;
 import org.jaudiotagger.audio.AudioFileIO;
 import org.jaudiotagger.audio.AudioHeader;
 import org.jaudiotagger.audio.AudioFile;
-import org.jaudiotagger.audio.exceptions.CannotReadException;
-import org.jaudiotagger.audio.exceptions.InvalidAudioFrameException;
-import org.jaudiotagger.audio.exceptions.ReadOnlyFileException;
 import org.jaudiotagger.tag.FieldKey;
 import org.jaudiotagger.tag.Tag;
-import org.jaudiotagger.tag.TagException;
+import org.jaudiotagger.tag.images.Artwork;
 
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.attribute.BasicFileAttributes;
-import java.nio.file.attribute.FileTime;
-import java.time.LocalDate;
 import java.time.Year;
-import java.time.ZoneId;
 import java.time.format.DateTimeParseException;
 
-public class JaudiotaggerManager implements MetaDataManager {
+public class JaudiotaggerManager implements MetadataManager {
 
-    public void writeMetaData(Track track){
+    public void write(Track track) {
         try {
-            File file = new File(track.getFilePath().toUri());
+            File file = new File(track.getFileData().getFilePath().toUri());
             AudioFile audioFile = AudioFileIO.read(file);
             Tag tag = audioFile.getTagOrCreateAndSetDefault();
-            TrackMetadata metadata = track.getMetadata();
+            Metadata metadata = track.getMetadata();
 
             if (tag == null) {
                 tag = audioFile.createDefaultTag();
@@ -49,10 +41,11 @@ public class JaudiotaggerManager implements MetaDataManager {
             if (track.getType()== MediaType.SONG){
                 safeSet(tag,FieldKey.ARTIST,metadata.getArtist());
                 safeSet(tag,FieldKey.ALBUM,metadata.getAlbum());
+                safeSet(tag, FieldKey.ALBUM_ARTIST, metadata.getAlbumArtist());
                 safeSet(tag,FieldKey.LYRICS,metadata.getLyrics());
             }
             if (track.getType()== MediaType.PODCAST){
-                safeSet(tag,FieldKey.ARTIST,metadata.getArtist());
+                safeSet(tag, FieldKey.ARTIST, metadata.getHost());
                 safeSet(tag,FieldKey.ALBUM,metadata.getChannel());
                 safeSet(tag,FieldKey.TRACK, String.valueOf(metadata.getEpisodeNumber()));
             }
@@ -60,6 +53,7 @@ public class JaudiotaggerManager implements MetaDataManager {
                 safeSet(tag,FieldKey.ARTIST,metadata.getNarrator());
                 safeSet(tag,FieldKey.ALBUM,metadata.getSeries());
                 safeSet(tag,FieldKey.ALBUM_ARTIST,metadata.getAuthor());
+                safeSet(tag, FieldKey.TRACK, String.valueOf(metadata.getChapterCount()));
             }
             audioFile.commit();
         } catch (Exception e){
@@ -68,14 +62,14 @@ public class JaudiotaggerManager implements MetaDataManager {
         }
     }
 
-    public void readMetadata(Track track) {
+    public void read(Track track) {
 
         try {
-            TrackMetadata metadata = track.getMetadata();
+            Metadata metadata = track.getMetadata();
+            Filedata fileData = track.getFileData();
 
-            File file = new File(track.getFilePath().toUri());
-            Path path = Path.of(track.getFilePath().toUri());
-            BasicFileAttributes attributes = Files.readAttributes(path, BasicFileAttributes.class);
+            File file = new File(fileData.getFilePath().toUri());
+            Path path = Path.of(fileData.getFilePath().toUri());
 
             AudioFile audioFile = AudioFileIO.read(file);
             Tag tag = audioFile.getTag();
@@ -90,7 +84,7 @@ public class JaudiotaggerManager implements MetaDataManager {
                 track.setTitle(title.trim());
                 metadata.setGenre(tag.getFirst(FieldKey.GENRE));
                 metadata.setYear(safeParseYear(tag.getFirst(FieldKey.YEAR)));
-                metadata.setDurationInSeconds(getFallbackDuration(path, header));
+                metadata.setDurationInSeconds(header.getTrackLength());
 
                 Integer br = null;
                 try {
@@ -104,18 +98,16 @@ public class JaudiotaggerManager implements MetaDataManager {
                 int sr = header.getSampleRateAsNumber();
                 metadata.setSampleRate(sr);
 
-                org.jaudiotagger.tag.images.Artwork artwork = tag.getFirstArtwork();
+                Artwork artwork = tag.getFirstArtwork();
                 if (artwork != null && artwork.getBinaryData() != null) {
                     metadata.setArtwork(artwork.getBinaryData());
                 }
-                track.setFileSize(attributes.size());
                 metadata.setSampleRate(header.getSampleRateAsNumber());
-                track.setDateCreated(toLocalDate(attributes.creationTime()));
-                track.setDateModified(toLocalDate(attributes.lastModifiedTime()));
                 metadata.setDescription(tag.getFirst(FieldKey.COMMENT));
                 if (track.getType()== MediaType.SONG){
                     metadata.setArtist(tag.getFirst(FieldKey.ARTIST));
                     metadata.setAlbum(tag.getFirst(FieldKey.ALBUM));
+                    metadata.setAlbumArtist(tag.getFirst(FieldKey.ALBUM_ARTIST));
                     metadata.setLyrics(tag.getFirst(FieldKey.LYRICS));
                 }
                 if (track.getType()== MediaType.PODCAST){
@@ -132,47 +124,10 @@ public class JaudiotaggerManager implements MetaDataManager {
             }
 
         } catch(Exception e) {
-            System.err.println("Metadata read failed for: " + track.getFilePath());
+            System.err.println("Metadata read failed for: " + track.getFileData().getFilePath());
             e.printStackTrace();
         }
 
-    }
-
-    private AudioFile createAudioFile(Path path){
-        File file = new File(path.toUri());
-        AudioFile audioFile;
-        try {
-            audioFile = AudioFileIO.read(file);
-            return audioFile;
-        } catch (CannotReadException | IOException | TagException | ReadOnlyFileException | InvalidAudioFrameException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private int getFallbackDuration(Path path, AudioHeader header) {
-        if (header != null) {
-            return header.getTrackLength();
-        } else {
-            try (AudioInputStream stream =
-                         AudioSystem.getAudioInputStream(path.toFile())) {
-
-                AudioFormat format = stream.getFormat();
-                long frames = stream.getFrameLength();
-
-                if (frames == AudioSystem.NOT_SPECIFIED) {
-                    return 0;
-                }
-
-                return (int) (frames / format.getFrameRate());
-
-            } catch (Exception e) {
-                return 0;
-            }
-        }
-    }
-
-    private LocalDate toLocalDate(FileTime fileTime){
-        return fileTime.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
     }
 
     private int safeParseInt(String value) {

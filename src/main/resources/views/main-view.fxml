@@ -16,12 +16,12 @@
             xmlns="http://javafx.com/javafx/25.0.1" xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="gui.controllers.MainViewController">
    <stylesheets>
-       <URL value="@../styles/mainStyle.css"/>
+      <URL value="@../styles/main.css"/>
    </stylesheets>
    <left>
       <VBox alignment="CENTER" spacing="15.0" BorderPane.alignment="CENTER">
          <children>
-            <VBox id="media" fx:id="vbMedia" spacing="10.0">
+            <VBox id="media" fx:id="vbMedia" spacing="10.0" styleClass="media-controls">
                <children>
                   <Button fx:id="btnTracks" mnemonicParsing="false" text="Tracks" />
                   <Button fx:id="btnSongs" mnemonicParsing="false" text="Songs" />
@@ -36,7 +36,7 @@
                   <Insets top="5.0" />
                </padding>
             </VBox>
-            <VBox id="utils" fx:id="vbUtils" spacing="10.0">
+            <VBox id="utils" fx:id="vbUtils" spacing="10.0" styleClass="utils-controls">
                <children>
                   <Button fx:id="btnSettings" mnemonicParsing="false" text="Settings" />
                   <Button fx:id="btnFolders" mnemonicParsing="false" text="My Folders"/>
@@ -61,7 +61,8 @@
    <bottom>
       <VBox alignment="CENTER" spacing="8.0" BorderPane.alignment="CENTER">
          <children>
-            <Label fx:id="currentTrack" alignment="CENTER" prefHeight="16.0" prefWidth="168.0" text="---" />
+            <Label fx:id="currentTrack" alignment="CENTER" prefHeight="16.0" prefWidth="168.0"
+                   styleClass="playing-track-label" text="---"/>
 
             <Slider fx:id="progressSlider" maxWidth="1.7976931348623157E308" />
             <HBox alignment="CENTER" spacing="20.0">
@@ -110,7 +111,7 @@
    <right>
       <VBox alignment="CENTER" BorderPane.alignment="CENTER">
          <children>
-            <VBox id="controls" fx:id="vbControls" alignment="CENTER" spacing="20.0">
+            <VBox id="controls" fx:id="vbControls" alignment="CENTER" spacing="20.0" styleClass="player-controls">
                <children>
                   <Button fx:id="btnCurrentTrack" mnemonicParsing="false" text="Track" />
                   <Button fx:id="btnQueue" mnemonicParsing="false" text="Queue"/>

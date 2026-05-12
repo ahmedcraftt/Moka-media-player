@@ -2,7 +2,7 @@ package domain.model;
 
 import java.time.Year;
 
-public class TrackMetadata {
+public class Metadata {
 
     private String title;
     private String genre;
@@ -14,6 +14,7 @@ public class TrackMetadata {
     private String description;
     private String artist;
     private String album;
+    private String albumArtist;
     private String lyrics;
     private int episodeNumber;
     private String channel;
@@ -23,7 +24,7 @@ public class TrackMetadata {
     private String series;
     private int chapterCount;
 
-    public TrackMetadata() {
+    public Metadata() {
 
     }
 
@@ -111,6 +112,14 @@ public class TrackMetadata {
         return description;
     }
 
+    public String getAlbumArtist() {
+        return albumArtist;
+    }
+
+    public void setAlbumArtist(String albumArtist) {
+        this.albumArtist = albumArtist;
+    }
+
     public void setDescription(String description) {
         this.description = description;
     }
@@ -171,7 +180,27 @@ public class TrackMetadata {
         this.sampleRate = sampleRate;
     }
 
-    public String toString(){
-        return String.format("Meta data:[%s ,%s ,%s, %d", title, genre, description, durationInSeconds);
+    @Override
+    public String toString() {
+        return "Metadata{" +
+                "album='" + album + '\'' +
+                ", title='" + title + '\'' +
+                ", genre='" + genre + '\'' +
+                ", durationInSeconds=" + durationInSeconds +
+                ", \nyear=" + year +
+                ", bitrate=" + bitrate +
+                ", sampleRate=" + sampleRate +
+                ", description='" + description + '\'' +
+                ", \nartist='" + artist + '\'' +
+                ", albumArtist='" + albumArtist + '\'' +
+                ", episodeNumber=" + episodeNumber +
+                ", channel='" + channel + '\'' +
+                ", \nhost='" + host + '\'' +
+                ", author='" + author + '\'' +
+                ", narrator='" + narrator + '\'' +
+                ", series='" + series + '\'' +
+                ", \nchapterCount=" + chapterCount +
+                ", \nlyrics='" + lyrics + '\'' +
+                '}';
     }
 }

@@ -5,7 +5,7 @@ import domain.audio.RepeatMode;
 import domain.model.Track;
 import infrastructure.audio.*;
 import infrastructure.media.JaudiotaggerManager;
-import infrastructure.media.MetaDataManager;
+import infrastructure.media.MetadataManager;
 import infrastructure.factory.TrackFactory;
 import bootstrap.VlcBootstrap;
 
@@ -19,13 +19,12 @@ public class Test {
 
     static AudioEngine engine = new VLCJAudioEngine();
     static AudioPlayer player = new AudioPlayer(engine);
-    static MetaDataManager metaData = new JaudiotaggerManager();
+    static MetadataManager metaData = new JaudiotaggerManager();
 
     public static void main(String[] ignoredArgs) {
 
         VlcBootstrap.init();
 
-        // 🔹 Build playlist
         List<Track> playlist = new ArrayList<>();
 
         playlist.add(makeTrack("Track 1"));
@@ -122,7 +121,7 @@ public class Test {
     private static Track makeTrack(String title) {
         Path path = Path.of("/home/Ahmed/test/CG5 - FNAF SL SONG ▶ ＂I Can't Fix You＂ (Remix⧸Cover feat. Chi-chi) [SFM] ｜ CG5.m4a");
         Track t = TrackFactory.create(path);
-        t.setFilePath(path);
+
         return t;
     }
 

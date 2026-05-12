@@ -1,0 +1,12 @@
+@import "theme.css";
+@import "controls.css";
+@import "forms.css";
+@import "listview.css";
+@import "menu.css";
+@import "player.css";
+
+.root {
+    -fx-font-family: "Segoe UI", "Helvetica Neue", sans-serif;
+    -fx-text-fill: #e8d8c3;
+}
+

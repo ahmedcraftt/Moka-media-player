@@ -6,7 +6,7 @@ import domain.model.Playlist;
 import application.dto.PlaylistDTO;
 import domain.model.Track;
 import infrastructure.media.JaudiotaggerManager;
-import infrastructure.media.MetaDataManager;
+import infrastructure.media.MetadataManager;
 import infrastructure.factory.TrackFactory;
 
 import java.io.IOException;
@@ -16,20 +16,19 @@ import java.util.stream.Collectors;
 
 public class PlaylistStorage {
 
-    private static final MetaDataManager metaData = new JaudiotaggerManager();
     private static final Gson gson = new GsonBuilder().setPrettyPrinting().create();
     private static final Path base = Path.of(System.getProperty("user.home"), ".moka_music_player", "playlists.json");
 
     public static void save(Playlist playlist) throws IOException {
 
         PlaylistDTO dto = new PlaylistDTO();
-        dto.title = playlist.getTitle();
-        dto.favorite = playlist.isFavorite();
+        dto.setTitle(playlist.getTitle());
+        dto.setFavorite(playlist.isFavorite());
 
-        dto.trackPaths = playlist.getTracks()
+        dto.setTrackPaths(playlist.getTracks()
                 .stream()
                 .map(t -> t.getFilePath().toString())
-                .collect(Collectors.toList());
+                .collect(Collectors.toList()));
 
         Files.createDirectories(base.getParent());
         Files.writeString(base, gson.toJson(dto));
@@ -39,13 +38,12 @@ public class PlaylistStorage {
         String json = Files.readString(base);
         PlaylistDTO dto = gson.fromJson(json, PlaylistDTO.class);
 
-        Playlist playlist = new Playlist(dto.title, dto.favorite);
+        Playlist playlist = new Playlist(dto.getTitle(), dto.isFavorite());
 
         for (String pathStr : dto.trackPaths) {
             Path path = Path.of(pathStr);
             String filename = path.getFileName().toString();
             Track t = TrackFactory.create(path);
-            t.setFilePath(path);
 
             playlist.addTrack(t);
         }

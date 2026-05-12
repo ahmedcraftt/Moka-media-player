@@ -1,7 +1,7 @@
 package infrastructure.classifier;
 
 import domain.model.MediaType;
-import domain.model.TrackMetadata;
+import domain.model.Metadata;
 
 import java.nio.file.Path;
 import java.util.Arrays;
@@ -23,7 +23,7 @@ public class TrackClassifier {
     private static final Pattern PODCAST_PATTERN = Pattern.compile(".*(s\\d+e\\d+|episode\\s*\\d+|ep\\s*\\d+).*");
     private static final Pattern AUDIOBOOK_PATTERN = Pattern.compile(".*(chapter\\s*\\d+|part\\s*\\d+|volume\\s*\\d+|book\\s*\\d+).*");
 
-    public MediaType classify(Path path, TrackMetadata metadata) {
+    public MediaType classify(Path path, Metadata metadata) {
 
         int songScore = 0;
         int podcastScore = 0;
@@ -36,13 +36,39 @@ public class TrackClassifier {
         String genre = safe(metadata.getGenre()).toLowerCase();
 
         // duration rules
+        int songBoost = 0;
+        int abookBoost = 0;
+        int podcastBoost = 0;
+
         if (duration <= 300) {
-            songScore += 6;
-        } else if (duration <= 1800) {
-            abookScore += 6;
+            songBoost += 6;
+            abookBoost -= 1;
+        } else if (duration <= 600) {
+            songBoost += 3;
+            abookBoost += 3;
         } else {
-            podcastScore += 5;
+            songBoost -= 2;
         }
+
+        if (duration >= 600 && duration <= 1800) {
+            abookBoost += 6;
+            podcastScore -= 1;
+        } else if (duration <= 3600) {
+            abookBoost += 4;
+            podcastBoost += 1;
+        } else {
+            abookBoost += 3;
+        }
+
+        if (duration >= 1800 && duration <= 7200) {
+            podcastBoost += 5;
+        } else if (duration > 7200) {
+            podcastBoost += 6;
+        }
+
+        songScore += songBoost;
+        abookScore += abookBoost;
+        podcastScore += podcastBoost;
 
         // keyword rules
         songScore += evalTokens(filename, SONG_KEYWORDS);
@@ -54,7 +80,7 @@ public class TrackClassifier {
         abookScore += evalTokens(title, ABOOK_KEYWORDS);
 
         songScore += evalTokens(genre, SONG_GENRES);
-        podcastScore += evalTokens(genre, PODCAST_KEYWORDS);
+        podcastScore += evalTokens(genre, PODCAST_GENRES);
         abookScore += evalTokens(genre, AUDIOBOOK_GENRES);
 
         // final decision

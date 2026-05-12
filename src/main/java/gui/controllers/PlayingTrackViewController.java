@@ -3,6 +3,7 @@ package gui.controllers;
 
 import application.sevice.PlayerService;
 import domain.model.Track;
+import gui.utils.FXUtils;
 import javafx.animation.Animation;
 import javafx.animation.Interpolator;
 import javafx.animation.RotateTransition;
@@ -14,6 +15,8 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.shape.Circle;
 import javafx.util.Duration;
+
+import java.util.Objects;
 
 public class PlayingTrackViewController {
 
@@ -89,7 +92,10 @@ public class PlayingTrackViewController {
         if (track == null) {
             lblTitle.setText("No Track Playing");
             lblArtist.setText("Unknown Artist");
-            imgTrack.setImage(null);
+            imgTrack.setImage(new Image(
+                    Objects.requireNonNull(
+                            getClass().getResourceAsStream("/assets/images/unknown.jpg")
+                    )));
             return;
         }
 
@@ -97,12 +103,17 @@ public class PlayingTrackViewController {
         if (track.getMetadata().getArtist() != null) {
             lblArtist.setText(track.getMetadata().getArtist());
         } else lblArtist.setText("Unknown Artist");
+
         System.out.println("showing:" + track);
 
         var artwork = track.getMetadata().getArtwork();
-        System.out.println(artwork == null);
-        System.out.println(track.getMetadata().getArtwork().getClass());
-        imgTrack.setImage(convertToImage(artwork));
+
+        if (track.getMetadata().getArtwork() != null) {
+            imgTrack.setImage(FXUtils.convertToImage(artwork));
+        } else imgTrack.setImage(new Image(
+                Objects.requireNonNull(
+                        getClass().getResourceAsStream("/assets/images/unknown.jpg")
+                )));
     }
 
     private void makeCircular(ImageView imageView) {
@@ -155,9 +166,4 @@ public class PlayingTrackViewController {
         scaleTransition.setInterpolator(Interpolator.EASE_BOTH);
     }
 
-    private Image convertToImage(byte[] data) {
-        if (data == null || data.length == 0) return null;
-
-        return new Image(new java.io.ByteArrayInputStream(data));
-    }
 }

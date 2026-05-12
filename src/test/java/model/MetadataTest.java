@@ -2,7 +2,7 @@ package model;
 
 import org.junit.jupiter.api.Test;
 
-class TrackMetadataTest {
+class MetadataTest {
 
     @Test
     void getAlbum() {
