@@ -14,13 +14,14 @@ import infrastructure.media.MetadataManager;
 import domain.library.MediaLibrary;
 import gui.controllers.MainViewController;
 
+import infrastructure.storage.DatabaseManager;
+import infrastructure.storage.TrackStorage;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
-import javafx.scene.input.KeyCode;
 import javafx.stage.Stage;
 
 import java.awt.*;
@@ -38,11 +39,14 @@ public class MainApplication extends Application {
     private final LibraryService libraryService = new LibraryService();
     private final MediaService mediaService = new MediaService(scanner,library,libraryService);
     private final PlayerService playerService = new PlayerService(player);
+    private final TrackStorage trackStorage = new TrackStorage();
     private final int startingVolume = 50;
     private int oldVolume = startingVolume;
 
     @Override
     public void start(Stage stage) throws IOException {
+        trackStorage.initialize();
+
         FXMLLoader loader = new FXMLLoader(MainApplication.class.getResource("/views/main-view.fxml"));
         Parent root = loader.load();
         MainViewController controller = loader.getController();

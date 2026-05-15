@@ -45,7 +45,7 @@ public class MediaListViewController {
 
         switch (mode) {
             case TITLE -> items.sort(Comparator.comparing(Track::getTitle, String.CASE_INSENSITIVE_ORDER));
-            case FILE_NAME -> items.sort(Comparator.comparing(track -> track.getFilePath().getFileName().toString()));
+            case FILE_NAME -> items.sort(Comparator.comparing(Track::getFileName));
             case ARTISTS -> items.sort(Comparator.comparing(track -> track.getMetadata().getArtist(), String.CASE_INSENSITIVE_ORDER));
             case DURATION -> items.sort(Comparator.comparingInt(track -> track.getMetadata().getDurationInSeconds()));
             case YEAR -> items.sort(Comparator.comparing(track -> track.getMetadata().getYear()));

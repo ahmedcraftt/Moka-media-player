@@ -23,7 +23,7 @@ public class TrackClassifier {
     private static final Pattern PODCAST_PATTERN = Pattern.compile(".*(s\\d+e\\d+|episode\\s*\\d+|ep\\s*\\d+).*");
     private static final Pattern AUDIOBOOK_PATTERN = Pattern.compile(".*(chapter\\s*\\d+|part\\s*\\d+|volume\\s*\\d+|book\\s*\\d+).*");
 
-    public MediaType classify(Path path, Metadata metadata) {
+    public MediaType classify(String path, Metadata metadata) {
 
         int songScore = 0;
         int podcastScore = 0;

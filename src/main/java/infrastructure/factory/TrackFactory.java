@@ -9,7 +9,7 @@ public final class TrackFactory {
     private TrackFactory() {
     }
 
-    public static Track create(Path path) {
+    public static Track create(String path) {
 
         return new Track(
                 path.getFileName().toString(),

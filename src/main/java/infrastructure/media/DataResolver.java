@@ -10,7 +10,7 @@ public class DataResolver {
 
     public int resolveMissingDuration(Track track) {
         if (track.getMetadata().getDurationInSeconds() <= 0) {
-            Path path = track.getFilePath();
+            String path = track.getFilePath();
 
             try {
 
@@ -19,7 +19,7 @@ public class DataResolver {
                         "-v", "error",
                         "-show_entries", "format=duration",
                         "-of", "default=noprint_wrappers=1:nokey=1",
-                        path.toString()
+                        path
                 ).start();
 
                 try (BufferedReader reader =

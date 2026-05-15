@@ -28,7 +28,7 @@ public interface AudioEngine {
      * </ul>
      */
 
-    void play(Path path, Runnable onTrackFinished);
+    void play(String path, Runnable onTrackFinished);
     void pause();
     void stop();
     void resume();

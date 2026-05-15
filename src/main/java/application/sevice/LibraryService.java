@@ -1,6 +1,6 @@
 package application.sevice;
 
-import infrastructure.storge.LibraryStorage;
+import infrastructure.storage.LibraryStorage;
 import domain.library.Library;
 import domain.library.LibraryFolder;
 

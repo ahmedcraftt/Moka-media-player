@@ -14,6 +14,7 @@ module org.example.moka_music_player {
     requires AhmedUtilsV2;
     requires org.slf4j;
     requires java.desktop;
+    requires java.sql;
 
     // Export packages that need to be accessed by other modules or the JVM
     exports gui.main;
@@ -21,28 +22,27 @@ module org.example.moka_music_player {
     exports infrastructure.audio;
     exports config;
     exports domain.model;
-
-    // Open packages for reflection (JavaFX and vlcj factory often need this)
-    opens gui.main to javafx.fxml;
-    opens gui.controllers to javafx.fxml;
-    opens domain.model to javafx.base;
     exports infrastructure.media;
-    opens infrastructure.media to javafx.base;
-    opens infrastructure.audio to javafx.base;
     exports application.dto;
-    opens application.dto to javafx.base;
-    opens domain.library to com.google.gson;
     exports infrastructure.scanner;
-    opens infrastructure.scanner to javafx.base;
-    exports infrastructure.storge;
-    opens infrastructure.storge to javafx.base;
+    exports infrastructure.storage;
     exports infrastructure.mapper;
-    opens infrastructure.mapper to javafx.base;
-    exports infrastructure.factory;
-    opens infrastructure.factory to javafx.base;
     exports platform;
     exports bootstrap;
     exports domain.audio;
+
+    // Open packages for reflection
+    opens gui.main to javafx.fxml;
+    opens gui.controllers to javafx.fxml;
+    opens domain.model to javafx.base;
+    opens infrastructure.media to javafx.base;
+    opens infrastructure.audio to javafx.base;
+    opens application.dto to javafx.base;
+    opens domain.library to com.google.gson;
+    opens infrastructure.scanner to javafx.base;
+    opens infrastructure.storage to javafx.base;
+    opens infrastructure.mapper to javafx.base;
+    opens infrastructure.factory to javafx.base;
     opens domain.audio to javafx.base;
     opens gui.utils to javafx.fxml;
 }

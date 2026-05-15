@@ -11,6 +11,7 @@ import infrastructure.factory.TrackFactory;
 import java.io.IOException;
 import java.nio.file.*;
 import java.util.*;
+import java.util.concurrent.*;
 
 public class MediaScanner {
 
@@ -30,7 +31,69 @@ public class MediaScanner {
 
     public List<Track> scan(Path root) {
 
-        List<Track> result = new ArrayList<>();
+        int threads = Math.max(2,
+                Runtime.getRuntime().availableProcessors());
+
+        ExecutorService metadataPool =
+                Executors.newFixedThreadPool(threads);
+
+        List<Track> result =
+                Collections.synchronizedList(new ArrayList<>());
+
+        try {
+
+            discover(root, metadataPool, result);
+
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } finally {
+
+            metadataPool.shutdown();
+
+            try {
+                if (!metadataPool.awaitTermination(60, TimeUnit.SECONDS)) {
+                    metadataPool.shutdownNow();
+                }
+            } catch (InterruptedException e) {
+                metadataPool.shutdownNow();
+                Thread.currentThread().interrupt();
+            }
+        }
+
+        return result;
+    }
+
+    private Track processTrack(String path) {
+
+        Track track = TrackFactory.create(path);
+
+        filedata.read(track);
+
+        try {
+            metadata.read(track);
+        } catch (Exception e) {
+            System.err.println("Metadata failed: " + path);
+        }
+
+        track.getMetadata().setDurationInSeconds(
+                resolver.resolveMissingDuration(track)
+        );
+        track.getMetadata().setTitle(
+                resolver.resolveMissingTitle(track)
+        );
+
+        track.setType(
+                classifier.classify(path, track.getMetadata())
+        );
+
+        return track;
+    }
+
+    private void discover(
+            Path root,
+            ExecutorService metadataPool,
+            List<Track> result
+    ) throws IOException {
 
         try (var paths = Files.walk(root)) {
 
@@ -38,32 +101,27 @@ public class MediaScanner {
                     .filter(this::isAudioFile)
                     .forEach(path -> {
 
-                        Track track = TrackFactory.create(path);
+                        metadataPool.submit(() -> {
 
-                        filedata.read(track);
+                            try {
 
-                        try {
-                            metadata.read(track);
+                                Track track = processTrack(path);
 
-                            MediaType type =
-                                    classifier.classify(path, track.getMetadata());
+                                if (track != null) {
+                                    result.add(track);
+                                }
 
-                            track.setType(type);
+                            } catch (Exception e) {
 
-                            result.add(track);
+                                System.err.println(
+                                        "Failed processing: " + path
+                                );
 
-                        } catch (Exception e) {
-                            System.err.println("Skipping: " + path);
-                        }
-                        track.getMetadata().setDurationInSeconds(resolver.resolveMissingDuration(track));
-                        track.getMetadata().setTitle(resolver.resolveMissingTitle(track));
+                                e.printStackTrace();
+                            }
+                        });
                     });
-
-        } catch (IOException e) {
-            throw new RuntimeException(e);
         }
-
-        return result;
     }
 
     private boolean isAudioFile(Path path) {

@@ -94,7 +94,6 @@ public class MainViewController {
         this.playerService = playerService;
         updatePlayButton();
         setupLabel();
-
     }
 
     public void setMediaService(MediaService mediaService) {
@@ -303,7 +302,7 @@ public class MainViewController {
 
     private void loadPlaylistView() {
         try {
-            FXMLLoader loader = loadView("/views/playlistView.fxml");
+            FXMLLoader loader = loadView("/views/playlist-view.fxml");
 
             PlaylistViewController playlistController = loader.getController();
 
@@ -312,10 +311,10 @@ public class MainViewController {
             }
 
         } catch (IOException e) {
-            System.err.println("Failed to load playlistView.fxml");
+            System.err.println("Failed to load playlist-view.fxml");
             e.printStackTrace();
         } catch (IllegalStateException e) {
-            System.err.println("FXML Error: Check if fx:controller is set correctly in playlistView.fxml");
+            System.err.println("FXML Error: Check if fx:controller is set correctly in playlist-view.fxml");
             e.printStackTrace();
         }
     }

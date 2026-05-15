@@ -5,28 +5,35 @@ import java.time.LocalDate;
 
 public class Filedata {
 
-    private Path filePath;
-    private String fileName;
+    private String filePath;
+    private String fileName = "Unknown";
     private LocalDate dateCreated;
     private LocalDate dateModified;
     private LocalDate lastAccessed;
-    private String fileType;
-    private long fileSize;
+    private String fileType = "Unknown";
+    private long fileSize = 0;
 
-    public Filedata(Path filePath, String fileName) {
-        this.filePath = filePath;
-        this.fileName = fileName;
+    public Filedata(String filePath, String fileName) {
+        setFilePath(filePath);
+        setFileName(fileName);
     }
 
     public Filedata() {
     }
 
-    public Path getFilePath() {
+    public String getFilePath() {
         return filePath;
     }
 
-    public void setFilePath(Path filePath) {
-        this.filePath = filePath;
+    public String getFilePathString() {
+        if (filePath != null) return filePath;
+        else return "Unknown";
+    }
+
+    public void setFilePath(String filePath) {
+        if (filePath != null)
+            this.filePath = filePath;
+        else throw new IllegalArgumentException("file path is null");
     }
 
     public String getFileName() {
@@ -34,23 +41,39 @@ public class Filedata {
     }
 
     public void setFileName(String fileName) {
-        this.fileName = fileName;
+        if (fileName != null && !fileName.isBlank())
+            this.fileName = fileName;
+        else throw new IllegalArgumentException("filename is null or blank");
     }
 
     public LocalDate getDateCreated() {
         return dateCreated;
     }
 
+    public String getDateCreatedString() {
+        if (dateCreated != null) return dateCreated.toString();
+        else return "Unknown";
+    }
+
     public void setDateCreated(LocalDate dateCreated) {
-        this.dateCreated = dateCreated;
+        if (dateCreated != null)
+            this.dateCreated = dateCreated;
+        else throw new IllegalArgumentException("date created is null");
     }
 
     public LocalDate getDateModified() {
         return dateModified;
     }
 
+    public String getDateModifiedString() {
+        if (dateModified != null) return dateModified.toString();
+        else return "Unknown";
+    }
+
     public void setDateModified(LocalDate dateModified) {
-        this.dateModified = dateModified;
+        if (dateModified != null)
+            this.dateModified = dateModified;
+        else throw new IllegalArgumentException("date modified is null");
     }
 
     public long getFileSize() {
@@ -66,25 +89,33 @@ public class Filedata {
     }
 
     public void setFileType(String fileType) {
-        this.fileType = fileType;
+        if (fileType != null && !fileType.isBlank()) this.fileType = fileType;
+        else throw new IllegalArgumentException("file type is null or blank");
     }
 
     public LocalDate getLastAccessed() {
         return lastAccessed;
     }
 
+    public String getLastAccessedString() {
+        if (lastAccessed != null) return lastAccessed.toString();
+        else return "Unknown";
+    }
+
     public void setLastAccessed(LocalDate lastAccessed) {
-        this.lastAccessed = lastAccessed;
+        if (lastAccessed != null)
+            this.lastAccessed = lastAccessed;
+        else throw new IllegalArgumentException("last accessed is null");
     }
 
     @Override
     public String toString() {
         return "Filedata{" +
-                "dateCreated=" + dateCreated +
-                ", filePath=" + filePath +
+                "dateCreated=" + getDateCreatedString() +
+                ", filePath=" + getFilePathString() +
                 ", fileName='" + fileName + '\'' +
-                ", \ndateModified=" + dateModified +
-                ", lastAccessed=" + lastAccessed +
+                ", \ndateModified=" + getDateModifiedString() +
+                ", lastAccessed=" + getLastAccessedString() +
                 ", fileType='" + fileType + '\'' +
                 ", fileSize=" + fileSize +
                 '}';

@@ -5,7 +5,8 @@ import java.nio.file.Path;
 public class TrackDTO {
     private String title;
     private boolean favorite;
-    private Path path;
+    private int timesPlayed;
+    private String path;
 
     public boolean isFavorite() {
         return favorite;
@@ -15,11 +16,11 @@ public class TrackDTO {
         this.favorite = favorite;
     }
 
-    public Path getPath() {
+    public String getPath() {
         return path;
     }
 
-    public void setPath(Path path) {
+    public void setPath(String path) {
         this.path = path;
     }
 
@@ -31,4 +32,11 @@ public class TrackDTO {
         this.title = title;
     }
 
+    public void setTimesPlayed(int timesPlayed) {
+        this.timesPlayed = timesPlayed;
+    }
+
+    public int getTimesPlayed() {
+        return timesPlayed;
+    }
 }

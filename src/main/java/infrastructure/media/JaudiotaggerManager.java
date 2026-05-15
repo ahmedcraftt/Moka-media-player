@@ -12,9 +12,6 @@ import org.jaudiotagger.tag.FieldKey;
 import org.jaudiotagger.tag.Tag;
 import org.jaudiotagger.tag.images.Artwork;
 
-import javax.sound.sampled.AudioFormat;
-import javax.sound.sampled.AudioInputStream;
-import javax.sound.sampled.AudioSystem;
 import java.io.File;
 import java.nio.file.Path;
 import java.time.Year;
@@ -42,6 +39,7 @@ public class JaudiotaggerManager implements MetadataManager {
                 safeSet(tag,FieldKey.ARTIST,metadata.getArtist());
                 safeSet(tag,FieldKey.ALBUM,metadata.getAlbum());
                 safeSet(tag, FieldKey.ALBUM_ARTIST, metadata.getAlbumArtist());
+                safeSet(tag, FieldKey.TRACK, String.valueOf(metadata.getNumberInAlbum()));
                 safeSet(tag,FieldKey.LYRICS,metadata.getLyrics());
             }
             if (track.getType()== MediaType.PODCAST){
@@ -53,7 +51,7 @@ public class JaudiotaggerManager implements MetadataManager {
                 safeSet(tag,FieldKey.ARTIST,metadata.getNarrator());
                 safeSet(tag,FieldKey.ALBUM,metadata.getSeries());
                 safeSet(tag,FieldKey.ALBUM_ARTIST,metadata.getAuthor());
-                safeSet(tag, FieldKey.TRACK, String.valueOf(metadata.getChapterCount()));
+                safeSet(tag, FieldKey.TRACK, String.valueOf(metadata.getChapterNumber()));
             }
             audioFile.commit();
         } catch (Exception e){
@@ -108,6 +106,7 @@ public class JaudiotaggerManager implements MetadataManager {
                     metadata.setArtist(tag.getFirst(FieldKey.ARTIST));
                     metadata.setAlbum(tag.getFirst(FieldKey.ALBUM));
                     metadata.setAlbumArtist(tag.getFirst(FieldKey.ALBUM_ARTIST));
+                    metadata.setNumberInAlbum(safeParseInt(tag.getFirst(FieldKey.TRACK)));
                     metadata.setLyrics(tag.getFirst(FieldKey.LYRICS));
                 }
                 if (track.getType()== MediaType.PODCAST){
@@ -119,7 +118,7 @@ public class JaudiotaggerManager implements MetadataManager {
                     metadata.setAuthor(tag.getFirst(FieldKey.ALBUM_ARTIST));
                     metadata.setNarrator(tag.getFirst(FieldKey.ARTIST));
                     metadata.setSeries(tag.getFirst(FieldKey.ALBUM));
-                    metadata.setChapterCount(safeParseInt(tag.getFirst(FieldKey.TRACK)));
+                    metadata.setChapterNumber(safeParseInt(tag.getFirst(FieldKey.TRACK)));
                 }
             }
 

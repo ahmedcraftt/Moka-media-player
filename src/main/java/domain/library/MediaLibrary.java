@@ -13,12 +13,12 @@ public class MediaLibrary {
 
     public void addAll(List<Track> newTracks) {
         for (Track t : newTracks) {
-            tracks.putIfAbsent(t.getFilePath().toString(), t);
+            tracks.putIfAbsent(t.getFilePath(), t);
         }
     }
 
     public void addTrack(Track track) {
-        tracks.putIfAbsent(track.getFilePath().toString(), track);
+        tracks.putIfAbsent(track.getFilePath(), track);
     }
 
     public List<Track> getTracks() {
@@ -26,7 +26,7 @@ public class MediaLibrary {
     }
 
     public void removeTrack(@NotNull Track track) {
-        tracks.remove(track.getFilePath().toString());
+        tracks.remove(track.getFilePath());
     }
 
     public void clear() {
@@ -60,7 +60,7 @@ public class MediaLibrary {
                 .filter(t ->
                         safe(t.getMetadata().getTitle()).contains(q) ||
                                 safe(t.getMetadata().getGenre()).contains(q) ||
-                                safe(t.getFileName()).contains(q)
+                                safe(t.getFileData().getFileName()).contains(q)
                 )
                 .collect(Collectors.toList());
     }

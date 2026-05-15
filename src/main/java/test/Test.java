@@ -119,7 +119,7 @@ public class Test {
     }
 
     private static Track makeTrack(String title) {
-        Path path = Path.of("/home/Ahmed/test/CG5 - FNAF SL SONG ▶ ＂I Can't Fix You＂ (Remix⧸Cover feat. Chi-chi) [SFM] ｜ CG5.m4a");
+        String path = Path.of("/home/Ahmed/test/CG5 - FNAF SL SONG ▶ ＂I Can't Fix You＂ (Remix⧸Cover feat. Chi-chi) [SFM] ｜ CG5.m4a");
         Track t = TrackFactory.create(path);
 
         return t;

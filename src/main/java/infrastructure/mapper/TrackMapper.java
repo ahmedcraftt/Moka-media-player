@@ -11,6 +11,7 @@ public class TrackMapper {
         dto.setTitle(track.getTitle());
         dto.setFavorite(track.isFavorite());
         dto.setPath(track.getFilePath());
+        dto.setTimesPlayed(track.getTimesPlayed().intValue());
         return dto;
     }
 
@@ -18,6 +19,7 @@ public class TrackMapper {
         Track track = TrackFactory.create(dto.getPath());
         track.setFavorite(dto.isFavorite());
         track.setTitle(dto.getTitle());
+        track.setTimesPlayed(dto.getTimesPlayed());
         return track;
     }
 

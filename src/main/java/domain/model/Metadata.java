@@ -4,28 +4,29 @@ import java.time.Year;
 
 public class Metadata {
 
-    private String title;
-    private String genre;
-    private int durationInSeconds;
+    private String title = "Unknown";
+    private String genre = "Unknown";
+    private int durationInSeconds = 0;
     private byte[] artwork;
-    private Year year;
-    private long bitrate;
-    private int sampleRate;
-    private String description;
-    private String artist;
-    private String album;
-    private String albumArtist;
-    private String lyrics;
-    private int episodeNumber;
-    private String channel;
-    private String host;
-    private String author;
-    private String narrator;
-    private String series;
-    private int chapterCount;
+    private Year year = Year.of(0);
+    private long bitrate = 0;
+    private int sampleRate = 0;
+    private String description = "Unknown";
+    private String artist = "Unknown";
+    private String album = "Unknown";
+    private String albumArtist = "Unknown";
+    private String lyrics = "Unknown";
+    private int episodeNumber = 0;
+    private String channel = "Unknown";
+    private String host = "Unknown";
+    private String author = "Unknown";
+    private String narrator = "Unknown";
+    private String series = "Unknown";
+    private int chapterNumber = 0;
+    private int numberInAlbum = 0;
+
 
     public Metadata() {
-
     }
 
     public String getAlbum() {
@@ -33,15 +34,16 @@ public class Metadata {
     }
 
     public void setAlbum(String album) {
+
         this.album = album;
     }
 
-    public int getChapterCount() {
-        return chapterCount;
+    public int getChapterNumber() {
+        return chapterNumber;
     }
 
-    public void setChapterCount(int chapterCount) {
-        this.chapterCount = chapterCount;
+    public void setChapterNumber(int chapterNumber) {
+        this.chapterNumber = chapterNumber;
     }
 
     public String getArtist() {
@@ -160,6 +162,16 @@ public class Metadata {
         return year;
     }
 
+    public int getYearNumber() {
+        if (this.year != null) return year.getValue();
+        else return 0;
+    }
+
+    public String getYearSting() {
+        if (this.year != null) return year.toString();
+        else return "unknown";
+    }
+
     public void setYear(Year year) {
         this.year = year;
     }
@@ -178,6 +190,14 @@ public class Metadata {
 
     public void setSampleRate(int sampleRate) {
         this.sampleRate = sampleRate;
+    }
+
+    public int getNumberInAlbum() {
+        return numberInAlbum;
+    }
+
+    public void setNumberInAlbum(int numberInAlbum) {
+        this.numberInAlbum = numberInAlbum;
     }
 
     @Override
@@ -199,7 +219,8 @@ public class Metadata {
                 ", author='" + author + '\'' +
                 ", narrator='" + narrator + '\'' +
                 ", series='" + series + '\'' +
-                ", \nchapterCount=" + chapterCount +
+                ", \nchapterNumber=" + chapterNumber +
+                ", album number=" + numberInAlbum +
                 ", \nlyrics='" + lyrics + '\'' +
                 '}';
     }

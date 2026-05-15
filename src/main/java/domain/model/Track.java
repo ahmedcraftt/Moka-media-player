@@ -1,19 +1,23 @@
 package domain.model;
 
 import java.nio.file.Path;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class Track {
 
     private MediaType type;
     private Filedata fileData;
     private Metadata metadata;
-    private boolean favorite;
+    private boolean favorite = false;
+    private boolean playing = false;
+    private final AtomicInteger timesPlayed = new AtomicInteger(0);
 
     public Track() {}
 
-    public Track(String fileName, Path filePath) {
+    public Track(String fileName, String filePath) {
         metadata = new Metadata();
         fileData = new Filedata(filePath, fileName);
+        type = MediaType.SONG;
     }
 
     public boolean isFavorite() {
@@ -30,30 +34,62 @@ public class Track {
     }
 
     public void setType(MediaType type) {
-        this.type = type;
+        if (type != null)
+            this.type = type;
+        else throw new IllegalArgumentException("Media type is null");
     }
 
     public Metadata getMetadata() {
         return metadata;
     }
 
+    public void setMetadata(Metadata metadata) {
+        if (metadata != null) {
+            this.metadata = metadata;
+        } else throw new RuntimeException("metadata is null");
+    }
+
     public Filedata getFileData() {
         return fileData;
     }
 
+    public boolean isPlaying() {
+        return playing;
+    }
+
+    public void setPlaying(boolean playing) {
+        this.playing = playing;
+    }
+
+    public AtomicInteger getTimesPlayed() {
+        return timesPlayed;
+    }
+
+    public void setTimesPlayed(int timesPlayed) {
+        this.timesPlayed.set(timesPlayed);
+    }
+
+    public void incrementTimesPlayed() {
+        this.timesPlayed.getAndIncrement();
+    }
+
     public void setTitle(String title) {
-        if (title != null) {
+        if (title != null && !title.isBlank() && !title.equalsIgnoreCase("unknown")) {
             metadata.setTitle(title);
-        } else metadata.setTitle(removeExtension(fileData.getFileName()));
+        } else if (fileData.getFileName() != null) {
+            metadata.setTitle(removeExtension(fileData.getFileName()));
+        } else throw new IllegalArgumentException("title");
     }
 
     public String getTitle() {
-        if (metadata.getTitle() != null) {
+        if (metadata.getTitle() != null
+                && !metadata.getTitle().isBlank()
+                && !metadata.getTitle().equalsIgnoreCase("unknown")) {
             return metadata.getTitle();
-        } else return removeExtension(this.getFileName());
+        } else return removeExtension(fileData.getFileName());
     }
 
-    public Path getFilePath() {
+    public String getFilePath() {
         return fileData.getFilePath();
     }
 
@@ -67,14 +103,14 @@ public class Track {
 
     @Override
     public String toString() {
-        return String.format("%s (%s)%n + is favorite: %s", this.getTitle(), this.getDuration(), favorite);
+        return String.format("%s (%s)", this.getTitle(), this.getDuration());
     }
 
     private String removeExtension(String fileName) {
         if (fileName == null) return null;
 
         int lastDot = fileName.lastIndexOf('.');
-        if (lastDot == -1) return fileName; // no extension
+        if (lastDot == -1) return fileName;
 
         return fileName.substring(0, lastDot);
     }

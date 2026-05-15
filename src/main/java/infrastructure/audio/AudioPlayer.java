@@ -88,8 +88,10 @@ public class AudioPlayer {
      */
     public void play(Track track){
         if (track == null) return;
-        Path path = track.getFilePath();
+        String path = track.getFilePath();
         currentTrack = track;
+        currentTrack.setPlaying(true);
+        currentTrack.incrementTimesPlayed();
         notifyTrackChanged();
         engine.play(path,this::playNext);
         state = PlaybackState.PLAYING;
@@ -162,10 +164,10 @@ public class AudioPlayer {
 
             case STOP_WHEN_QUEUE_END -> {
                 Track nextTrack = queue.next();
-                if (nextTrack != null)
-                    System.out.println("playing " + nextTrack);
 
                 if (nextTrack != null) {
+                    currentTrack.setPlaying(false);
+                    System.out.println("playing " + nextTrack);
                     currentTrack = nextTrack;
                     play(currentTrack);
                 } else {
@@ -176,15 +178,14 @@ public class AudioPlayer {
             case LOOP_CURRENT_QUEUE -> {
                 Track nextTrack = queue.next();
 
-                if (nextTrack != null)
-                    System.out.println("playing " + nextTrack);
-
                 if (nextTrack == null) {
+                    System.out.println("playing " + nextTrack);
                     queue.reset();
                     nextTrack = queue.next();
                 }
 
                 if (nextTrack != null) {
+                    currentTrack.setPlaying(false);
                     currentTrack = nextTrack;
                     play(currentTrack);
                 } else {
@@ -218,6 +219,7 @@ public class AudioPlayer {
     public void pause() {
         if (state == PlaybackState.PLAYING) {
             engine.pause();
+            currentTrack.setPlaying(false);
             state = PlaybackState.PAUSED;
             notifyPlaybackStateChanged();
         }
@@ -277,10 +279,10 @@ public class AudioPlayer {
     /**
      * Sets playback volume.
      *
-     * @param volume volume level (values below 0 are clamped to 0)
+     * @param volume volume level (values below 0 are clamped to 0 and ones above 100 clamped to 100)
      */
     public void setVolume(int volume) {
-        engine.setVolume(Math.max(0, volume));
+        engine.setVolume(Math.clamp(volume, 0, 100));
     }
 
     public int getVolume() {
@@ -413,7 +415,8 @@ public class AudioPlayer {
                 ", \nengine= " + engine +
                 ", \nstate= " + state +
                 ", \nrepeatMode= " + repeatMode +
-                ", \ncurrentTrack= " + currentTrack +
+                ", \ncurrentTrack= " + currentTrack + "isPlaying= " + currentTrack.isPlaying() +
+                ", \ntimesPlayed= " + currentTrack.getTimesPlayed().intValue() +
                 ", \nmetadat= " + currentTrack.getMetadata().toString() +
                 ", \nfiledata= " + currentTrack.getFileData().toString() +
                 '}';
