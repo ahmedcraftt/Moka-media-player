@@ -5,180 +5,192 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Priority?>
+<?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 
 <!--suppress ALL -->
 
-<VBox spacing="12.0"
-      stylesheets="@../styles/main.css"
-      xmlns="http://javafx.com/javafx/25.0.1"
-      xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="gui.controllers.TrackDataEditViewController">
+<VBox spacing="12.0" stylesheets="@../styles/main.css" xmlns="http://javafx.com/javafx/25.0.1"
+      xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.controllers.TrackDataEditViewController">
 
     <children>
+        <VBox>
+            <children>
+                <Label text="File path"/>
+                <TextField fx:id="tfFilePath" editable="false" focusTraversable="false"/>
+            </children>
+        </VBox>
 
         <GridPane hgap="12.0" vgap="10.0">
 
             <children>
 
-                <!-- Row 1 -->
-
                 <VBox GridPane.columnIndex="0" GridPane.rowIndex="0">
                     <children>
                         <Label text="File name"/>
-                        <TextField fx:id="tfFilename"
-                                   editable="false"
-                                   focusTraversable="false"/>
+                        <TextField fx:id="tfFilename" editable="false" focusTraversable="false"/>
                     </children>
                 </VBox>
 
                 <VBox GridPane.columnIndex="1" GridPane.rowIndex="0">
                     <children>
                         <Label text="Date created"/>
-                        <TextField fx:id="tfDateCreated"
-                                   editable="false"
-                                   focusTraversable="false"/>
+                        <TextField fx:id="tfDateCreated" editable="false" focusTraversable="false"/>
                     </children>
                 </VBox>
 
                 <VBox GridPane.columnIndex="2" GridPane.rowIndex="0">
                     <children>
                         <Label text="Date modified"/>
-                        <TextField fx:id="tfDateModified"
-                                   editable="false"
-                                   focusTraversable="false"/>
+                        <TextField fx:id="tfDateModified" editable="false" focusTraversable="false"/>
                     </children>
                 </VBox>
-
-                <!-- Row 2 -->
-
-                <VBox GridPane.columnIndex="0" GridPane.rowIndex="1">
+                <VBox GridPane.rowIndex="1">
                     <children>
-                        <Label text="Times played"/>
-                        <TextField fx:id="tfTimesPlayed"
-                                   editable="false"
-                                   focusTraversable="false"/>
+                        <Label text="Last accessed"/>
+                        <TextField fx:id="tfLastAccessed" editable="false"/>
                     </children>
                 </VBox>
 
                 <VBox GridPane.columnIndex="1" GridPane.rowIndex="1">
                     <children>
                         <Label text="File type"/>
-                        <TextField fx:id="tfFileType"
-                                   editable="false"
-                                   focusTraversable="false"/>
+                        <TextField fx:id="tfFileType" editable="false" focusTraversable="false"/>
                     </children>
                 </VBox>
 
                 <VBox GridPane.columnIndex="2" GridPane.rowIndex="1">
                     <children>
                         <Label text="File size"/>
-                        <TextField fx:id="tfFileSize"
-                                   editable="false"
-                                   focusTraversable="false"/>
+                        <TextField fx:id="tfFileSize" editable="false" focusTraversable="false"/>
+                    </children>
+                </VBox>
+                <VBox GridPane.rowIndex="2">
+                    <children>
+                        <Label text="bitrate"/>
+                        <TextField fx:id="tfBitrate" editable="false"/>
+                    </children>
+                </VBox>
+                <VBox layoutX="10.0" layoutY="117.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                    <children>
+                        <Label text="samplerate"/>
+                        <TextField fx:id="tfSamplerate" editable="false"/>
                     </children>
                 </VBox>
 
-                <!-- Row 3 -->
 
-                <VBox GridPane.columnIndex="0" GridPane.rowIndex="2">
+                <VBox GridPane.columnIndex="2" GridPane.rowIndex="2">
+                    <children>
+                        <Label text="Times played"/>
+                        <TextField fx:id="tfTimesPlayed" editable="false" focusTraversable="false"/>
+                    </children>
+                </VBox>
+
+
+                <VBox GridPane.columnIndex="0" GridPane.rowIndex="3">
                     <children>
                         <Label text="Type"/>
                         <TextField fx:id="tfType"/>
                     </children>
                 </VBox>
 
-                <VBox GridPane.columnIndex="1" GridPane.rowIndex="2">
+                <VBox GridPane.columnIndex="1" GridPane.rowIndex="3">
                     <children>
                         <Label text="Title"/>
                         <TextField fx:id="tfTitle"/>
                     </children>
                 </VBox>
 
-                <VBox GridPane.columnIndex="2" GridPane.rowIndex="2">
+                <VBox GridPane.columnIndex="2" GridPane.rowIndex="3">
                     <children>
                         <Label text="Genre"/>
                         <TextField fx:id="tfGenre"/>
                     </children>
                 </VBox>
 
-                <!-- Row 4 -->
 
-                <VBox GridPane.columnIndex="0" GridPane.rowIndex="3">
+                <VBox GridPane.columnIndex="0" GridPane.rowIndex="4">
                     <children>
                         <Label text="Year"/>
                         <TextField fx:id="tfYear"/>
                     </children>
                 </VBox>
 
-                <VBox GridPane.columnIndex="1" GridPane.rowIndex="3">
+                <VBox GridPane.columnIndex="1" GridPane.rowIndex="4">
                     <children>
-                        <Label text="Artist"/>
+                        <Label fx:id="lblArtist" text="Artist"/>
                         <TextField fx:id="tfArtist"/>
                     </children>
                 </VBox>
 
-                <VBox GridPane.columnIndex="2" GridPane.rowIndex="3">
+                <VBox GridPane.columnIndex="2" GridPane.rowIndex="4">
                     <children>
-                        <Label text="Album artist"/>
+                        <Label fx:id="lblAlbumArtist" text="Album artist"/>
                         <TextField fx:id="tfAlbumArtist"/>
                     </children>
                 </VBox>
 
-                <!-- Row 5 -->
 
-                <VBox GridPane.columnIndex="0" GridPane.rowIndex="4">
+                <VBox GridPane.columnIndex="0" GridPane.rowIndex="5">
                     <children>
-                        <Label text="Album"/>
+                        <Label fx:id="lblAlbum" text="Album"/>
                         <TextField fx:id="tfAlbum"/>
                     </children>
                 </VBox>
 
-                <VBox GridPane.columnIndex="1" GridPane.rowIndex="4">
+                <VBox GridPane.columnIndex="1" GridPane.rowIndex="5">
                     <children>
-                        <Label text="Album number"/>
+                        <Label fx:id="lblAlbumNumber" text="Album number"/>
                         <TextField fx:id="tfAlbumNumber"/>
+                    </children>
+                </VBox>
+                <VBox GridPane.columnIndex="2" GridPane.rowIndex="5">
+                    <children>
+                        <Label text="language"/>
+                        <TextField fx:id="tfLang"/>
                     </children>
                 </VBox>
 
             </children>
+            <columnConstraints>
+                <ColumnConstraints/>
+                <ColumnConstraints/>
+                <ColumnConstraints/>
+            </columnConstraints>
+            <rowConstraints>
+                <RowConstraints/>
+                <RowConstraints/>
+                <RowConstraints/>
+                <RowConstraints/>
+                <RowConstraints/>
+                <RowConstraints/>
+            </rowConstraints>
 
         </GridPane>
 
         <!-- Description -->
 
-        <VBox spacing="4.0">
+        <VBox spacing="4.0" VBox.vgrow="ALWAYS">
             <children>
                 <Label text="Description"/>
-                <TextArea fx:id="taDescription"
-                          prefRowCount="4"
-                          wrapText="true"/>
+                <TextArea fx:id="taDescription" prefRowCount="4" wrapText="true" VBox.vgrow="ALWAYS"
+                          maxHeight="-Infinity"/>
             </children>
-
-            <VBox.vgrow>
-                <Priority>ALWAYS</Priority>
-            </VBox.vgrow>
         </VBox>
 
         <!-- Buttons -->
 
-        <HBox alignment="CENTER_RIGHT"
-              spacing="8.0">
+        <HBox alignment="CENTER_RIGHT" spacing="8.0">
 
             <children>
 
-                <Button fx:id="btnSave"
-                        mnemonicParsing="false"
-                        onAction="#handleSave"
-                        text="Save"/>
+                <Button fx:id="btnSave" mnemonicParsing="false" onAction="#handleSave" text="Save"/>
 
-                <Button fx:id="btnCancel"
-                        mnemonicParsing="false"
-                        onAction="#handleCancel"
-                        text="Cancel"/>
+                <Button fx:id="btnCancel" mnemonicParsing="false" onAction="#handleCancel" text="Cancel"/>
 
             </children>
 
@@ -187,10 +199,7 @@
     </children>
 
     <padding>
-        <Insets top="12.0"
-                right="12.0"
-                bottom="12.0"
-                left="12.0"/>
+        <Insets bottom="12.0" left="12.0" right="12.0" top="12.0"/>
     </padding>
 
 </VBox>

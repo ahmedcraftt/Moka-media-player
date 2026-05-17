@@ -1,0 +1,39 @@
+package test;
+
+import application.dto.TrackDTO;
+import com.ahmed.utils.InputUtils;
+import domain.model.Filedata;
+import domain.model.MediaType;
+import domain.model.Metadata;
+import domain.model.Track;
+import infrastructure.factory.TrackFactory;
+import infrastructure.mapper.TrackMapper;
+
+import java.nio.file.Path;
+
+public final class TestMapper {
+    static void main() {
+        int test = InputUtils.readInt("test 1 or 2:");
+        switch (test) {
+            case 1:
+                testFromDto();
+                break;
+            case 2:
+                testToDto();
+                break;
+        }
+    }
+
+    public static void testFromDto() {
+        TrackDTO dto = new TrackDTO("title", false, 2, "hiiii/hiii/hi.mp3", "song", 1234, 10);
+        Track track = TrackMapper.fromDTO(dto);
+        IO.println(track.toText());
+    }
+
+
+    public static void testToDto() {
+        Track track = TrackFactory.create("test", true, 1, MediaType.SONG, Path.of("hii/hiiii/hi.mp3"));
+        TrackDTO dto = TrackMapper.toDTO(track);
+        IO.println(dto.toString());
+    }
+}

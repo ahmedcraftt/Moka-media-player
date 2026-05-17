@@ -16,7 +16,7 @@ public class FiledataManager {
 
     public void read(Track track) {
 
-        Filedata data = track.getFileData();
+        Filedata data = track.getFiledata();
 
         File file = new File(data.getFilePath().toUri());
         Path path = Path.of(data.getFilePath().toUri());
@@ -31,7 +31,7 @@ public class FiledataManager {
             data.setFileType(Files.probeContentType(path));
 
         } catch (IOException e) {
-            System.err.println("file data read failed for: " + track.getFileData().getFilePath());
+            System.err.println("file data read failed for: " + track.getFiledata().getFilePath());
             e.printStackTrace();
         }
     }

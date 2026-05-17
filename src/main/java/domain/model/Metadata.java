@@ -22,9 +22,9 @@ public class Metadata {
     private String author = "Unknown";
     private String narrator = "Unknown";
     private String series = "Unknown";
+    private String language = "Unknown";
     private int chapterNumber = 0;
-    private int numberInAlbum = 0;
-
+    private int albumNumber = 0;
 
     public Metadata() {
     }
@@ -172,6 +172,14 @@ public class Metadata {
         else return "unknown";
     }
 
+    public String getLanguage() {
+        return language;
+    }
+
+    public void setLanguage(String language) {
+        this.language = language;
+    }
+
     public void setYear(Year year) {
         this.year = year;
     }
@@ -192,12 +200,12 @@ public class Metadata {
         this.sampleRate = sampleRate;
     }
 
-    public int getNumberInAlbum() {
-        return numberInAlbum;
+    public int getAlbumNumber() {
+        return albumNumber;
     }
 
-    public void setNumberInAlbum(int numberInAlbum) {
-        this.numberInAlbum = numberInAlbum;
+    public void setAlbumNumber(int albumNumber) {
+        this.albumNumber = albumNumber;
     }
 
     @Override
@@ -220,7 +228,8 @@ public class Metadata {
                 ", narrator='" + narrator + '\'' +
                 ", series='" + series + '\'' +
                 ", \nchapterNumber=" + chapterNumber +
-                ", album number=" + numberInAlbum +
+                ", album number=" + albumNumber +
+                ", language='" + language + '\'' +
                 ", \nlyrics='" + lyrics + '\'' +
                 '}';
     }

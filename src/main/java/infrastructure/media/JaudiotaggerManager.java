@@ -20,42 +20,52 @@ import java.time.format.DateTimeParseException;
 public class JaudiotaggerManager implements MetadataManager {
 
     public void write(Track track) {
+        File file = null;
+
         try {
-            File file = new File(track.getFileData().getFilePath().toUri());
+            file = new File(track.getFiledata().getFilePath().toUri());
+
+            if (!file.exists() || file.length() < 1024) {
+                throw new IllegalArgumentException("Invalid or corrupted audio file: " + file);
+            }
+
             AudioFile audioFile = AudioFileIO.read(file);
+
             Tag tag = audioFile.getTagOrCreateAndSetDefault();
+
             Metadata metadata = track.getMetadata();
 
-            if (tag == null) {
-                tag = audioFile.createDefaultTag();
-                audioFile.setTag(tag);
+            safeSet(tag, FieldKey.TITLE, track.getTitle());
+            safeSet(tag, FieldKey.GENRE, metadata.getGenre());
+            safeSet(tag, FieldKey.YEAR, String.valueOf(metadata.getYear()));
+            safeSet(tag, FieldKey.COMMENT, metadata.getDescription());
+            safeSet(tag, FieldKey.LANGUAGE, normalizeLanguage(metadata.getLanguage()));
+
+            if (track.getType() == MediaType.SONG) {
+                safeSet(tag, FieldKey.ARTIST, metadata.getArtist());
+                safeSet(tag, FieldKey.ALBUM, metadata.getAlbum());
+                safeSet(tag, FieldKey.ALBUM_ARTIST, metadata.getAlbumArtist());
+                safeSet(tag, FieldKey.TRACK, String.valueOf(metadata.getAlbumNumber()));
+                safeSet(tag, FieldKey.LYRICS, metadata.getLyrics());
             }
 
-            safeSet(tag, FieldKey.TITLE, track.getTitle());
-            safeSet(tag,FieldKey.GENRE,metadata.getGenre());
-            safeSet(tag,FieldKey.YEAR, String.valueOf(metadata.getYear()));
-            safeSet(tag,FieldKey.COMMENT,metadata.getDescription());
-            if (track.getType()== MediaType.SONG){
-                safeSet(tag,FieldKey.ARTIST,metadata.getArtist());
-                safeSet(tag,FieldKey.ALBUM,metadata.getAlbum());
-                safeSet(tag, FieldKey.ALBUM_ARTIST, metadata.getAlbumArtist());
-                safeSet(tag, FieldKey.TRACK, String.valueOf(metadata.getNumberInAlbum()));
-                safeSet(tag,FieldKey.LYRICS,metadata.getLyrics());
-            }
-            if (track.getType()== MediaType.PODCAST){
+            if (track.getType() == MediaType.PODCAST) {
                 safeSet(tag, FieldKey.ARTIST, metadata.getHost());
-                safeSet(tag,FieldKey.ALBUM,metadata.getChannel());
-                safeSet(tag,FieldKey.TRACK, String.valueOf(metadata.getEpisodeNumber()));
+                safeSet(tag, FieldKey.ALBUM, metadata.getChannel());
+                safeSet(tag, FieldKey.TRACK, String.valueOf(metadata.getEpisodeNumber()));
             }
-            if (track.getType()==MediaType.AUDIOBOOK){
-                safeSet(tag,FieldKey.ARTIST,metadata.getNarrator());
-                safeSet(tag,FieldKey.ALBUM,metadata.getSeries());
-                safeSet(tag,FieldKey.ALBUM_ARTIST,metadata.getAuthor());
+
+            if (track.getType() == MediaType.AUDIOBOOK) {
+                safeSet(tag, FieldKey.ARTIST, metadata.getNarrator());
+                safeSet(tag, FieldKey.ALBUM, metadata.getSeries());
+                safeSet(tag, FieldKey.ALBUM_ARTIST, metadata.getAuthor());
                 safeSet(tag, FieldKey.TRACK, String.valueOf(metadata.getChapterNumber()));
             }
+
             audioFile.commit();
-        } catch (Exception e){
-            System.err.println(e.getMessage());
+
+        } catch (Exception e) {
+            System.err.println("Failed to write metadata for: " + file);
             e.printStackTrace();
         }
     }
@@ -64,7 +74,7 @@ public class JaudiotaggerManager implements MetadataManager {
 
         try {
             Metadata metadata = track.getMetadata();
-            Filedata fileData = track.getFileData();
+            Filedata fileData = track.getFiledata();
 
             File file = new File(fileData.getFilePath().toUri());
             Path path = Path.of(fileData.getFilePath().toUri());
@@ -75,13 +85,10 @@ public class JaudiotaggerManager implements MetadataManager {
 
             if(tag != null) {
 
-                String title = tag.getFirst(FieldKey.TITLE);
-                if(title == null || title.isBlank() || title.equalsIgnoreCase("unknown")) {
-                    title = file.getName();
-                }
-                track.setTitle(title.trim());
+                metadata.setTitle(tag.getFirst(FieldKey.TITLE));
                 metadata.setGenre(tag.getFirst(FieldKey.GENRE));
                 metadata.setYear(safeParseYear(tag.getFirst(FieldKey.YEAR)));
+                metadata.setLanguage(tag.getFirst(FieldKey.LANGUAGE));
                 metadata.setDurationInSeconds(header.getTrackLength());
 
                 Integer br = null;
@@ -106,11 +113,12 @@ public class JaudiotaggerManager implements MetadataManager {
                     metadata.setArtist(tag.getFirst(FieldKey.ARTIST));
                     metadata.setAlbum(tag.getFirst(FieldKey.ALBUM));
                     metadata.setAlbumArtist(tag.getFirst(FieldKey.ALBUM_ARTIST));
-                    metadata.setNumberInAlbum(safeParseInt(tag.getFirst(FieldKey.TRACK)));
+                    metadata.setAlbumNumber(safeParseInt(tag.getFirst(FieldKey.TRACK)));
                     metadata.setLyrics(tag.getFirst(FieldKey.LYRICS));
                 }
-                if (track.getType()== MediaType.PODCAST){
-                    metadata.setChannel(tag.getFirst(FieldKey.ALBUM));
+                if (track.getType() == MediaType.PODCAST) {
+                    metadata.setChannel(tag.getFirst(FieldKey.ALBUM_ARTIST));
+                    metadata.setSeries(tag.getFirst(FieldKey.ALBUM));
                     metadata.setHost(tag.getFirst(FieldKey.ARTIST));
                     metadata.setEpisodeNumber(safeParseInt(tag.getFirst(FieldKey.TRACK)));
                 }
@@ -123,7 +131,7 @@ public class JaudiotaggerManager implements MetadataManager {
             }
 
         } catch(Exception e) {
-            System.err.println("Metadata read failed for: " + track.getFileData().getFilePath());
+            System.err.println("Metadata read failed for: " + track.getFiledata().getFilePath());
             e.printStackTrace();
         }
 
@@ -148,9 +156,29 @@ public class JaudiotaggerManager implements MetadataManager {
     }
 
     private void safeSet(Tag tag, FieldKey key, String value) throws Exception {
-        if (value != null && !value.isBlank()) {
-            tag.setField(key, value);
+        if (value != null) {
+            value = value.trim();
+
+            if (!value.isEmpty()) {
+                tag.setField(key, value);
+            }
         }
+    }
+
+    private String normalizeLanguage(String lang) {
+        if (lang == null) return null;
+
+        lang = lang.trim().toLowerCase();
+
+        return switch (lang) {
+            case "english", "eng" -> "eng";
+            case "arabic", "ara" -> "ara";
+            case "japanese", "jpn" -> "jpn";
+            case "french", "fra" -> "fra";
+            case "german", "deu" -> "deu";
+            case "spanish", "spa" -> "spa";
+            default -> lang;
+        };
     }
 
 }

@@ -147,7 +147,7 @@ public class MainViewController {
 
         btnPlay.setOnAction(event -> {
                     if (player.getState() == PlaybackState.STOPPED) {
-                        playerService.playFromList(playerService.getCurrentTrack(), playerService.getCurrentList());
+                        playerService.playSelectedTrack();
                     } else if (player.getState() == PlaybackState.PLAYING) {
                         playerService.pause();
                     } else if (player.getState() == PlaybackState.PAUSED) {
@@ -276,7 +276,6 @@ public class MainViewController {
     private void switchMediaView(List<Track> tracks, ViewMode mode) {
         loadMediaView(tracks, mode);
         controller.setData(tracks);
-        controller.setMode(mode);
     }
 
     private void switchCategoryView(List<Playlist> categoryList, ViewMode mode) {

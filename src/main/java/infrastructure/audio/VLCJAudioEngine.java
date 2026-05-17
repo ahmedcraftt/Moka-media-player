@@ -47,7 +47,7 @@ public class VLCJAudioEngine implements AudioEngine {
      * @param onTrackFinished callback triggered when playback completes
      */
     @Override
-    public void play(String path, Runnable onTrackFinished) {
+    public void play(Path path, Runnable onTrackFinished) {
         this.currentOnFinished = onTrackFinished;
         mediaPlayer.media().play(path.toAbsolutePath().toString());
     }

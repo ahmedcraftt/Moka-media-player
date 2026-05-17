@@ -10,15 +10,17 @@ import infrastructure.media.JaudiotaggerManager;
 import infrastructure.scanner.MediaScanner;
 import infrastructure.media.MetadataManager;
 import domain.library.MediaLibrary;
+import infrastructure.storage.TrackStorage;
 
-public class MainCli {
+public final class MainCli {
 
     public static void main(String[] args) {
         AudioEngine engine = new VLCJAudioEngine();
         AudioPlayer player = new AudioPlayer(engine);
         MetadataManager metaDataManager = new JaudiotaggerManager();
         FiledataManager filedataManager = new FiledataManager();
-        MediaScanner scanner = new MediaScanner(metaDataManager, filedataManager);
+        TrackStorage storage = new TrackStorage();
+        MediaScanner scanner = new MediaScanner(metaDataManager, filedataManager, storage);
         MediaLibrary library = new MediaLibrary();
         LibraryService libraryService = new LibraryService();
         MediaService mediaService = new MediaService(scanner, library,libraryService);

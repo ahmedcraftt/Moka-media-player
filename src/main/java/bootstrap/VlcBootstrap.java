@@ -4,7 +4,7 @@ import config.VlcConfig;
 import uk.co.caprica.vlcj.factory.MediaPlayerFactory;
 import uk.co.caprica.vlcj.factory.discovery.NativeDiscovery;
 
-public class VlcBootstrap {
+public final class VlcBootstrap {
 
     public static void init() {
         try {

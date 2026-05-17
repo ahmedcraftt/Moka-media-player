@@ -14,7 +14,6 @@ import infrastructure.media.MetadataManager;
 import domain.library.MediaLibrary;
 import gui.controllers.MainViewController;
 
-import infrastructure.storage.DatabaseManager;
 import infrastructure.storage.TrackStorage;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -34,12 +33,12 @@ public class MainApplication extends Application {
     private final AudioPlayer player = new AudioPlayer(engine);
     private final MetadataManager metaDataManger = new JaudiotaggerManager();
     private final FiledataManager filedataManager = new FiledataManager();
-    private final MediaScanner scanner = new MediaScanner(metaDataManger, filedataManager);
+    private final TrackStorage trackStorage = new TrackStorage();
+    private final MediaScanner scanner = new MediaScanner(metaDataManger, filedataManager, trackStorage);
     private final MediaLibrary library = new MediaLibrary();
     private final LibraryService libraryService = new LibraryService();
     private final MediaService mediaService = new MediaService(scanner,library,libraryService);
     private final PlayerService playerService = new PlayerService(player);
-    private final TrackStorage trackStorage = new TrackStorage();
     private final int startingVolume = 50;
     private int oldVolume = startingVolume;
 
@@ -114,6 +113,7 @@ public class MainApplication extends Application {
         stage.setOnCloseRequest(
                 event -> {
                     System.out.println("Closing app...");
+                    trackStorage.saveAll(mediaService.getTracks());
                     engine.release();
                     event.consume();
                     Platform.exit();

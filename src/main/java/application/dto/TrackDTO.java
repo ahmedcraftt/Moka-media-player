@@ -1,42 +1,18 @@
 package application.dto;
 
-import java.nio.file.Path;
+public record TrackDTO(String title, boolean favorite, int timesPlayed, String path, String type, long lastModified,
+                       long size) {
 
-public class TrackDTO {
-    private String title;
-    private boolean favorite;
-    private int timesPlayed;
-    private String path;
-
-    public boolean isFavorite() {
-        return favorite;
-    }
-
-    public void setFavorite(boolean favorite) {
-        this.favorite = favorite;
-    }
-
-    public String getPath() {
-        return path;
-    }
-
-    public void setPath(String path) {
-        this.path = path;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public void setTimesPlayed(int timesPlayed) {
-        this.timesPlayed = timesPlayed;
-    }
-
-    public int getTimesPlayed() {
-        return timesPlayed;
+    @Override
+    public String toString() {
+        return "TrackDTO{" +
+                "favorite=" + favorite +
+                ", title='" + title + '\'' +
+                ", timesPlayed=" + timesPlayed +
+                ", path='" + path + '\'' +
+                ", type='" + type + '\'' +
+                ", last_modified=" + lastModified +
+                ", size=" + size +
+                '}';
     }
 }

@@ -30,7 +30,7 @@ public class PlaylistStorage {
         Files.createDirectories(BASE_DIR);
 
         Path path =
-                BASE_DIR.resolve(dto.getTitle() + ".json");
+                BASE_DIR.resolve(dto.title() + ".json");
 
         Files.writeString(
                 path,

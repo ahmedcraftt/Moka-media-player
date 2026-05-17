@@ -1,24 +1,35 @@
 package domain.model;
 
 import java.nio.file.Path;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class Track {
 
     private MediaType type;
-    private Filedata fileData;
-    private Metadata metadata;
+    private final Filedata filedata;
+    private final Metadata metadata;
     private boolean favorite = false;
-    private boolean playing = false;
-    private final AtomicInteger timesPlayed = new AtomicInteger(0);
+    private int timesPlayed = 0;
 
-    public Track() {}
-
-    public Track(String fileName, String filePath) {
+    public Track() {
         metadata = new Metadata();
-        fileData = new Filedata(filePath, fileName);
-        type = MediaType.SONG;
+        filedata = new Filedata();
     }
+
+    public Track(String fileName, Path filePath) {
+        metadata = new Metadata();
+        filedata = new Filedata(filePath, fileName);
+    }
+
+    public Track(String title, boolean favorite, int timesPlayed, MediaType type, Path filepath) {
+        metadata = new Metadata();
+        filedata = new Filedata();
+        metadata.setTitle(title);
+        filedata.setFilePath(filepath);
+        this.favorite = favorite;
+        this.timesPlayed = timesPlayed;
+        this.type = type;
+    }
+
 
     public boolean isFavorite() {
         return favorite;
@@ -26,7 +37,6 @@ public class Track {
 
     public void setFavorite(boolean favorite) {
         this.favorite = favorite;
-        System.out.println("is favorite:" + this.favorite);
     }
 
     public MediaType getType() {
@@ -43,41 +53,27 @@ public class Track {
         return metadata;
     }
 
-    public void setMetadata(Metadata metadata) {
-        if (metadata != null) {
-            this.metadata = metadata;
-        } else throw new RuntimeException("metadata is null");
+    public Filedata getFiledata() {
+        return filedata;
     }
 
-    public Filedata getFileData() {
-        return fileData;
-    }
-
-    public boolean isPlaying() {
-        return playing;
-    }
-
-    public void setPlaying(boolean playing) {
-        this.playing = playing;
-    }
-
-    public AtomicInteger getTimesPlayed() {
+    public int getTimesPlayed() {
         return timesPlayed;
     }
 
     public void setTimesPlayed(int timesPlayed) {
-        this.timesPlayed.set(timesPlayed);
+        this.timesPlayed = timesPlayed;
     }
 
     public void incrementTimesPlayed() {
-        this.timesPlayed.getAndIncrement();
+        this.timesPlayed++;
     }
 
     public void setTitle(String title) {
         if (title != null && !title.isBlank() && !title.equalsIgnoreCase("unknown")) {
             metadata.setTitle(title);
-        } else if (fileData.getFileName() != null) {
-            metadata.setTitle(removeExtension(fileData.getFileName()));
+        } else if (filedata.getFileName() != null) {
+            metadata.setTitle(removeExtension(filedata.getFileName()));
         } else throw new IllegalArgumentException("title");
     }
 
@@ -86,15 +82,7 @@ public class Track {
                 && !metadata.getTitle().isBlank()
                 && !metadata.getTitle().equalsIgnoreCase("unknown")) {
             return metadata.getTitle();
-        } else return removeExtension(fileData.getFileName());
-    }
-
-    public String getFilePath() {
-        return fileData.getFilePath();
-    }
-
-    public String getFileName() {
-        return fileData.getFileName();
+        } else return removeExtension(filedata.getFileName());
     }
 
     public String getDuration() {
@@ -104,6 +92,16 @@ public class Track {
     @Override
     public String toString() {
         return String.format("%s (%s)", this.getTitle(), this.getDuration());
+    }
+
+    public String toText() {
+        return "Track{" +
+                "\nfavorite=" + favorite +
+                ", \ntype=" + type +
+                ", \nfileData=" + filedata +
+                ", \nmetadata=" + metadata +
+                ", \ntimesPlayed=" + timesPlayed +
+                '}';
     }
 
     private String removeExtension(String fileName) {

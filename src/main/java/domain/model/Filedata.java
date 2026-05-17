@@ -5,7 +5,7 @@ import java.time.LocalDate;
 
 public class Filedata {
 
-    private String filePath;
+    private Path filePath;
     private String fileName = "Unknown";
     private LocalDate dateCreated;
     private LocalDate dateModified;
@@ -13,7 +13,7 @@ public class Filedata {
     private String fileType = "Unknown";
     private long fileSize = 0;
 
-    public Filedata(String filePath, String fileName) {
+    public Filedata(Path filePath, String fileName) {
         setFilePath(filePath);
         setFileName(fileName);
     }
@@ -21,16 +21,16 @@ public class Filedata {
     public Filedata() {
     }
 
-    public String getFilePath() {
+    public Path getFilePath() {
         return filePath;
     }
 
     public String getFilePathString() {
-        if (filePath != null) return filePath;
+        if (filePath != null) return filePath.toString();
         else return "Unknown";
     }
 
-    public void setFilePath(String filePath) {
+    public void setFilePath(Path filePath) {
         if (filePath != null)
             this.filePath = filePath;
         else throw new IllegalArgumentException("file path is null");

@@ -4,21 +4,22 @@ import domain.model.MediaType;
 import domain.model.Track;
 import org.jetbrains.annotations.NotNull;
 
+import java.nio.file.Path;
 import java.util.*;
 import java.util.stream.Collectors;
 
 public class MediaLibrary {
 
-    private final Map<String, Track> tracks = new HashMap<>();
+    private final Map<Path, Track> tracks = new HashMap<>();
 
     public void addAll(List<Track> newTracks) {
         for (Track t : newTracks) {
-            tracks.putIfAbsent(t.getFilePath(), t);
+            tracks.putIfAbsent(t.getFiledata().getFilePath(), t);
         }
     }
 
     public void addTrack(Track track) {
-        tracks.putIfAbsent(track.getFilePath(), track);
+        tracks.putIfAbsent(track.getFiledata().getFilePath(), track);
     }
 
     public List<Track> getTracks() {
@@ -26,7 +27,7 @@ public class MediaLibrary {
     }
 
     public void removeTrack(@NotNull Track track) {
-        tracks.remove(track.getFilePath());
+        tracks.remove(track.getFiledata().getFilePath());
     }
 
     public void clear() {
@@ -60,7 +61,7 @@ public class MediaLibrary {
                 .filter(t ->
                         safe(t.getMetadata().getTitle()).contains(q) ||
                                 safe(t.getMetadata().getGenre()).contains(q) ||
-                                safe(t.getFileData().getFileName()).contains(q)
+                                safe(t.getFiledata().getFileName()).contains(q)
                 )
                 .collect(Collectors.toList());
     }

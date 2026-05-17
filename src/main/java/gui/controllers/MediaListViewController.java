@@ -4,11 +4,16 @@ import application.sevice.PlayerService;
 import domain.model.Track;
 
 import gui.utils.FXUtils;
+import infrastructure.media.MetadataManager;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -18,17 +23,22 @@ public class MediaListViewController {
 
     @FXML private ListView<Track> contentList;
     @FXML private TextField searchBar;
-    @FXML private Button btnListPlay;
     @FXML private MenuButton btnSort;
     @FXML private Button btnRefresh;
+    @FXML
+    private Button btnListPlay;
 
     private List<Track> currentData;
     private PlayerService playerService;
+    private MetadataManager metadataManager;
 
     public void setPlayerService(PlayerService playerService) {
         this.playerService = playerService;
     }
 
+    public void setMetadataManager(MetadataManager metadataManager) {
+        this.metadataManager = metadataManager;
+    }
 
     @FXML
     private void initialize() {
@@ -45,12 +55,12 @@ public class MediaListViewController {
 
         switch (mode) {
             case TITLE -> items.sort(Comparator.comparing(Track::getTitle, String.CASE_INSENSITIVE_ORDER));
-            case FILE_NAME -> items.sort(Comparator.comparing(Track::getFileName));
+            case FILE_NAME -> items.sort(Comparator.comparing(track -> track.getFiledata().getFileName()));
             case ARTISTS -> items.sort(Comparator.comparing(track -> track.getMetadata().getArtist(), String.CASE_INSENSITIVE_ORDER));
             case DURATION -> items.sort(Comparator.comparingInt(track -> track.getMetadata().getDurationInSeconds()));
             case YEAR -> items.sort(Comparator.comparing(track -> track.getMetadata().getYear()));
-            case DATE_ADDED -> items.sort(Comparator.comparing(track -> track.getFileData().getDateCreated()));
-            case DATE_MODIFIED -> items.sort(Comparator.comparing(t -> t.getFilePath().toFile().lastModified()));
+            case DATE_ADDED -> items.sort(Comparator.comparing(track -> track.getFiledata().getDateCreated()));
+            case DATE_MODIFIED -> items.sort(Comparator.comparing(track -> track.getFiledata().getDateModified()));
         }
 
         contentList.getItems().setAll(items);
@@ -77,7 +87,7 @@ public class MediaListViewController {
             Track selected = contentList.getSelectionModel().getSelectedItem();
 
             if (selected != null) {
-                playerService.setCurrentTrack(selected);
+                playerService.setSelectTrack(selected);
             }
             if (e.getClickCount() == 2) {
                 playerService.playFromList(selected, contentList.getItems());
@@ -96,6 +106,7 @@ public class MediaListViewController {
         private final VBox textBox = new VBox(5);
 
         public MyListCell() {
+
             artworkView.setFitWidth(40);
             artworkView.setFitHeight(40);
             artworkView.setPreserveRatio(true);
@@ -103,11 +114,30 @@ public class MediaListViewController {
             textBox.getChildren().addAll(titleLabel);
             root.getChildren().addAll(artworkView, textBox, infoButton);
 
-            infoButton.setOnAction(e -> {
+            infoButton.setOnAction(event -> {
                 Track track = getItem();
                 if (track != null) {
                     System.out.println("Info: " + track.getTitle());
-                    // TODO: open side panel here
+                    try {
+
+                        FXMLLoader loader = new FXMLLoader(
+                                getClass().getResource("/views/track-data-view.fxml")
+                        );
+
+                        Parent root = loader.load();
+                        TrackDataEditViewController controller = loader.getController();
+                        controller.setTrack(track);
+
+                        Stage stage = new Stage();
+                        stage.setTitle("Track info");
+                        stage.setScene(new Scene(root));
+
+                        stage.showAndWait();
+
+
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 }
             });
         }
@@ -142,15 +172,8 @@ public class MediaListViewController {
         }
     }
 
-    public void setMode(ViewMode mode) {
+    public void loadDataView(Track track) {
 
-        btnListPlay.setText(
-                switch (mode) {
-                    case BOOKS -> "Read";
-                    case PODCASTS -> "Play Episode";
-                    default -> "Play";
-                }
-        );
     }
 
     private void setupSearch() {
@@ -175,7 +198,7 @@ public class MediaListViewController {
     private void setupPlay() {
         btnListPlay.setOnAction(e -> {
             if (!contentList.getItems().isEmpty()) {
-                playerService.playFromList(playerService.getCurrentTrack(), playerService.getCurrentList());
+                playerService.playFromList(playerService.getCurrentList().getFirst(), playerService.getCurrentList());
             }
         });
     }

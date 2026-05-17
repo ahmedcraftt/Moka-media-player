@@ -16,6 +16,9 @@ public class PlayerService {
     private final ObjectProperty<List<Track>> currentList =
             new SimpleObjectProperty<>();
 
+    private final ObjectProperty<Track> selectedTrack =
+            new SimpleObjectProperty<>();
+
     private final ObjectProperty<Track> currentTrack =
             new SimpleObjectProperty<>();
 
@@ -34,9 +37,9 @@ public class PlayerService {
             @Override
             public void onTrackChanged(Track newTrack) {
 
-                Platform.runLater(() ->
-                        currentTrack.set(newTrack)
-                );
+                Platform.runLater(() -> {
+                    currentTrack.set(newTrack);
+                });
             }
 
             @Override
@@ -55,6 +58,17 @@ public class PlayerService {
     // =========================
     // Playback Controls
     // =========================
+
+    public void playSelectedTrack() {
+
+        Track track = selectedTrack.get();
+
+        if (track == null || currentList.get() == null) {
+            return;
+        }
+
+        player.playFromList(track, currentList.get());
+    }
 
     public void playFromList(Track selected, List<Track> trackList) {
         player.playFromList(selected, trackList);
@@ -100,12 +114,16 @@ public class PlayerService {
         return currentList;
     }
 
+    public ObjectProperty<Track> selectedTrackProperty() {
+        return selectedTrack;
+    }
+
     public BooleanProperty playingProperty() {
         return playing;
     }
 
     // =========================
-    // Getters
+    // Getters and setters
     // =========================
 
     public Track getCurrentTrack() {
@@ -126,6 +144,10 @@ public class PlayerService {
 
     public PlaybackState getPlaybackState() {
         return playbackState.get();
+    }
+
+    public void setSelectTrack(Track track) {
+        selectedTrack.set(track);
     }
 
     public boolean isPlaying() {

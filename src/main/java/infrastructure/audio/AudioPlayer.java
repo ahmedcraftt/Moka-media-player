@@ -88,9 +88,8 @@ public class AudioPlayer {
      */
     public void play(Track track){
         if (track == null) return;
-        String path = track.getFilePath();
+        Path path = track.getFiledata().getFilePath();
         currentTrack = track;
-        currentTrack.setPlaying(true);
         currentTrack.incrementTimesPlayed();
         notifyTrackChanged();
         engine.play(path,this::playNext);
@@ -166,7 +165,6 @@ public class AudioPlayer {
                 Track nextTrack = queue.next();
 
                 if (nextTrack != null) {
-                    currentTrack.setPlaying(false);
                     System.out.println("playing " + nextTrack);
                     currentTrack = nextTrack;
                     play(currentTrack);
@@ -185,7 +183,6 @@ public class AudioPlayer {
                 }
 
                 if (nextTrack != null) {
-                    currentTrack.setPlaying(false);
                     currentTrack = nextTrack;
                     play(currentTrack);
                 } else {
@@ -219,7 +216,6 @@ public class AudioPlayer {
     public void pause() {
         if (state == PlaybackState.PLAYING) {
             engine.pause();
-            currentTrack.setPlaying(false);
             state = PlaybackState.PAUSED;
             notifyPlaybackStateChanged();
         }
@@ -415,10 +411,7 @@ public class AudioPlayer {
                 ", \nengine= " + engine +
                 ", \nstate= " + state +
                 ", \nrepeatMode= " + repeatMode +
-                ", \ncurrentTrack= " + currentTrack + "isPlaying= " + currentTrack.isPlaying() +
-                ", \ntimesPlayed= " + currentTrack.getTimesPlayed().intValue() +
-                ", \nmetadat= " + currentTrack.getMetadata().toString() +
-                ", \nfiledata= " + currentTrack.getFileData().toString() +
+                ", \ncurrentTrack= " + currentTrack.toText() +
                 '}';
     }
 

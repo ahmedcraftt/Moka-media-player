@@ -5,7 +5,7 @@ public enum RepeatMode {
     LOOP_CURRENT_ONE("Loop 1"),
     STOP_WHEN_QUEUE_END("Play Queue"),
     LOOP_CURRENT_QUEUE("Loop queue");
-    String title;
+    private final String title;
 
     RepeatMode(String title) {
         this.title = title;
