@@ -4,6 +4,7 @@ import domain.model.MediaType;
 import domain.model.Track;
 
 import java.nio.file.Path;
+import java.time.LocalDate;
 
 public final class TrackFactory {
 
@@ -23,9 +24,10 @@ public final class TrackFactory {
             boolean favorite,
             int timesPlayed,
             MediaType type,
-            Path path
+            Path path,
+            LocalDate dateAdded
     ) {
-        return new Track(title, favorite, timesPlayed, type, path);
+        return new Track(title, favorite, timesPlayed, type, path, dateAdded);
     }
 
 }

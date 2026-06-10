@@ -41,3 +41,6 @@ build/
 target/out/
 *.jar
 natives
+
+# Data base
+*.db

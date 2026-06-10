@@ -10,6 +10,7 @@ import infrastructure.factory.TrackFactory;
 import infrastructure.mapper.TrackMapper;
 
 import java.nio.file.Path;
+import java.time.LocalDate;
 
 public final class TestMapper {
     static void main() {
@@ -25,14 +26,14 @@ public final class TestMapper {
     }
 
     public static void testFromDto() {
-        TrackDTO dto = new TrackDTO("title", false, 2, "hiiii/hiii/hi.mp3", "song", 1234, 10);
+        TrackDTO dto = new TrackDTO("title", false, 2, "hiiii/hiii/hi.mp3", "song", 1234, 10, LocalDate.now().toString());
         Track track = TrackMapper.fromDTO(dto);
         IO.println(track.toText());
     }
 
 
     public static void testToDto() {
-        Track track = TrackFactory.create("test", true, 1, MediaType.SONG, Path.of("hii/hiiii/hi.mp3"));
+        Track track = TrackFactory.create("test", true, 1, MediaType.SONG, Path.of("hii/hiiii/hi.mp3"), LocalDate.now());
         TrackDTO dto = TrackMapper.toDTO(track);
         IO.println(dto.toString());
     }

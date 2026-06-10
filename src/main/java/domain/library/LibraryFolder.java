@@ -5,7 +5,6 @@ import java.nio.file.Path;
 public class LibraryFolder {
 
     private final String path;
-
     private boolean recursive;
     private boolean enabled;
 

@@ -1,14 +1,12 @@
 package infrastructure.scanner;
 
-import domain.model.TrackState;
-import domain.model.MediaType;
-import domain.model.Track;
-import domain.model.TrackTask;
+import domain.model.*;
 import infrastructure.classifier.TrackClassifier;
+import infrastructure.factory.MediaMetadataFactory;
+import infrastructure.factory.TrackFactory;
 import infrastructure.media.DataResolver;
 import infrastructure.media.FiledataManager;
 import infrastructure.media.MetadataManager;
-import infrastructure.factory.TrackFactory;
 import infrastructure.storage.TrackStorage;
 
 import java.io.IOException;
@@ -22,15 +20,15 @@ public class MediaScanner {
             "mp3", "flac", "wav", "m4a", "ogg", "aac", "opus", "wma", "alac"
     );
 
-    private final MetadataManager metadata;
-    private final FiledataManager filedata;
+    private final MetadataManager metadataManager;
+    private final FiledataManager filedataManager;
     private final TrackStorage storage;
     private final TrackClassifier classifier = new TrackClassifier();
     private final DataResolver resolver = new DataResolver();
 
-    public MediaScanner(MetadataManager metadata, FiledataManager filedata, TrackStorage storage) {
-        this.metadata = metadata;
-        this.filedata = filedata;
+    public MediaScanner(MetadataManager metadataManager, FiledataManager filedataManager, TrackStorage storage) {
+        this.metadataManager = metadataManager;
+        this.filedataManager = filedataManager;
         this.storage = storage;
     }
 
@@ -55,6 +53,7 @@ public class MediaScanner {
                     .toList();
 
         } catch (Exception e) {
+            e.printStackTrace();
             throw new RuntimeException(e);
 
         } finally {
@@ -71,7 +70,7 @@ public class MediaScanner {
 
             try {
 
-                TrackState state = storage.getState(path);
+                TrackSyncState state = storage.getState(path);
 
                 boolean exists = state.exists();
 
@@ -104,58 +103,56 @@ public class MediaScanner {
 
         for (Path path : paths) {
 
-            futures.add(pool.submit(() -> {
-                TrackState state = storage.getState(path);
-                Track track = processTrack(path, state);
-                return new TrackTask(path, track);
-            }));
+            TrackSyncState state = storage.getState(path);
+            Track track = processTrack(path, state);
+            futures.add(pool.submit(() -> new TrackTask(path, track)));
+
         }
 
-        List<TrackTask> result = new ArrayList<>();
-
-        for (Future<TrackTask> f : futures) {
-            try {
-                result.add(f.get());
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-
-        return result;
+        return futures.stream()
+                .map(f -> {
+                    try {
+                        return f.get();
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                })
+                .toList();
     }
 
-    private Track processTrack(Path path, TrackState state) {
-
-        Track track = TrackFactory.create(path);
-
-        filedata.read(track);
-
-        try {
-            metadata.read(track);
-        } catch (Exception e) {
-            System.err.println("Metadata failed: " + path);
+    private Track processTrack(Path path, TrackSyncState state) {
+        Track track = storage.loadTrack(path.toString());
+        if (track == null) {
+            track = TrackFactory.create(path);
         }
 
-        track.getMetadata().setDurationInSeconds(
-                resolver.resolveMissingDuration(track)
-        );
-
-        track.getMetadata().setTitle(
-                resolver.resolveMissingTitle(track)
-        );
-
         if (!state.exists()) {
-
             track.setType(
                     classifier.classify(path, track.getMetadata())
             );
-
         } else {
-
             track.setType(
                     MediaType.StringToMediaType(state.mediaType())
             );
         }
+
+        track.setMediaMetadata(
+                MediaMetadataFactory.create(track.getType())
+        );
+
+        filedataManager.read(track);
+
+        metadataManager.read(track);
+
+        Metadata metadata = track.getMetadata();
+
+        metadata.setDurationInSeconds(
+                resolver.resolveMissingDuration(track)
+        );
+
+        metadata.setTitle(
+                resolver.resolveMissingTitle(track)
+        );
 
         return track;
     }

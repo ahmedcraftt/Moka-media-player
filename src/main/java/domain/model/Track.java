@@ -1,40 +1,51 @@
 package domain.model;
 
+import java.net.URI;
 import java.nio.file.Path;
+import java.time.LocalDate;
 
-public class Track {
+public class Track implements AudioSource {
 
-    private MediaType type;
     private final Filedata filedata;
     private final Metadata metadata;
+    private final LocalDate dateAdded;
+    private MediaType type;
+    private MediaMetadata mediaMetadata;
     private boolean favorite = false;
     private int timesPlayed = 0;
 
     public Track() {
         metadata = new Metadata();
         filedata = new Filedata();
+        dateAdded = LocalDate.now();
     }
 
     public Track(String fileName, Path filePath) {
         metadata = new Metadata();
-        filedata = new Filedata(filePath, fileName);
+        filedata = new Filedata();
+        filedata.setFileName(fileName);
+        filedata.setFilePath(filePath);
+        dateAdded = LocalDate.now();
     }
 
-    public Track(String title, boolean favorite, int timesPlayed, MediaType type, Path filepath) {
+    public Track(String title, boolean favorite, int timesPlayed, MediaType type, Path filepath, LocalDate dateAdded) {
         metadata = new Metadata();
         filedata = new Filedata();
         metadata.setTitle(title);
         filedata.setFilePath(filepath);
-        this.favorite = favorite;
-        this.timesPlayed = timesPlayed;
-        this.type = type;
+        setFavorite(favorite);
+        setTimesPlayed(timesPlayed);
+        setType(type);
+        this.dateAdded = dateAdded;
     }
 
 
+    @Override
     public boolean isFavorite() {
         return favorite;
     }
 
+    @Override
     public void setFavorite(boolean favorite) {
         this.favorite = favorite;
     }
@@ -62,36 +73,43 @@ public class Track {
     }
 
     public void setTimesPlayed(int timesPlayed) {
+        if (timesPlayed < 0) throw new IllegalArgumentException("TimesPlayed can't be negative");
         this.timesPlayed = timesPlayed;
     }
 
-    public void incrementTimesPlayed() {
+    public LocalDate getDateAdded() {
+        return dateAdded;
+    }
+
+    @Override
+    public URI getResource() {
+        return this.filedata.getFilePath().toUri();
+    }
+
+    public synchronized void incrementTimesPlayed() {
         this.timesPlayed++;
     }
 
-    public void setTitle(String title) {
-        if (title != null && !title.isBlank() && !title.equalsIgnoreCase("unknown")) {
-            metadata.setTitle(title);
-        } else if (filedata.getFileName() != null) {
-            metadata.setTitle(removeExtension(filedata.getFileName()));
-        } else throw new IllegalArgumentException("title");
-    }
-
+    @Override
     public String getTitle() {
-        if (metadata.getTitle() != null
-                && !metadata.getTitle().isBlank()
-                && !metadata.getTitle().equalsIgnoreCase("unknown")) {
-            return metadata.getTitle();
-        } else return removeExtension(filedata.getFileName());
+        return metadata.getTitle();
     }
 
-    public String getDuration() {
-        return formatTime(metadata.getDurationInSeconds());
+    public String getFileName() {
+        return filedata.getFileName();
+    }
+
+    public MediaMetadata getMediaMetadata() {
+        return mediaMetadata;
+    }
+
+    public void setMediaMetadata(MediaMetadata mediaMetadata) {
+        this.mediaMetadata = mediaMetadata;
     }
 
     @Override
     public String toString() {
-        return String.format("%s (%s)", this.getTitle(), this.getDuration());
+        return String.format("%s (%d)", this.getTitle(), metadata.getDurationInSeconds());
     }
 
     public String toText() {
@@ -101,21 +119,8 @@ public class Track {
                 ", \nfileData=" + filedata +
                 ", \nmetadata=" + metadata +
                 ", \ntimesPlayed=" + timesPlayed +
+                ", \ndateAdded=" + dateAdded +
                 '}';
     }
 
-    private String removeExtension(String fileName) {
-        if (fileName == null) return null;
-
-        int lastDot = fileName.lastIndexOf('.');
-        if (lastDot == -1) return fileName;
-
-        return fileName.substring(0, lastDot);
-    }
-
-    private String formatTime(long seconds) {
-        long mins = seconds / 60;
-        long secs = seconds % 60;
-        return String.format("%02d:%02d", mins, secs);
-    }
 }

@@ -4,8 +4,8 @@ public enum MediaType {
     SONG("song"),
     PODCAST("podcast"),
     AUDIOBOOK("audio book"),
-    MUSIC("music"),
-    LECTURE("lecture"), //not integrated yet
+    MUSIC("music"),//not integrated yet
+    LECTURE("lecture"),//not integrated yet
     VIDEO("video");//not integrated yet
 
     private final String title;
@@ -19,12 +19,19 @@ public enum MediaType {
     }
 
     public static MediaType StringToMediaType(String mediaType) {
-        if (mediaType.equalsIgnoreCase(MediaType.AUDIOBOOK.getTitle())) {
+        if (mediaType.equalsIgnoreCase(MediaType.AUDIOBOOK.getTitle())
+                || mediaType.equalsIgnoreCase("book")) {
             return MediaType.AUDIOBOOK;
         } else if (mediaType.equalsIgnoreCase(MediaType.SONG.getTitle())) {
             return MediaType.SONG;
         } else if (mediaType.equalsIgnoreCase(MediaType.PODCAST.getTitle())) {
             return MediaType.PODCAST;
-        } else return MediaType.SONG;
+        } else if (mediaType.equalsIgnoreCase(MediaType.VIDEO.getTitle())) {
+            return MediaType.VIDEO;
+        } else if (mediaType.equalsIgnoreCase(MediaType.LECTURE.getTitle())) {
+            return MediaType.LECTURE;
+        } else if (mediaType.equalsIgnoreCase(MediaType.MUSIC.getTitle())) {
+            return MediaType.MUSIC;
+        } else return MediaType.SONG;//default fallback
     }
 }

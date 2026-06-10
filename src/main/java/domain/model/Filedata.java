@@ -12,12 +12,6 @@ public class Filedata {
     private LocalDate lastAccessed;
     private String fileType = "Unknown";
     private long fileSize = 0;
-
-    public Filedata(Path filePath, String fileName) {
-        setFilePath(filePath);
-        setFileName(fileName);
-    }
-
     public Filedata() {
     }
 

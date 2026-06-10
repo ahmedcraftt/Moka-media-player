@@ -4,6 +4,8 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.MenuButton?>
+<?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
@@ -11,7 +13,7 @@
 
 <!--suppress ALL -->
 
-<AnchorPane xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1"
+<AnchorPane xmlns="http://javafx.com/javafx/25.0.1" xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="gui.controllers.PlaylistViewController">
    <stylesheets>
        <URL value="@../styles/main.css"/>
@@ -23,8 +25,13 @@
       
             <HBox spacing="10.0">
                <children>
-                  <TextField fx:id="searchBar" promptText="Search" HBox.hgrow="ALWAYS" />
-                  <Button fx:id="btnSort" text="Sort" />
+                   <TextField fx:id="tfSearchBar" promptText="Search" HBox.hgrow="ALWAYS"/>
+                   <MenuButton fx:id="btnSort" mnemonicParsing="false" text="sort">
+                       <items>
+                           <MenuItem mnemonicParsing="false" text="Action 1"/>
+                           <MenuItem mnemonicParsing="false" text="Action 2"/>
+                       </items>
+                   </MenuButton>
                   <Button fx:id="btnAdd" text="+" />
                </children>
                <padding>
@@ -33,10 +40,10 @@
             </HBox>
             <HBox spacing="10.0">
                <children>
-                  <Button mnemonicParsing="false" text="Favorites" />
-                  <Button mnemonicParsing="false" text="Recently added" />
-                  <Button mnemonicParsing="false" text="Most played" />
-                  <Button mnemonicParsing="false" text="Recently played" />
+                   <Button fx:id="btnFavorites" mnemonicParsing="false" text="Favorites"/>
+                   <Button fx:id="btnRecentlyAdded" mnemonicParsing="false" text="Recently added"/>
+                   <Button fx:id="btnMostPlayed" mnemonicParsing="false" text="Most played"/>
+                   <Button fx:id="btnRecentlyPlayed" mnemonicParsing="false" text="Recently played"/>
                </children>
                <padding>
                   <Insets top="5.0" />

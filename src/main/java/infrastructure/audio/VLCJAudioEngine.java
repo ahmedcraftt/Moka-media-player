@@ -1,10 +1,11 @@
 package infrastructure.audio;
 
+import domain.model.AudioSource;
+
 import uk.co.caprica.vlcj.factory.MediaPlayerFactory;
 import uk.co.caprica.vlcj.player.base.MediaPlayer;
 import uk.co.caprica.vlcj.player.base.MediaPlayerEventAdapter;
 
-import java.nio.file.Path;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -12,13 +13,13 @@ public class VLCJAudioEngine implements AudioEngine {
 
     private final MediaPlayer mediaPlayer;
     private final MediaPlayerFactory factory;
-    private Runnable currentOnFinished;
+    private volatile Runnable currentOnFinished;
 
-    private final ExecutorService callbackExecutor = Executors.newSingleThreadExecutor(r -> {
-        Thread t = new Thread(r);
-        t.setName("audio-finished-callback-thread");
-        t.setDaemon(true);
-        return t;
+    private final ExecutorService callbackExecutor = Executors.newSingleThreadExecutor(runnable -> {
+        Thread thread = new Thread(runnable);
+        thread.setName("audio-finished-callback-thread");
+        thread.setDaemon(true);
+        return thread;
     });
 
     public VLCJAudioEngine() {
@@ -30,7 +31,7 @@ public class VLCJAudioEngine implements AudioEngine {
             public void finished(MediaPlayer mediaPlayer) {
                 System.out.println("FINISHED EVENT FIRED");
 
-                Runnable callback = currentOnFinished; // snapshot
+                Runnable callback = currentOnFinished;
 
                 if (callback != null) {
                     callbackExecutor.submit(callback);
@@ -40,16 +41,20 @@ public class VLCJAudioEngine implements AudioEngine {
 
     }
 
+
     /**
-     * Starts playback of the given media file.
+     * Starts playback of the given media source.
      *
-     * @param path            audio file path
+     * @param source audio source
      * @param onTrackFinished callback triggered when playback completes
      */
     @Override
-    public void play(Path path, Runnable onTrackFinished) {
+    public void play(AudioSource source, Runnable onTrackFinished) {
         this.currentOnFinished = onTrackFinished;
-        mediaPlayer.media().play(path.toAbsolutePath().toString());
+        String resource = source.getResource().toString();
+        mediaPlayer.controls().stop();
+        mediaPlayer.media().prepare(resource);
+        mediaPlayer.controls().play();
     }
 
     /**
@@ -86,6 +91,7 @@ public class VLCJAudioEngine implements AudioEngine {
         mediaPlayer.audio().setVolume(volume);
     }
 
+    @Override
     public int getVolume(){
         return mediaPlayer.audio().volume();
     }
@@ -95,6 +101,7 @@ public class VLCJAudioEngine implements AudioEngine {
         return mediaPlayer.status().position(); // 0.0 to 1.0
     }
 
+    @Override
     public void setProgress(float position){
         mediaPlayer.controls().setPosition(position);
     }
@@ -133,7 +140,6 @@ public class VLCJAudioEngine implements AudioEngine {
 
             long newTime = current + (seconds * 1000L);
 
-            // Clamp to track length
             if (newTime > length) newTime = length;
 
             mediaPlayer.controls().setTime(newTime);

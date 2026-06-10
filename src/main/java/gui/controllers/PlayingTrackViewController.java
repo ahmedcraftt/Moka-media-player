@@ -3,16 +3,18 @@ package gui.controllers;
 
 import application.sevice.PlayerService;
 import domain.model.Track;
-import gui.utils.FXUtils;
+import gui.utils.ImageConverter;
 import javafx.animation.Animation;
 import javafx.animation.Interpolator;
 import javafx.animation.RotateTransition;
 import javafx.animation.ScaleTransition;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
+import javafx.scene.CacheHint;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.StackPane;
 import javafx.scene.shape.Circle;
 import javafx.util.Duration;
 
@@ -26,6 +28,8 @@ public class PlayingTrackViewController {
     private Label lblArtist;
     @FXML
     private ImageView imgTrack;
+    @FXML
+    private StackPane spImageContainer;
 
     private RotateTransition rotateTransition;
     private ScaleTransition scaleTransition;
@@ -66,7 +70,13 @@ public class PlayingTrackViewController {
     @FXML
     private void initialize() {
 
-        makeCircular(imgTrack);
+        spImageContainer.setCache(true);
+        spImageContainer.setCacheHint(CacheHint.SPEED);
+
+        imgTrack.setSmooth(true);
+        imgTrack.setCache(true);
+
+        makeCircular(spImageContainer);
 
         setupRotation();
 
@@ -100,8 +110,8 @@ public class PlayingTrackViewController {
         }
 
         lblTitle.setText(track.getTitle());
-        if (track.getMetadata().getArtist() != null) {
-            lblArtist.setText(track.getMetadata().getArtist());
+        if (track.getMediaMetadata().getArtist() != null) {
+            lblArtist.setText(track.getMediaMetadata().getArtist());
         } else lblArtist.setText("Unknown Artist");
 
         System.out.println("showing:" + track);
@@ -109,40 +119,31 @@ public class PlayingTrackViewController {
         var artwork = track.getMetadata().getArtwork();
 
         if (track.getMetadata().getArtwork() != null) {
-            imgTrack.setImage(FXUtils.convertToImage(artwork));
+            imgTrack.setImage(ImageConverter.convertToImage(artwork));
         } else imgTrack.setImage(new Image(
                 Objects.requireNonNull(
                         getClass().getResourceAsStream("/assets/images/unknown.jpg")
                 )));
     }
 
-    private void makeCircular(ImageView imageView) {
-
+    private void makeCircular(StackPane container) {
         Circle clip = new Circle();
 
-        imageView.setClip(clip);
+        container.setClip(clip);
 
-        imageView.imageProperty().addListener((obs, oldImg, newImg) -> {
+        container.layoutBoundsProperty().addListener((obs, oldVal, newVal) -> {
+            double radius = Math.min(newVal.getWidth(), newVal.getHeight()) / 2;
 
-            if (newImg != null) {
-
-                double radius = Math.min(
-                        imageView.getFitWidth(),
-                        imageView.getFitHeight()
-                ) / 2;
-
-                clip.setRadius(radius);
-
-                clip.setCenterX(imageView.getFitWidth() / 2);
-                clip.setCenterY(imageView.getFitHeight() / 2);
-            }
+            clip.setRadius(radius);
+            clip.setCenterX(newVal.getWidth() / 2);
+            clip.setCenterY(newVal.getHeight() / 2);
         });
     }
 
     private void setupRotation() {
-        rotateTransition = new RotateTransition(Duration.seconds(32), imgTrack);
+        rotateTransition = new RotateTransition(Duration.seconds(32), spImageContainer);
         rotateTransition.setByAngle(360);
-        rotateTransition.setCycleCount(RotateTransition.INDEFINITE);
+        rotateTransition.setCycleCount(Animation.INDEFINITE);
         rotateTransition.setInterpolator(Interpolator.LINEAR);
     }
 
@@ -150,7 +151,7 @@ public class PlayingTrackViewController {
 
         scaleTransition = new ScaleTransition(
                 Duration.seconds(2),
-                imgTrack
+                spImageContainer
         );
 
         scaleTransition.setFromX(1.0);

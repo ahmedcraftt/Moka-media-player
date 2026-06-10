@@ -3,6 +3,7 @@ package application.sevice;
 import domain.model.Track;
 import infrastructure.scanner.MediaScanner;
 import domain.library.MediaLibrary;
+import infrastructure.storage.TrackStorage;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -14,6 +15,7 @@ public class MediaService {
     private final MediaScanner scanner;
     private final MediaLibrary library;
     private final LibraryService libraryService;
+    private final TrackStorage trackStorage = new TrackStorage();
 
     public MediaService(MediaScanner scanner,
                         MediaLibrary library,
@@ -32,6 +34,7 @@ public class MediaService {
                 .getRootPaths()) {
 
             tracks.addAll(scanner.scan(path));
+
         }
 
         library.clear();

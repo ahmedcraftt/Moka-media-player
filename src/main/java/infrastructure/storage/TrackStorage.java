@@ -1,13 +1,12 @@
 package infrastructure.storage;
 
 import application.dto.TrackDTO;
-import domain.model.TrackState;
+import domain.model.TrackSyncState;
 import domain.model.Track;
 import infrastructure.mapper.TrackMapper;
 
 import java.nio.file.Path;
 import java.sql.*;
-import java.util.ArrayList;
 import java.util.List;
 
 public class TrackStorage {
@@ -20,15 +19,16 @@ public class TrackStorage {
                 times_played INTEGER NOT NULL,
                 media_type TEXT NOT NULL,
                 last_modified INTEGER NOT NULL,
-                size INTEGER NOT NULL
+                size INTEGER NOT NULL,
+                dateAdded Text NOT NULL
                 );
                 """;
 
         try (
                 Connection connection = DatabaseManager.connect();
-                Statement stmt = connection.createStatement()
+                Statement statement = connection.createStatement()
         ) {
-            stmt.execute(sql);
+            statement.execute(sql);
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -39,28 +39,30 @@ public class TrackStorage {
         TrackDTO dto = TrackMapper.toDTO(track);
 
         String sql = """
-                INSERT INTO tracks(title, favorite, times_played, path, media_type, last_modified, size)
-                          VALUES(?,?,?,?,?,?,?)
+                INSERT INTO tracks(title, favorite, times_played, path, media_type, last_modified, size, dateAdded)
+                          VALUES(?,?,?,?,?,?,?,?)
                           ON CONFLICT(path) DO UPDATE SET
                               title = excluded.title,
                               favorite = excluded.favorite,
                               times_played = excluded.times_played,
                               media_type = excluded.media_type,
                               last_modified = excluded.last_modified,
-                              size = excluded.size;
+                              size = excluded.size,
+                              dateAdded = excluded.dateAdded;
                 """;
         try (
                 Connection connection = DatabaseManager.connect();
-                PreparedStatement stmt = connection.prepareStatement(sql)
+                PreparedStatement statement = connection.prepareStatement(sql)
         ) {
-            stmt.setString(1, dto.title());
-            stmt.setInt(2, dto.favorite() ? 1 : 0);
-            stmt.setInt(3, dto.timesPlayed());
-            stmt.setString(4, dto.path());
-            stmt.setString(5, dto.type());
-            stmt.setLong(6, dto.lastModified());
-            stmt.setLong(7, dto.size());
-            stmt.executeUpdate();
+            statement.setString(1, dto.title());
+            statement.setInt(2, dto.favorite() ? 1 : 0);
+            statement.setInt(3, dto.timesPlayed());
+            statement.setString(4, dto.path());
+            statement.setString(5, dto.type());
+            statement.setLong(6, dto.lastModified());
+            statement.setLong(7, dto.size());
+            statement.setString(8, dto.dateAdded());
+            statement.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -72,33 +74,38 @@ public class TrackStorage {
         }
     }
 
-    public List<Track> loadTracks() {
-        List<Track> tracks = new ArrayList<>();
-
-        String sql = "SELECT * FROM tracks";
+    public Track loadTrack(String path) {
+        String sql = "SELECT * FROM tracks WHERE path = ?";
 
         try (
                 Connection connection = DatabaseManager.connect();
-                Statement statement = connection.createStatement();
-                ResultSet resultSet = statement.executeQuery(sql)
+                PreparedStatement statement = connection.prepareStatement(sql)
         ) {
-            while (resultSet.next()) {
+            statement.setString(1, path);
+
+            try (ResultSet resultSet = statement.executeQuery()) {
+
+                if (!resultSet.next()) {
+                    return null;
+                }
+
                 TrackDTO dto = new TrackDTO(
                         resultSet.getString("title"),
                         resultSet.getInt("favorite") == 1,
                         resultSet.getInt("times_played"),
                         resultSet.getString("path"),
                         resultSet.getString("media_type"),
-                        resultSet.getInt("last_modified"),
-                        resultSet.getInt("size")
+                        resultSet.getLong("last_modified"),
+                        resultSet.getLong("size"),
+                        resultSet.getString("dateAdded")
                 );
-                Track track = TrackMapper.fromDTO(dto);
-                tracks.add(track);
+
+                return TrackMapper.fromDTO(dto);
             }
+
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-        return tracks;
     }
 
     public void update(Track track) {
@@ -111,23 +118,26 @@ public class TrackStorage {
                     times_played = ?,
                     media_type = ?,
                     last_modified = ?,
-                    size = ?
+                    size = ?,
+                    dateAdded = ?
                 WHERE path = ?
                 """;
 
         try (
-                Connection conn = DatabaseManager.connect();
-                PreparedStatement stmt = conn.prepareStatement(sql)
+                Connection connection = DatabaseManager.connect();
+                PreparedStatement statement = connection.prepareStatement(sql)
         ) {
 
-            stmt.setString(1, dto.title());
-            stmt.setInt(2, dto.favorite() ? 1 : 0);
-            stmt.setInt(3, dto.timesPlayed());
-            stmt.setString(4, dto.type());
-            stmt.setLong(5, dto.lastModified());
-            stmt.setLong(6, dto.size());
+            statement.setString(1, dto.title());
+            statement.setInt(2, dto.favorite() ? 1 : 0);
+            statement.setInt(3, dto.timesPlayed());
+            statement.setString(4, dto.type());
+            statement.setLong(5, dto.lastModified());
+            statement.setLong(6, dto.size());
+            statement.setString(7, dto.dateAdded());
+            statement.setString(8, dto.path());
 
-            stmt.executeUpdate();
+            statement.executeUpdate();
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -152,7 +162,7 @@ public class TrackStorage {
         }
     }
 
-    public TrackState getState(Path path) {
+    public TrackSyncState getState(Path path) {
 
         String sql = """
                 SELECT last_modified, size ,media_type
@@ -161,19 +171,19 @@ public class TrackStorage {
                 """;
 
         try (
-                Connection conn = DatabaseManager.connect();
-                PreparedStatement stmt = conn.prepareStatement(sql)
+                Connection connection = DatabaseManager.connect();
+                PreparedStatement statement = connection.prepareStatement(sql)
         ) {
 
-            stmt.setString(1, path.toString());
+            statement.setString(1, path.toString());
 
-            try (ResultSet rs = stmt.executeQuery()) {
+            try (ResultSet rs = statement.executeQuery()) {
 
                 if (!rs.next()) {
-                    return new TrackState(false, 0, 0, "");
+                    return new TrackSyncState(false, 0, 0, "");
                 }
 
-                return new TrackState(
+                return new TrackSyncState(
                         true,
                         rs.getLong("last_modified"),
                         rs.getLong("size"),

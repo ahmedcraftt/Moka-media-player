@@ -1,6 +1,6 @@
 package infrastructure.audio;
 
-import java.nio.file.Path;
+import domain.model.AudioSource;
 
 public interface AudioEngine {
 
@@ -28,7 +28,7 @@ public interface AudioEngine {
      * </ul>
      */
 
-    void play(Path path, Runnable onTrackFinished);
+    void play(AudioSource source, Runnable onTrackFinished);
     void pause();
     void stop();
     void resume();

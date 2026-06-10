@@ -568,7 +568,7 @@
     <routine id="213" parent="1" name="padr"/>
     <schema id="214" parent="1" name="main">
       <Current>1</Current>
-      <LastIntrospectionLocalTimestamp>2026-05-16.22:10:24</LastIntrospectionLocalTimestamp>
+      <LastIntrospectionLocalTimestamp>2026-05-23.18:08:02</LastIntrospectionLocalTimestamp>
     </schema>
     <argument id="215" parent="14">
       <ArgumentDirection>R</ArgumentDirection>
@@ -1856,6 +1856,10 @@
     </column>
     <column id="640" parent="628" name="size">
       <Position>7</Position>
+      <StoredType>integer|0s</StoredType>
+    </column>
+    <column id="641" parent="628" name="dateAdded">
+      <Position>8</Position>
       <StoredType>integer|0s</StoredType>
     </column>
   </database-model>

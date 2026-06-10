@@ -5,7 +5,6 @@ import domain.audio.PlaybackState;
 import domain.audio.RepeatMode;
 import domain.model.Track;
 
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -88,11 +87,10 @@ public class AudioPlayer {
      */
     public void play(Track track){
         if (track == null) return;
-        Path path = track.getFiledata().getFilePath();
         currentTrack = track;
         currentTrack.incrementTimesPlayed();
         notifyTrackChanged();
-        engine.play(path,this::playNext);
+        engine.play(track, this::playNext);
         state = PlaybackState.PLAYING;
         notifyPlaybackStateChanged();
         printStatus();
@@ -312,18 +310,12 @@ public class AudioPlayer {
         engine.skipBackwards(seconds);
     }
 
-    /**
-     * @return formatted current playback time (mm:ss)
-     */
-    public String getCurrentTimeStr(){
-        return formatTime(engine.getCurrentTime());
+    public long getTotalTimeSeconds() {
+        return engine.getTotalTime() / 1000;
     }
 
-    /**
-     * @return formatted total track duration (mm:ss)
-     */
-    public String getTotalTimeStr(){
-        return formatTime(engine.getTotalTime());
+    public long getCurrentTimeSeconds() {
+        return engine.getCurrentTime() / 1000;
     }
 
     // =========================
@@ -414,12 +406,4 @@ public class AudioPlayer {
                 ", \ncurrentTrack= " + currentTrack.toText() +
                 '}';
     }
-
-    private String formatTime(long ms) {
-        long seconds = ms / 1000;
-        long mins = seconds / 60;
-        long secs = seconds % 60;
-        return String.format("%02d:%02d", mins, secs);
-    }
-
 }

@@ -3,7 +3,8 @@ package gui.controllers;
 import application.sevice.PlayerService;
 import domain.model.Track;
 
-import gui.utils.FXUtils;
+import gui.utils.ImageConverter;
+import gui.utils.TimeFormater;
 import infrastructure.media.MetadataManager;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -30,14 +31,19 @@ public class MediaListViewController {
 
     private List<Track> currentData;
     private PlayerService playerService;
-    private MetadataManager metadataManager;
+    private static MetadataManager metadataManager;
 
     public void setPlayerService(PlayerService playerService) {
+        if (this.playerService != null) return;
         this.playerService = playerService;
     }
 
     public void setMetadataManager(MetadataManager metadataManager) {
-        this.metadataManager = metadataManager;
+        MediaListViewController.metadataManager = metadataManager;
+    }
+
+    public void inti() {
+        sort(SortByModes.TITLE);
     }
 
     @FXML
@@ -53,17 +59,24 @@ public class MediaListViewController {
     private void sort(SortByModes mode) {
         List<Track> items = new ArrayList<>(contentList.getItems());
 
-        switch (mode) {
-            case TITLE -> items.sort(Comparator.comparing(Track::getTitle, String.CASE_INSENSITIVE_ORDER));
-            case FILE_NAME -> items.sort(Comparator.comparing(track -> track.getFiledata().getFileName()));
-            case ARTISTS -> items.sort(Comparator.comparing(track -> track.getMetadata().getArtist(), String.CASE_INSENSITIVE_ORDER));
-            case DURATION -> items.sort(Comparator.comparingInt(track -> track.getMetadata().getDurationInSeconds()));
-            case YEAR -> items.sort(Comparator.comparing(track -> track.getMetadata().getYear()));
-            case DATE_ADDED -> items.sort(Comparator.comparing(track -> track.getFiledata().getDateCreated()));
-            case DATE_MODIFIED -> items.sort(Comparator.comparing(track -> track.getFiledata().getDateModified()));
-        }
+        Comparator<Track> baseComparator = switch (mode) {
+            case TITLE -> Comparator.comparing(Track::getTitle, String.CASE_INSENSITIVE_ORDER);
+            case FILE_NAME -> Comparator.comparing(t -> t.getFiledata().getFileName(), String.CASE_INSENSITIVE_ORDER);
+            case ARTISTS -> Comparator.comparing(t -> t.getMediaMetadata().getArtist(), String.CASE_INSENSITIVE_ORDER);
+            case DURATION -> Comparator.comparingInt(t -> t.getMetadata().getDurationInSeconds());
+            case YEAR -> Comparator.comparingInt(t -> t.getMetadata().getYear().getValue());
+            case DATE_ADDED -> Comparator.comparing(Track::getDateAdded);
+            case DATE_MODIFIED -> Comparator.comparing(t -> t.getFiledata().getDateModified());
+            case DATE_CREATED -> Comparator.comparing(t -> t.getFiledata().getDateCreated());
+        };
 
+        Comparator<Track> finalComparator =
+                Comparator.comparing((Track t) -> !t.isFavorite())
+                        .thenComparing(baseComparator);
+
+        items.sort(finalComparator);
         contentList.getItems().setAll(items);
+        btnSort.setText("sort by " + mode);
     }
 
     @FXML private void sortByTitle() { sort(SortByModes.TITLE); }
@@ -80,6 +93,10 @@ public class MediaListViewController {
 
     @FXML private void sortByDateModified() { sort(SortByModes.DATE_MODIFIED); }
 
+    @FXML
+    private void sortByDateCreated() {
+        sort(SortByModes.DATE_CREATED);
+    }
 
     private void setupListView() {
         contentList.setCellFactory(lv -> new MyListCell());
@@ -96,14 +113,13 @@ public class MediaListViewController {
 
     }
 
+
     private static class MyListCell extends ListCell<Track> {
 
         private final ImageView artworkView = new ImageView();
         private final Label titleLabel = new Label();
-        private final Button infoButton = new Button("⋮");
 
         private final HBox root = new HBox(10);
-        private final VBox textBox = new VBox(5);
 
         public MyListCell() {
 
@@ -111,35 +127,36 @@ public class MediaListViewController {
             artworkView.setFitHeight(40);
             artworkView.setPreserveRatio(true);
 
-            textBox.getChildren().addAll(titleLabel);
+            VBox textBox = new VBox(5);
+            textBox.getChildren().add(titleLabel);
+            Button infoButton = new Button("⋮");
             root.getChildren().addAll(artworkView, textBox, infoButton);
 
-            infoButton.setOnAction(event -> {
-                Track track = getItem();
-                if (track != null) {
-                    System.out.println("Info: " + track.getTitle());
-                    try {
+            infoButton.setOnAction(e -> openTrackInfo());
+        }
 
-                        FXMLLoader loader = new FXMLLoader(
-                                getClass().getResource("/views/track-data-view.fxml")
-                        );
+        private void openTrackInfo() {
+            Track track = getItem();
+            if (track == null) return;
 
-                        Parent root = loader.load();
-                        TrackDataEditViewController controller = loader.getController();
-                        controller.setTrack(track);
+            try {
+                FXMLLoader loader = new FXMLLoader(
+                        getClass().getResource("/views/track-data-view.fxml")
+                );
 
-                        Stage stage = new Stage();
-                        stage.setTitle("Track info");
-                        stage.setScene(new Scene(root));
+                Parent root = loader.load();
+                TrackDataViewController controller = loader.getController();
+                controller.setTrack(track);
+                controller.setMetadataManager(metadataManager);
 
-                        stage.showAndWait();
+                Stage stage = new Stage();
+                stage.setTitle("Track info");
+                stage.setScene(new Scene(root));
+                stage.showAndWait();
 
-
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-            });
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
         }
 
         @Override
@@ -151,10 +168,10 @@ public class MediaListViewController {
                 return;
             }
 
-            titleLabel.setText(item.getTitle() + " " + item.getDuration());
+            titleLabel.setText(item.getTitle() + " " + TimeFormater.formatTime(item.getMetadata().getDurationInSeconds()));
 
             if (item.getMetadata().getArtwork() != null) {
-                artworkView.setImage(FXUtils.convertToImage(item.getMetadata().getArtwork()));
+                artworkView.setImage(ImageConverter.convertToImage(item.getMetadata().getArtwork()));
             } else {
                 artworkView.setImage(null);
             }
@@ -218,4 +235,5 @@ public class MediaListViewController {
     private String safe(String s) {
         return s == null ? "" : s.toLowerCase();
     }
+
 }

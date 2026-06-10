@@ -1,9 +1,6 @@
 package gui.controllers;
 
-import domain.model.Filedata;
-import domain.model.MediaType;
-import domain.model.Metadata;
-import domain.model.Track;
+import domain.model.*;
 
 import infrastructure.media.JaudiotaggerManager;
 import infrastructure.media.MetadataManager;
@@ -17,7 +14,7 @@ import javafx.stage.Stage;
 
 import java.time.Year;
 
-public class TrackDataEditViewController {
+public class TrackDataViewController {
 
     // Read-only file info and metadata
 
@@ -83,6 +80,8 @@ public class TrackDataEditViewController {
 
     private Track track;
 
+    private MetadataManager metadataManager;
+
     public void setTrack(Track track) {
         this.track = track;
 
@@ -91,6 +90,10 @@ public class TrackDataEditViewController {
         }
 
         loadTrackData();
+    }
+
+    public void setMetadataManager(MetadataManager metadataManager) {
+        this.metadataManager = metadataManager;
     }
 
     private void loadTrackData() {
@@ -111,6 +114,7 @@ public class TrackDataEditViewController {
         // Metadata
 
         Metadata metadata = track.getMetadata();
+        MediaMetadata mediaMetadata = track.getMediaMetadata();
 
         tfType.setText(safe(track.getType().getTitle()));
         tfBitrate.setText(String.valueOf(metadata.getBitrate()));
@@ -119,38 +123,30 @@ public class TrackDataEditViewController {
         tfTitle.setText(safe(metadata.getTitle()));
         tfGenre.setText(safe(metadata.getGenre()));
         taDescription.setText(safe(metadata.getDescription()));
+        tfArtist.setText(safe(mediaMetadata.getArtist()));
+        tfAlbumArtist.setText(safe(mediaMetadata.getSeriesArtist()));
+        tfAlbum.setText(safe(mediaMetadata.getSeries()));
+        tfAlbumNumber.setText(String.valueOf(mediaMetadata.getTrackNumber()));
+
+        if (metadata.getYear() != null) tfYear.setText(String.valueOf(metadata.getYear().getValue()));
+
         if (track.getType() == MediaType.SONG) {
             lblArtist.setText("Artist");
-            tfArtist.setText(safe(metadata.getArtist()));
             lblAlbumArtist.setText("Album Artist");
-            tfAlbumArtist.setText(safe(metadata.getAlbumArtist()));
             lblAlbum.setText("Album");
-            tfAlbum.setText(safe(metadata.getAlbum()));
             lblAlbumNumber.setText("Album Number");
-            tfAlbumNumber.setText(String.valueOf(metadata.getAlbumNumber()));
         }
         if (track.getType() == MediaType.AUDIOBOOK) {
             lblArtist.setText("Author");
-            tfArtist.setText(safe(metadata.getAuthor()));
             lblAlbumArtist.setText("Narrator");
-            tfAlbumArtist.setText(safe(metadata.getNarrator()));
             lblAlbum.setText("Series");
-            tfAlbum.setText(safe(metadata.getSeries()));
             lblAlbumNumber.setText("Chapter Number");
-            tfAlbumNumber.setText(safe(metadata.getChapterNumber()));
         }
         if (track.getType() == MediaType.PODCAST) {
             lblArtist.setText("Host");
-            tfArtist.setText(safe(metadata.getHost()));
             lblAlbum.setText("Series");
-            tfAlbum.setText(safe(metadata.getSeries()));
             lblAlbumArtist.setText("Channel");
-            tfAlbumArtist.setText(safe(metadata.getChannel()));
             lblAlbumNumber.setText("Episode Number");
-            tfAlbumNumber.setText(safe(metadata.getEpisodeNumber()));
-        }
-        if (metadata.getYear() != null) {
-            tfYear.setText(String.valueOf(metadata.getYear().getValue()));
         }
 
 
@@ -164,6 +160,7 @@ public class TrackDataEditViewController {
         }
 
         Metadata metadata = track.getMetadata();
+        MediaMetadata mediaMetadata = track.getMediaMetadata();
 
         String yearText = tfYear.getText().trim();
 
@@ -181,47 +178,18 @@ public class TrackDataEditViewController {
         metadata.setGenre(tfGenre.getText().trim());
         metadata.setLanguage(tfLang.getText().trim());
         metadata.setDescription(taDescription.getText().trim());
+        mediaMetadata.setArtist(tfArtist.getText().trim());
+        mediaMetadata.setSeriesArtist(tfAlbumArtist.getText().trim());
+        mediaMetadata.setSeries(tfAlbum.getText().trim());
 
-        if (track.getType() == MediaType.SONG) {
-            metadata.setArtist(tfArtist.getText().trim());
-            metadata.setAlbumArtist(tfAlbumArtist.getText().trim());
-            metadata.setAlbum(tfAlbum.getText().trim());
-
-            if (!number.isBlank()) {
-                try {
-                    metadata.setAlbumNumber(Integer.parseInt(number));
-                } catch (NumberFormatException e) {
-                    System.out.println("Invalid album number");
-                }
-            }
-
-        } else if (track.getType() == MediaType.AUDIOBOOK) {
-            metadata.setAuthor(tfArtist.getText().trim());
-            metadata.setNarrator(tfAlbumArtist.getText().trim());
-            metadata.setSeries(tfAlbum.getText().trim());
-
-            if (!number.isBlank()) {
-                try {
-                    metadata.setChapterNumber(Integer.parseInt(number));
-                } catch (NumberFormatException e) {
-                    System.out.println("Invalid album number");
-                }
-            }
-        } else if (track.getType() == MediaType.PODCAST) {
-            metadata.setHost(tfArtist.getText().trim());
-            metadata.setChannel(tfAlbumArtist.getText().trim());
-            metadata.setSeries(tfAlbum.getText().trim());
-
-            if (!number.isBlank()) {
-                try {
-                    metadata.setEpisodeNumber(Integer.parseInt(number));
-                } catch (NumberFormatException e) {
-                    System.out.println("Invalid album number");
-                }
+        if (!number.isBlank()) {
+            try {
+                mediaMetadata.setTrackNumber(Integer.parseInt(number));
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid album number");
             }
         }
 
-        MetadataManager metadataManager = new JaudiotaggerManager();
         metadataManager.write(track);
 
         closeWindow();

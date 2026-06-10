@@ -35,6 +35,7 @@
                <MenuItem onAction="#sortByYear" text="Year" />
                <MenuItem onAction="#sortByDateAdded" text="Date Added" />
                <MenuItem onAction="#sortByDateModified" text="Date Modified" />
+                <MenuItem onAction="#sortByDateCreated" text="Date Created"/>
             </items>
          </MenuButton>
          <Button fx:id="btnRefresh" text="Refresh" />

@@ -49,6 +49,23 @@ public class DataResolver {
     }
 
     public String resolveMissingTitle(Track track) {
-        return track.getTitle();
+        if (track.getTitle() != null
+                && !track.getTitle().isBlank()
+                && !track.getTitle().equalsIgnoreCase("unknown")) {
+            return track.getTitle();
+        } else if (track.getFiledata().getFileName() != null
+                && !track.getFiledata().getFileName().isBlank()
+                && !track.getFiledata().getFileName().equalsIgnoreCase("unknown"))
+            return removeExtension(track.getFiledata().getFileName());
+        else return "unknown";
+    }
+
+    private String removeExtension(String fileName) {
+        if (fileName == null) return null;
+
+        int lastDot = fileName.lastIndexOf('.');
+        if (lastDot == -1) return fileName;
+
+        return fileName.substring(0, lastDot);
     }
 }

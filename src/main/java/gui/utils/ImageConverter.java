@@ -2,7 +2,7 @@ package gui.utils;
 
 import javafx.scene.image.Image;
 
-public class FXUtils {
+public class ImageConverter {
 
     public static Image convertToImage(byte[] data) {
         if (data == null || data.length == 0) return null;

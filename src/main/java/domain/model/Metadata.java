@@ -4,102 +4,30 @@ import java.time.Year;
 
 public class Metadata {
 
+    private int durationInSeconds = 0;
+    private long bitrate = 0;
+    private long sampleRate = 0;
     private String title = "Unknown";
     private String genre = "Unknown";
-    private int durationInSeconds = 0;
-    private byte[] artwork;
-    private Year year = Year.of(0);
-    private long bitrate = 0;
-    private int sampleRate = 0;
     private String description = "Unknown";
-    private String artist = "Unknown";
-    private String album = "Unknown";
-    private String albumArtist = "Unknown";
     private String lyrics = "Unknown";
-    private int episodeNumber = 0;
-    private String channel = "Unknown";
-    private String host = "Unknown";
-    private String author = "Unknown";
-    private String narrator = "Unknown";
-    private String series = "Unknown";
     private String language = "Unknown";
-    private int chapterNumber = 0;
-    private int albumNumber = 0;
+    private String series = "Unknown";
+    private Year year = Year.of(0);
+    private byte[] artwork;
 
     public Metadata() {
     }
 
-    public String getAlbum() {
-        return album;
-    }
 
-    public void setAlbum(String album) {
-
-        this.album = album;
-    }
-
-    public int getChapterNumber() {
-        return chapterNumber;
-    }
-
-    public void setChapterNumber(int chapterNumber) {
-        this.chapterNumber = chapterNumber;
-    }
-
-    public String getArtist() {
-        return artist;
-    }
-
-    public void setArtist(String artist) {
-        this.artist = artist;
-    }
-
-    public String getAuthor() {
-        return author;
-    }
-
-    public void setAuthor(String author) {
-        this.author = author;
-    }
-
-    public String getChannel() {
-        return channel;
-    }
-
-    public void setChannel(String channel) {
-        this.channel = channel;
-    }
-
-    public int getEpisodeNumber() {
-        return episodeNumber;
-    }
-
-    public void setEpisodeNumber(int episodeNumber) {
-        this.episodeNumber = episodeNumber;
+    public void setLyrics(String lyrics) {
+        if (!lyrics.isBlank() && lyrics != null) {
+            this.lyrics = lyrics;
+        } else this.lyrics = "Unknown";
     }
 
     public String getLyrics() {
         return lyrics;
-    }
-
-    public void setLyrics(String lyrics) {
-        this.lyrics = lyrics;
-    }
-
-    public String getHost() {
-        return host;
-    }
-
-    public void setHost(String host) {
-        this.host = host;
-    }
-
-    public String getNarrator() {
-        return narrator;
-    }
-
-    public void setNarrator(String narrator) {
-        this.narrator = narrator;
     }
 
     public String getSeries() {
@@ -107,23 +35,19 @@ public class Metadata {
     }
 
     public void setSeries(String series) {
-        this.series = series;
+        if (!series.isBlank() && series != null) {
+            this.series = series;
+        } else this.series = "Unknown";
     }
 
     public String getDescription() {
         return description;
     }
 
-    public String getAlbumArtist() {
-        return albumArtist;
-    }
-
-    public void setAlbumArtist(String albumArtist) {
-        this.albumArtist = albumArtist;
-    }
-
     public void setDescription(String description) {
-        this.description = description;
+        if (!description.isBlank() && description != null) {
+            this.description = description;
+        } else this.description = "Unknown";
     }
 
     public String getGenre() {
@@ -131,7 +55,9 @@ public class Metadata {
     }
 
     public void setGenre(String genre) {
-        this.genre = genre;
+        if (!genre.isBlank() && genre != null) {
+            this.genre = genre;
+        } else this.genre = "Unknown";
     }
 
     public String getTitle() {
@@ -139,7 +65,9 @@ public class Metadata {
     }
 
     public void setTitle(String title) {
-        this.title = title;
+        if (!title.isBlank() && title != null) {
+            this.title = title;
+        } else this.title = "Unknown";
     }
 
     public int getDurationInSeconds() {
@@ -147,7 +75,7 @@ public class Metadata {
     }
 
     public void setDurationInSeconds(int durationInSeconds) {
-        this.durationInSeconds = durationInSeconds;
+        this.durationInSeconds = Math.max(durationInSeconds, 0);
     }
 
     public byte[] getArtwork() {
@@ -158,79 +86,55 @@ public class Metadata {
         this.artwork = artwork;
     }
 
-    public Year getYear() {
-        return year;
-    }
-
-    public int getYearNumber() {
-        if (this.year != null) return year.getValue();
-        else return 0;
-    }
-
-    public String getYearSting() {
-        if (this.year != null) return year.toString();
-        else return "unknown";
+    public void setLanguage(String language) {
+        if (!language.isBlank() && language != null) {
+            this.language = language;
+        } else this.language = "Unknown";
     }
 
     public String getLanguage() {
         return language;
     }
 
-    public void setLanguage(String language) {
-        this.language = language;
+    public void setYear(Year year) {
+        if (year != null) {
+            this.year = year;
+        } else this.year = Year.of(0);
     }
 
-    public void setYear(Year year) {
-        this.year = year;
+    public Year getYear() {
+        return year;
+    }
+
+    public void setBitrate(long bitrate) {
+        this.bitrate = Math.max(bitrate, 0);
     }
 
     public long getBitrate() {
         return bitrate;
     }
 
-    public void setBitrate(long bitrate) {
-        this.bitrate = bitrate;
+    public void setSampleRate(long sampleRate) {
+        this.sampleRate = Math.max(sampleRate, 0);
     }
 
-    public int getSampleRate() {
+    public long getSampleRate() {
         return sampleRate;
-    }
-
-    public void setSampleRate(int sampleRate) {
-        this.sampleRate = sampleRate;
-    }
-
-    public int getAlbumNumber() {
-        return albumNumber;
-    }
-
-    public void setAlbumNumber(int albumNumber) {
-        this.albumNumber = albumNumber;
     }
 
     @Override
     public String toString() {
         return "Metadata{" +
-                "album='" + album + '\'' +
-                ", title='" + title + '\'' +
-                ", genre='" + genre + '\'' +
-                ", durationInSeconds=" + durationInSeconds +
+                ", \ntitle='" + title +
+                ", \ngenre='" + genre +
+                ", \ndurationInSeconds=" + durationInSeconds +
                 ", \nyear=" + year +
-                ", bitrate=" + bitrate +
-                ", sampleRate=" + sampleRate +
-                ", description='" + description + '\'' +
-                ", \nartist='" + artist + '\'' +
-                ", albumArtist='" + albumArtist + '\'' +
-                ", episodeNumber=" + episodeNumber +
-                ", channel='" + channel + '\'' +
-                ", \nhost='" + host + '\'' +
-                ", author='" + author + '\'' +
-                ", narrator='" + narrator + '\'' +
-                ", series='" + series + '\'' +
-                ", \nchapterNumber=" + chapterNumber +
-                ", album number=" + albumNumber +
-                ", language='" + language + '\'' +
-                ", \nlyrics='" + lyrics + '\'' +
+                ", \nbitrate=" + bitrate +
+                ", \nsampleRate=" + sampleRate +
+                ", \ndescription='" + description +
+                ", \nseries='" + series +
+                ", \nlanguage='" + language +
+                ", \nlyrics='" + lyrics +
                 '}';
     }
 }

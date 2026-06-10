@@ -54,10 +54,12 @@ public class MainApplication extends Application {
         controller.setMediaService(mediaService);
         controller.setLibraryService(libraryService);
         controller.setPlayerService(playerService);
+        controller.setMetadataManager(metaDataManger);
+        controller.setMediaLibrary(library);
+
+
 
         player.setVolume(startingVolume);
-
-        IO.println("ov" + oldVolume + "nv" + player.getVolume());
 
         Image icon = new Image(
                 Objects.requireNonNull(
@@ -67,44 +69,7 @@ public class MainApplication extends Application {
 
         Scene scene = new Scene(root,1000,750);
 
-        scene.setOnKeyPressed(event -> {
-            switch (event.getCode()){
-                case P ->{
-                    if (playerService.getCurrentTrack() != null) {
-                        playerService.playFromList(playerService.getCurrentTrack(), playerService.getCurrentList());
-                    }
-                }
-                case U -> {
-                    if (player.getState() == PlaybackState.PLAYING)
-                        playerService.pause();
-                    else playerService.resume();
-                }
-                case D -> playerService.playNext();
-                case A -> playerService.playPrev();
-                case W -> player.setVolume(player.getVolume() + 10);
-                case S -> player.setVolume(player.getVolume() - 10);
-                case M -> {
-                    if (player.getVolume() != 0) {
-                        oldVolume = player.getVolume();
-                        player.setVolume(0);
-                        IO.println("muted");
-                        IO.println("ov" + oldVolume + "nv" + player.getVolume());
-                    } else {
-                        player.setVolume(oldVolume);
-                        IO.println("unmuted");
-                        IO.println("ov" + oldVolume + "nv" + player.getVolume());
-                    }
-                }
-                case F -> {
-                    if (playerService.getCurrentTrack() != null) {
-                        playerService.getCurrentTrack()
-                                .setFavorite(!playerService.getCurrentTrack()
-                                        .isFavorite());
-                    }
-                }
-                case F11 -> stage.setFullScreen(!stage.isFullScreen());
-            }
-        });
+        setupKeyBindings(scene, stage);
 
         stage.setTitle("Moka Player ☕");
         stage.getIcons().add(icon);
@@ -122,6 +87,38 @@ public class MainApplication extends Application {
 
         stage.setFullScreenExitHint("");
 
+    }
 
+    private void setupKeyBindings(Scene scene, Stage stage) {
+        scene.setOnKeyPressed(event -> {
+            switch (event.getCode()){
+                case P -> playerService.playSelectedTrack();
+                case U -> {
+                    if (player.getState() == PlaybackState.PLAYING)
+                        playerService.pause();
+                    else playerService.resume();
+                }
+                case D -> playerService.playNext();
+                case A -> playerService.playPrev();
+                case W -> player.setVolume(player.getVolume() + 10);
+                case S -> player.setVolume(player.getVolume() - 10);
+                case M -> {
+                    if (player.getVolume() != 0) {
+                        oldVolume = player.getVolume();
+                        player.setVolume(0);
+                    } else {
+                        player.setVolume(oldVolume);
+                    }
+                }
+                case F -> {
+                    if (playerService.getCurrentTrack() != null) {
+                        playerService.getCurrentTrack()
+                                .setFavorite(!playerService.getCurrentTrack()
+                                        .isFavorite());
+                    }
+                }
+                case F11 -> stage.setFullScreen(!stage.isFullScreen());
+            }
+        });
     }
 }

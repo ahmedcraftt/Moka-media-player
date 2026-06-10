@@ -8,6 +8,7 @@ import infrastructure.factory.TrackFactory;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.LocalDate;
 
 public class TrackMapper {
 
@@ -26,6 +27,7 @@ public class TrackMapper {
                 , track.getType().getTitle()
                 , modified
                 , track.getFiledata().getFileSize()
+                , track.getDateAdded().toString()
         );
     }
 
@@ -35,7 +37,10 @@ public class TrackMapper {
                 dto.favorite(),
                 dto.timesPlayed(),
                 MediaType.StringToMediaType(dto.type()),
-                Path.of(dto.path()));
+                Path.of(dto.path()),
+                LocalDate.parse(dto.dateAdded())
+        );
+
     }
 
 }

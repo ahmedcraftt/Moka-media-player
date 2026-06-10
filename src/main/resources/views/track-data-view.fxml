@@ -15,7 +15,7 @@
 <!--suppress ALL -->
 
 <VBox spacing="12.0" stylesheets="@../styles/main.css" xmlns="http://javafx.com/javafx/25.0.1"
-      xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.controllers.TrackDataEditViewController">
+      xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.controllers.TrackDataViewController">
 
     <children>
         <VBox>

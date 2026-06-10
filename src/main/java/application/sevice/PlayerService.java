@@ -36,10 +36,7 @@ public class PlayerService {
 
             @Override
             public void onTrackChanged(Track newTrack) {
-
-                Platform.runLater(() -> {
-                    currentTrack.set(newTrack);
-                });
+                Platform.runLater(() -> currentTrack.set(newTrack));
             }
 
             @Override
@@ -144,6 +141,10 @@ public class PlayerService {
 
     public PlaybackState getPlaybackState() {
         return playbackState.get();
+    }
+
+    public Track getSelectedTrack() {
+        return selectedTrack.get();
     }
 
     public void setSelectTrack(Track track) {

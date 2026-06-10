@@ -1,6 +1,6 @@
 package domain.model;
 
-public record TrackState(
+public record TrackSyncState(
         boolean exists,
         long lastModified,
         long fileSize,
