@@ -45,4 +45,4 @@ natives
 # Data base
 *.db
 
-temp
+temp/
