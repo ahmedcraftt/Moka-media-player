@@ -289,11 +289,11 @@ public class AudioPlayer {
      *
      * @param position playback position (0.0 to 1.0)
      */
-    public void setProgress(float position) {
+    public void setProgress(double position) {
         engine.setProgress(position);
     }
 
-    public float getProgress() {
+    public double getProgress() {
         return engine.getProgress();
     }
 

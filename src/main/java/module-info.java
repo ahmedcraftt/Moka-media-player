@@ -5,19 +5,17 @@ module org.example.moka_music_player {
     requires javafx.base;
 
     // Explicitly require JNA for native library access
-    requires vlcj;
     requires com.sun.jna;
     requires com.sun.jna.platform;
     requires jaudiotagger;
-    requires annotations;
     requires com.google.gson;
     requires org.slf4j;
     requires java.desktop;
     requires java.sql;
+    requires uk.co.caprica.vlcj;
 
     // Export packages that need to be accessed by other modules or the JVM
     exports gui.main;
-    exports test;
     exports infrastructure.audio;
     exports config;
     exports domain.model.metadata;

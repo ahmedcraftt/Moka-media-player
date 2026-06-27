@@ -97,18 +97,13 @@ public class VLCJAudioEngine implements AudioEngine {
     }
 
     @Override
-    public float getProgress() {
+    public double getProgress() {
         return mediaPlayer.status().position(); // 0.0 to 1.0
     }
 
     @Override
-    public void setProgress(float position){
-        mediaPlayer.controls().setPosition(position);
-    }
-
-    @Override
-    public void setRepeat(boolean repeat){
-        mediaPlayer.media().setRepeat(repeat);
+    public void setProgress(double position){
+        mediaPlayer.controls().setPosition((float) position);
     }
 
     @Override

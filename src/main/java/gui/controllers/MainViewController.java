@@ -22,7 +22,6 @@ import javafx.scene.Parent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
-import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -236,8 +235,7 @@ public class MainViewController {
             }
         });
     }
-
-    @NotNull
+    
     private Task<Void> getQueueLoadingTask() {
         Task<Void> task = new Task<>() {
             @Override
