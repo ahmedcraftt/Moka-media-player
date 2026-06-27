@@ -1,7 +1,7 @@
 package gui.controllers;
 
-import application.sevice.PlayerService;
-import domain.model.Track;
+import application.service.PlayerService;
+import domain.model.media.Track;
 
 import gui.utils.ImageConverter;
 import gui.utils.TimeFormater;
@@ -11,14 +11,17 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 
 public class MediaListViewController {
 
@@ -46,8 +49,39 @@ public class MediaListViewController {
         sort(SortByModes.TITLE);
     }
 
+    public void setData(List<Track> tracks) {
+        this.currentData = tracks;
+        contentList.getItems().setAll(tracks);
+
+        if (playerService != null) {
+            playerService.setCurrentList(tracks);
+        }
+    }
+
+    static void loadDataView(Track track) throws IOException {
+        FXMLLoader loader = new FXMLLoader(
+                MediaListViewController.class.getResource("/views/track-data-view.fxml")
+        );
+
+        Parent root = loader.load();
+        TrackDataViewController controller = loader.getController();
+        controller.setTrack(track);
+        controller.setMetadataManager(metadataManager);
+
+        Stage stage = new Stage();
+        Image icon = new Image(
+                Objects.requireNonNull(
+                        MediaListViewController.class.getResourceAsStream("/assets/icons/app-icon.png")
+                )
+        );
+        stage.getIcons().add(icon);
+        stage.setTitle("Track info");
+        stage.setScene(new Scene(root));
+        stage.showAndWait();
+    }//loadDataView(Track track)
+
     @FXML
-    private void initialize() {
+    protected void initialize() {
         setupListView();
         setupSearch();
         setupPlay();
@@ -77,7 +111,8 @@ public class MediaListViewController {
         items.sort(finalComparator);
         contentList.getItems().setAll(items);
         btnSort.setText("sort by " + mode);
-    }
+
+    }//sort(SortByModes mode)
 
     @FXML private void sortByTitle() { sort(SortByModes.TITLE); }
 
@@ -110,86 +145,6 @@ public class MediaListViewController {
                 playerService.playFromList(selected, contentList.getItems());
             }
         });
-
-    }
-
-
-    private static class MyListCell extends ListCell<Track> {
-
-        private final ImageView artworkView = new ImageView();
-        private final Label titleLabel = new Label();
-
-        private final HBox root = new HBox(10);
-
-        public MyListCell() {
-
-            artworkView.setFitWidth(40);
-            artworkView.setFitHeight(40);
-            artworkView.setPreserveRatio(true);
-
-            VBox textBox = new VBox(5);
-            textBox.getChildren().add(titleLabel);
-            Button infoButton = new Button("⋮");
-            root.getChildren().addAll(artworkView, textBox, infoButton);
-
-            infoButton.setOnAction(e -> openTrackInfo());
-        }
-
-        private void openTrackInfo() {
-            Track track = getItem();
-            if (track == null) return;
-
-            try {
-                FXMLLoader loader = new FXMLLoader(
-                        getClass().getResource("/views/track-data-view.fxml")
-                );
-
-                Parent root = loader.load();
-                TrackDataViewController controller = loader.getController();
-                controller.setTrack(track);
-                controller.setMetadataManager(metadataManager);
-
-                Stage stage = new Stage();
-                stage.setTitle("Track info");
-                stage.setScene(new Scene(root));
-                stage.showAndWait();
-
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
-        }
-
-        @Override
-        protected void updateItem(Track item, boolean empty) {
-            super.updateItem(item, empty);
-
-            if (empty || item == null) {
-                setGraphic(null);
-                return;
-            }
-
-            titleLabel.setText(item.getTitle() + " " + TimeFormater.formatTime(item.getMetadata().getDurationInSeconds()));
-
-            if (item.getMetadata().getArtwork() != null) {
-                artworkView.setImage(ImageConverter.convertToImage(item.getMetadata().getArtwork()));
-            } else {
-                artworkView.setImage(null);
-            }
-
-            setGraphic(root);
-        }
-    }
-
-    public void setData(List<Track> tracks) {
-        this.currentData = tracks;
-        contentList.getItems().setAll(tracks);
-
-        if (playerService != null) {
-            playerService.setCurrentList(tracks);
-        }
-    }
-
-    public void loadDataView(Track track) {
 
     }
 
@@ -229,11 +184,67 @@ public class MediaListViewController {
     }
 
     private void setupRefresh() {
-        btnRefresh.setOnAction(e -> contentList.getItems().setAll(currentData));
+        btnRefresh.setOnAction(e ->
+                btnRefresh.fireEvent(new RefreshEvent()));
     }
 
     private String safe(String s) {
         return s == null ? "" : s.toLowerCase();
+    }
+
+    private static class MyListCell extends ListCell<Track> {
+
+        private final ImageView artworkView = new ImageView();
+        private final Label titleLabel = new Label();
+        private final Label artistLabel = new Label();
+
+        private final HBox root = new HBox(10);
+
+        public MyListCell() {
+
+            artworkView.setFitWidth(40);
+            artworkView.setFitHeight(40);
+            artworkView.setPreserveRatio(true);
+
+            VBox textBox = new VBox(5);
+            textBox.getChildren().add(titleLabel);
+            textBox.getChildren().add(artistLabel);
+            Button infoButton = new Button("⋮");
+            root.getChildren().addAll(artworkView, textBox, infoButton);
+
+            infoButton.setOnAction(e -> openTrackInfo());
+        }
+
+        private void openTrackInfo() {
+            Track track = getItem();
+            if (track == null) return;
+
+            try {
+                loadDataView(track);
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        }
+
+        @Override
+        protected void updateItem(Track item, boolean empty) {
+            super.updateItem(item, empty);
+
+            if (empty || item == null) {
+                setGraphic(null);
+                return;
+            }
+
+            titleLabel.setText(item.getTitle() + " " + TimeFormater.formatTime(item.getMetadata().getDurationInSeconds()));
+            artistLabel.setText(item.getMediaMetadata().getArtist());
+            if (item.getMetadata().getArtwork() != null) {
+                artworkView.setImage(ImageConverter.convertToImage(item.getMetadata().getArtwork()));
+            } else {
+                artworkView.setImage(null);
+            }
+
+            setGraphic(root);
+        }
     }
 
 }

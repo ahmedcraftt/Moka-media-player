@@ -1,6 +1,7 @@
 package gui.controllers;
 
 public enum SortByModes {
+
     TITLE("title"),
     FILE_NAME("file name"),
     ARTISTS("artist"),
@@ -9,6 +10,7 @@ public enum SortByModes {
     DATE_CREATED("created"),
     DATE_ADDED("added"),
     DATE_MODIFIED("modified");
+
     private final String text;
 
     SortByModes(String text) {

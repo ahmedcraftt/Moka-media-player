@@ -3,7 +3,7 @@ package infrastructure.audio;
 import domain.audio.PlaybackListener;
 import domain.audio.PlaybackState;
 import domain.audio.RepeatMode;
-import domain.model.Track;
+import domain.model.media.Track;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -85,6 +85,7 @@ public class AudioPlayer {
      *
      * @param track the track to play
      */
+
     public void play(Track track){
         if (track == null) return;
         currentTrack = track;

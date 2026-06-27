@@ -1,6 +1,6 @@
-package application.sevice;
+package application.service;
 
-import domain.model.Track;
+import domain.model.media.Track;
 import infrastructure.audio.AudioPlayer;
 import domain.audio.PlaybackListener;
 import domain.audio.PlaybackState;

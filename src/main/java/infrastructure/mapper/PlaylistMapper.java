@@ -1,8 +1,8 @@
 package infrastructure.mapper;
 
-import domain.model.Playlist;
+import domain.model.media.Playlist;
 import application.dto.PlaylistDTO;
-import domain.library.MediaLibrary;
+import domain.model.library.MediaLibrary;
 import infrastructure.factory.PlaylistFactory;
 
 import static java.util.Arrays.stream;

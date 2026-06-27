@@ -1,6 +1,6 @@
 package infrastructure.audio;
 
-import domain.model.AudioSource;
+import domain.model.media.AudioSource;
 
 public interface AudioEngine {
 

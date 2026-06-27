@@ -1,8 +1,8 @@
-package application.sevice;
+package application.service;
 
 import infrastructure.storage.LibraryStorage;
-import domain.library.Library;
-import domain.library.LibraryFolder;
+import domain.model.library.Library;
+import domain.model.library.LibraryFolder;
 
 import java.nio.file.Path;
 import java.util.*;

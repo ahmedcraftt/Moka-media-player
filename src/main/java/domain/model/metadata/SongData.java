@@ -1,4 +1,4 @@
-package domain.model;
+package domain.model.metadata;
 
 public class SongData implements MediaMetadata {
     private int albumNumber = 0;

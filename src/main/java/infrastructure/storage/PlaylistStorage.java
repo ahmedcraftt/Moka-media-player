@@ -2,7 +2,7 @@ package infrastructure.storage;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import domain.model.Playlist;
+import domain.model.media.Playlist;
 import application.dto.PlaylistDTO;
 import infrastructure.mapper.PlaylistMapper;
 

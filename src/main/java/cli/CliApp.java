@@ -1,12 +1,12 @@
 package cli;
 
-import application.sevice.LibraryService;
-import application.sevice.MediaService;
+import application.service.LibraryService;
+import application.service.MediaService;
 import com.ahmed.utils.InputUtils;
-import domain.model.Track;
+import domain.model.media.Track;
 import infrastructure.audio.AudioPlayer;
 import domain.audio.RepeatMode;
-import domain.library.Library;
+import domain.model.library.Library;
 
 import java.nio.file.Path;
 import java.util.List;

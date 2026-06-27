@@ -1,7 +1,7 @@
 package infrastructure.factory;
 
-import domain.model.Playlist;
-import domain.model.Track;
+import domain.model.media.Playlist;
+import domain.model.media.Track;
 
 import java.util.Collection;
 

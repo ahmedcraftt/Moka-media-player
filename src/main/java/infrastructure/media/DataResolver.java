@@ -1,6 +1,6 @@
 package infrastructure.media;
 
-import domain.model.Track;
+import domain.model.media.Track;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;

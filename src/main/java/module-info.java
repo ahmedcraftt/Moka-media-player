@@ -1,4 +1,5 @@
 module org.example.moka_music_player {
+
     requires javafx.controls;
     requires javafx.fxml;
     requires javafx.base;
@@ -7,7 +8,6 @@ module org.example.moka_music_player {
     requires vlcj;
     requires com.sun.jna;
     requires com.sun.jna.platform;
-
     requires jaudiotagger;
     requires annotations;
     requires com.google.gson;
@@ -21,7 +21,9 @@ module org.example.moka_music_player {
     exports test;
     exports infrastructure.audio;
     exports config;
-    exports domain.model;
+    exports domain.model.metadata;
+    exports domain.model.media;
+    exports domain.model.library;
     exports infrastructure.media;
     exports application.dto;
     exports infrastructure.scanner;
@@ -34,15 +36,16 @@ module org.example.moka_music_player {
     // Open packages for reflection
     opens gui.main to javafx.fxml;
     opens gui.controllers to javafx.fxml;
-    opens domain.model to javafx.base;
     opens infrastructure.media to javafx.base;
     opens infrastructure.audio to javafx.base;
     opens application.dto to javafx.base;
-    opens domain.library to com.google.gson;
     opens infrastructure.scanner to javafx.base;
     opens infrastructure.storage to javafx.base;
     opens infrastructure.mapper to javafx.base;
     opens infrastructure.factory to javafx.base;
     opens domain.audio to javafx.base;
     opens gui.utils to javafx.fxml;
+    opens domain.model.media to com.google.gson, javafx.base;
+    opens domain.model.metadata to com.google.gson, javafx.base;
+    opens domain.model.library to com.google.gson, javafx.base;
 }

@@ -1,7 +1,7 @@
 package cli;
 
-import application.sevice.LibraryService;
-import application.sevice.MediaService;
+import application.service.LibraryService;
+import application.service.MediaService;
 import infrastructure.audio.AudioEngine;
 import infrastructure.audio.AudioPlayer;
 import infrastructure.audio.VLCJAudioEngine;
@@ -9,7 +9,7 @@ import infrastructure.media.FiledataManager;
 import infrastructure.media.JaudiotaggerManager;
 import infrastructure.scanner.MediaScanner;
 import infrastructure.media.MetadataManager;
-import domain.library.MediaLibrary;
+import domain.model.library.MediaLibrary;
 import infrastructure.storage.TrackStorage;
 
 public final class MainCli {

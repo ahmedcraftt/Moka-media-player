@@ -1,10 +1,15 @@
-package domain.model;
+package domain.model.media;
+
+import domain.model.metadata.Filedata;
+import domain.model.metadata.MediaMetadata;
+import domain.model.metadata.Metadata;
 
 import java.net.URI;
 import java.nio.file.Path;
 import java.time.LocalDate;
+import java.util.Objects;
 
-public class Track implements AudioSource {
+public class Track implements AudioSource, Displayable {
 
     private final Filedata filedata;
     private final Metadata metadata;
@@ -39,7 +44,6 @@ public class Track implements AudioSource {
         this.dateAdded = dateAdded;
     }
 
-
     @Override
     public boolean isFavorite() {
         return favorite;
@@ -48,6 +52,7 @@ public class Track implements AudioSource {
     @Override
     public void setFavorite(boolean favorite) {
         this.favorite = favorite;
+        IO.println(this.favorite);
     }
 
     public MediaType getType() {
@@ -72,6 +77,10 @@ public class Track implements AudioSource {
         return timesPlayed;
     }
 
+    public Path getFilePath() {
+        return filedata.getFilePath();
+    }
+
     public void setTimesPlayed(int timesPlayed) {
         if (timesPlayed < 0) throw new IllegalArgumentException("TimesPlayed can't be negative");
         this.timesPlayed = timesPlayed;
@@ -86,13 +95,18 @@ public class Track implements AudioSource {
         return this.filedata.getFilePath().toUri();
     }
 
-    public synchronized void incrementTimesPlayed() {
+    public void incrementTimesPlayed() {
         this.timesPlayed++;
     }
 
     @Override
     public String getTitle() {
         return metadata.getTitle();
+    }
+
+    @Override
+    public byte[] getArtwork() {
+        return metadata.getArtwork();
     }
 
     public String getFileName() {
@@ -105,6 +119,18 @@ public class Track implements AudioSource {
 
     public void setMediaMetadata(MediaMetadata mediaMetadata) {
         this.mediaMetadata = mediaMetadata;
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        if (this == other) return true;
+        if (!(other instanceof Track track)) return false;
+        return Objects.equals(getFilePath(), track.getFilePath());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(getFilePath());
     }
 
     @Override

@@ -2,7 +2,7 @@ package infrastructure.storage;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import domain.library.Library;
+import domain.model.library.Library;
 
 import java.io.IOException;
 import java.lang.reflect.Type;

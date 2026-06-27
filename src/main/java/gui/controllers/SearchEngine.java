@@ -1,5 +1,5 @@
 package gui.controllers;
 
 public enum SearchEngine {
-    GOOGLE, DUCK_DUCK_GO, BING
+    GOOGLE, DUCK_DUCK_GO, BING, Brave
 }

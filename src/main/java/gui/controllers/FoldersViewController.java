@@ -1,14 +1,14 @@
 package gui.controllers;
 
-import application.sevice.LibraryService;
+import application.service.LibraryService;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.stage.DirectoryChooser;
-import domain.library.Library;
-import domain.library.LibraryFolder;
+import domain.model.library.Library;
+import domain.model.library.LibraryFolder;
 
 import java.io.File;
 import java.nio.file.Path;

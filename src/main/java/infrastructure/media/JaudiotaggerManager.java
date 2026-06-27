@@ -1,7 +1,8 @@
 package infrastructure.media;
 
-import domain.model.*;
-
+import domain.model.metadata.MediaMetadata;
+import domain.model.metadata.Metadata;
+import domain.model.media.Track;
 import org.jaudiotagger.audio.AudioFileIO;
 import org.jaudiotagger.audio.AudioHeader;
 import org.jaudiotagger.audio.AudioFile;
@@ -10,7 +11,6 @@ import org.jaudiotagger.tag.Tag;
 import org.jaudiotagger.tag.images.Artwork;
 
 import java.io.File;
-import java.nio.file.Path;
 import java.time.Year;
 import java.time.format.DateTimeParseException;
 

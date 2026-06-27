@@ -1,8 +1,10 @@
 package gui.main;
 
-import application.sevice.LibraryService;
-import application.sevice.MediaService;
-import application.sevice.PlayerService;
+import application.service.AppState;
+import application.service.LibraryService;
+import application.service.MediaService;
+import application.service.PlayerService;
+import gui.controllers.RefreshEvent;
 import infrastructure.audio.AudioEngine;
 import infrastructure.audio.AudioPlayer;
 import domain.audio.PlaybackState;
@@ -11,19 +13,17 @@ import infrastructure.media.FiledataManager;
 import infrastructure.media.JaudiotaggerManager;
 import infrastructure.scanner.MediaScanner;
 import infrastructure.media.MetadataManager;
-import domain.library.MediaLibrary;
+import domain.model.library.MediaLibrary;
 import gui.controllers.MainViewController;
 
 import infrastructure.storage.TrackStorage;
 import javafx.application.Application;
-import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
-import java.awt.*;
 import java.io.IOException;
 import java.util.Objects;
 
@@ -31,14 +31,16 @@ public class MainApplication extends Application {
 
     private final AudioEngine engine = new VLCJAudioEngine();
     private final AudioPlayer player = new AudioPlayer(engine);
-    private final MetadataManager metaDataManger = new JaudiotaggerManager();
+    private final MetadataManager metadataManager = new JaudiotaggerManager();
     private final FiledataManager filedataManager = new FiledataManager();
     private final TrackStorage trackStorage = new TrackStorage();
-    private final MediaScanner scanner = new MediaScanner(metaDataManger, filedataManager, trackStorage);
+    private final MediaScanner scanner = new MediaScanner(metadataManager, filedataManager, trackStorage);
     private final MediaLibrary library = new MediaLibrary();
     private final LibraryService libraryService = new LibraryService();
-    private final MediaService mediaService = new MediaService(scanner,library,libraryService);
+    private final MediaService mediaService = new MediaService(scanner, library, libraryService);
     private final PlayerService playerService = new PlayerService(player);
+    private final AppState appState = new AppState();
+
     private final int startingVolume = 50;
     private int oldVolume = startingVolume;
 
@@ -54,10 +56,9 @@ public class MainApplication extends Application {
         controller.setMediaService(mediaService);
         controller.setLibraryService(libraryService);
         controller.setPlayerService(playerService);
-        controller.setMetadataManager(metaDataManger);
+        controller.setMetadataManager(metadataManager);
         controller.setMediaLibrary(library);
-
-
+        controller.setAppState(appState);
 
         player.setVolume(startingVolume);
 
@@ -67,41 +68,35 @@ public class MainApplication extends Application {
                 )
         );
 
-        Scene scene = new Scene(root,1000,750);
-
-        setupKeyBindings(scene, stage);
+        Scene scene = new Scene(root, 1000, 750);
+        setupKeyBindings(root, scene, stage);
 
         stage.setTitle("Moka Player ☕");
         stage.getIcons().add(icon);
         stage.setScene(scene);
         stage.centerOnScreen();
-        stage.setOnCloseRequest(
-                event -> {
-                    System.out.println("Closing app...");
-                    trackStorage.saveAll(mediaService.getTracks());
-                    engine.release();
-                    event.consume();
-                    Platform.exit();
-                });
-        stage.show();
-
         stage.setFullScreenExitHint("");
 
+        root.addEventHandler(RefreshEvent.REFRESH, event -> controller.handleRefresh());
+
+        stage.show();
     }
 
-    private void setupKeyBindings(Scene scene, Stage stage) {
+    private void setupKeyBindings(Parent root, Scene scene, Stage stage) {
         scene.setOnKeyPressed(event -> {
-            switch (event.getCode()){
+            switch (event.getCode()) {
                 case P -> playerService.playSelectedTrack();
                 case U -> {
-                    if (player.getState() == PlaybackState.PLAYING)
+                    if (player.getState() == PlaybackState.PLAYING) {
                         playerService.pause();
-                    else playerService.resume();
+                    } else {
+                        playerService.resume();
+                    }
                 }
                 case D -> playerService.playNext();
                 case A -> playerService.playPrev();
-                case W -> player.setVolume(player.getVolume() + 10);
-                case S -> player.setVolume(player.getVolume() - 10);
+                case W -> player.setVolume(Math.min(100, player.getVolume() + 10));
+                case S -> player.setVolume(Math.max(0, player.getVolume() - 10));
                 case M -> {
                     if (player.getVolume() != 0) {
                         oldVolume = player.getVolume();
@@ -112,13 +107,28 @@ public class MainApplication extends Application {
                 }
                 case F -> {
                     if (playerService.getCurrentTrack() != null) {
-                        playerService.getCurrentTrack()
-                                .setFavorite(!playerService.getCurrentTrack()
-                                        .isFavorite());
+                        boolean isFav = playerService.getCurrentTrack().isFavorite();
+                        playerService.getCurrentTrack().setFavorite(!isFav);
                     }
                 }
                 case F11 -> stage.setFullScreen(!stage.isFullScreen());
+                case F5 -> root.fireEvent(new RefreshEvent());
             }
         });
+    }
+
+    @Override
+    public void stop() throws Exception {
+        System.out.println("Closing Moka Player...");
+
+        if (mediaService != null && trackStorage != null) {
+            trackStorage.saveAll(mediaService.getTracks());
+        }
+
+        if (engine != null) {
+            engine.release();
+        }
+
+        super.stop();
     }
 }

@@ -1,6 +1,6 @@
 package infrastructure.audio;
 
-import domain.model.AudioSource;
+import domain.model.media.AudioSource;
 
 import uk.co.caprica.vlcj.factory.MediaPlayerFactory;
 import uk.co.caprica.vlcj.player.base.MediaPlayer;

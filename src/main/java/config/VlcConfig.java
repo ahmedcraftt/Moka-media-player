@@ -1,5 +1,7 @@
 package config;
 
+import platform.ArchDetector;
+import platform.CpuArch;
 import platform.OS;
 import platform.OSDetector;
 
@@ -10,13 +12,27 @@ public class VlcConfig {
 
     public static void init() {
         OS os = OSDetector.getOS();
+        CpuArch arch = ArchDetector.getArch();
+        String basePath;
+        switch (os) {
+            case WINDOWS -> {
+                if (arch == CpuArch.ARM32 || arch == CpuArch.ARM64) {
+                    basePath = "natives/windows/Arm";
+                } else if (arch == CpuArch.x86_64) {
+                    basePath = "natives/windows/X86_64";
+                } else {
+                    basePath = "natives/windows/X86_32";
+                }
+            }
+            case LINUX -> basePath = "natives/linux";
+            case MAC -> {
+                if (arch == CpuArch.ARM32 || arch == CpuArch.ARM64) {
+                    basePath = "natives/mac/apple-silicon";
+                } else basePath = "natives/mac/intel";
+            }
 
-        String basePath = switch (os) {
-            case WINDOWS -> "natives/windows";
-            case LINUX -> "natives/linux";
-            case MAC -> "natives/mac"; //not supported yet
             default -> throw new RuntimeException("Unsupported OS for VLC");
-        };
+        }
 
         Path path = Path.of(basePath).toAbsolutePath();
 

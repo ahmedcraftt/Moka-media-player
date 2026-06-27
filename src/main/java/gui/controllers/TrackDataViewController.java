@@ -1,8 +1,10 @@
 package gui.controllers;
 
-import domain.model.*;
-
-import infrastructure.media.JaudiotaggerManager;
+import domain.model.metadata.Filedata;
+import domain.model.metadata.MediaMetadata;
+import domain.model.metadata.Metadata;
+import domain.model.media.MediaType;
+import domain.model.media.Track;
 import infrastructure.media.MetadataManager;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -72,7 +74,6 @@ public class TrackDataViewController {
     @FXML
     private Label lblAlbumArtist;
 
-
     @FXML
     private Button btnSave;
     @FXML
@@ -128,7 +129,8 @@ public class TrackDataViewController {
         tfAlbum.setText(safe(mediaMetadata.getSeries()));
         tfAlbumNumber.setText(String.valueOf(mediaMetadata.getTrackNumber()));
 
-        if (metadata.getYear() != null) tfYear.setText(String.valueOf(metadata.getYear().getValue()));
+        if (metadata.getYear() != null)
+            tfYear.setText(String.valueOf(metadata.getYear().getValue()));
 
         if (track.getType() == MediaType.SONG) {
             lblArtist.setText("Artist");
@@ -148,7 +150,6 @@ public class TrackDataViewController {
             lblAlbumArtist.setText("Channel");
             lblAlbumNumber.setText("Episode Number");
         }
-
 
     }
 
@@ -192,7 +193,7 @@ public class TrackDataViewController {
 
         metadataManager.write(track);
 
-        closeWindow();
+        btnSave.fireEvent(new RefreshEvent());
     }
 
     @FXML

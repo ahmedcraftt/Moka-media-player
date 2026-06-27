@@ -2,10 +2,8 @@ package test;
 
 import application.dto.TrackDTO;
 import com.ahmed.utils.InputUtils;
-import domain.model.Filedata;
-import domain.model.MediaType;
-import domain.model.Metadata;
-import domain.model.Track;
+import domain.model.media.MediaType;
+import domain.model.media.Track;
 import infrastructure.factory.TrackFactory;
 import infrastructure.mapper.TrackMapper;
 

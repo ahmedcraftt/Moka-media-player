@@ -5,13 +5,14 @@ public enum RepeatMode {
     LOOP_CURRENT_ONE("Loop 1"),
     STOP_WHEN_QUEUE_END("Play Queue"),
     LOOP_CURRENT_QUEUE("Loop queue");
-    private final String title;
+    private final String text;
 
-    RepeatMode(String title) {
-        this.title = title;
+    RepeatMode(String text) {
+        this.text = text;
     }
 
-    public String getTitle() {
-        return title;
+    public String getText() {
+        return text;
     }
+
 }

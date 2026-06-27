@@ -33,6 +33,7 @@
                        </items>
                    </MenuButton>
                   <Button fx:id="btnAdd" text="+" />
+                   <Button fx:id="btnBack" mnemonicParsing="false" text="⬅️"/>
                </children>
                <padding>
                   <Insets top="10.0" />

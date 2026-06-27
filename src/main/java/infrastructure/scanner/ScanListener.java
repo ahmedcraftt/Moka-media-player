@@ -1,6 +1,6 @@
 package infrastructure.scanner;
 
-import domain.model.Track;
+import domain.model.media.Track;
 
 import java.nio.file.Path;
 import java.util.List;

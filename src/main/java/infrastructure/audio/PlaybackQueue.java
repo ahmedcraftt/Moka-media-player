@@ -1,6 +1,6 @@
 package infrastructure.audio;
 
-import domain.model.Track;
+import domain.model.media.Track;
 
 import java.util.*;
 
@@ -55,6 +55,7 @@ public class PlaybackQueue {
             }
         }
     }
+
     public void clear(){
         trackQueue.clear();
         history.clear();
@@ -139,7 +140,6 @@ public class PlaybackQueue {
 
     public void pushHistory(Track track) {
         history.push(track);
-        System.out.println("push to history:" + track);
     }
 
     public void removeFromQueue(Track t){

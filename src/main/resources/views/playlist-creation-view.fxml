@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
 <?import javafx.scene.control.CheckBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
@@ -26,7 +27,8 @@
                         <CheckBox fx:id="cbFavorite" mnemonicParsing="false" text="Favorite"/>
                     </children>
                 </HBox>
-                <ListView fx:id="lvTracks" prefHeight="200.0" prefWidth="200.0"/>
+                <ListView fx:id="lvTracks" VBox.vgrow="ALWAYS"/>
+                <Button fx:id="btnSave" mnemonicParsing="false" onAction="#handelSave" text="Save"/>
             </children>
             <padding>
                 <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>

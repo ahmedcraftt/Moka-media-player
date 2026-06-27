@@ -1,6 +1,6 @@
 package domain.audio;
 
-import domain.model.Track;
+import domain.model.media.Track;
 
 public interface PlaybackListener {
 

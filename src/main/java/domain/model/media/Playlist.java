@@ -1,16 +1,14 @@
-package domain.model;
+package domain.model.media;
 
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class Playlist {
+public class Playlist implements Displayable {
 
     private final List<Track> tracks = new ArrayList<>();
     private String title = "Unknown";
     private boolean favorite = false;
-    private Path playlistArtworkPath;
 
     public Playlist(String title) {
         this.title = title;
@@ -23,14 +21,16 @@ public class Playlist {
         this.favorite = favorite;
     }
 
-    public Playlist(String title, boolean favorite, Path playlistArtworkPath) {
-        this.title = title;
-        this.favorite = favorite;
-        setPlaylistArtworkPath(playlistArtworkPath);
+    public boolean contains(Track track) {
+        return tracks.contains(track);
     }
 
     public void addTrack(Track track) {
-        tracks.add(track);
+        this.tracks.add(track);
+    }
+
+    public void addTracks(List<Track> tracks) {
+        this.tracks.addAll(tracks);
     }
 
     public boolean removeTrack(Track track) {
@@ -65,6 +65,11 @@ public class Playlist {
         return title;
     }
 
+    @Override
+    public byte[] getArtwork() {
+        return tracks.getFirst().getArtwork();
+    }
+
     public void setTitle(String title) {
         if (title == null) title = "Unknown";
         this.title = title;
@@ -72,15 +77,6 @@ public class Playlist {
 
     public int getTotalDurationSeconds() {
         return tracks.stream().mapToInt(t->t.getMetadata().getDurationInSeconds()).sum();
-    }
-
-    public Path getPlaylistArtworkPath() {
-        return playlistArtworkPath;
-    }
-
-    public void setPlaylistArtworkPath(Path playlistArtworkPath) {
-        if (playlistArtworkPath == null) throw new IllegalArgumentException("playlistArtworkPath cannot be null");
-        this.playlistArtworkPath = playlistArtworkPath;
     }
 
     @Override

@@ -1,8 +1,8 @@
 package infrastructure.mapper;
 
 import application.dto.TrackDTO;
-import domain.model.MediaType;
-import domain.model.Track;
+import domain.model.media.MediaType;
+import domain.model.media.Track;
 import infrastructure.factory.TrackFactory;
 
 import java.io.IOException;

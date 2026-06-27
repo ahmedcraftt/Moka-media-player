@@ -1,8 +1,7 @@
-package domain.library;
+package domain.model.library;
 
-import domain.model.MediaType;
-import domain.model.Track;
-import org.jetbrains.annotations.NotNull;
+import domain.model.media.MediaType;
+import domain.model.media.Track;
 
 import java.nio.file.Path;
 import java.util.*;
@@ -26,15 +25,9 @@ public class MediaLibrary {
         return new ArrayList<>(tracks.values());
     }
 
-    public void removeTrack(@NotNull Track track) {
-        tracks.remove(track.getFiledata().getFilePath());
-    }
-
     public void clear() {
         tracks.clear();
     }
-
-    // ===== QUERY LAYER =====
 
     public List<Track> getSongs() {
         return filterByType(MediaType.SONG);

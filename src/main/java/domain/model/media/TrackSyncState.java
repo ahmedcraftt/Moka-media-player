@@ -1,4 +1,4 @@
-package domain.model;
+package domain.model.media;
 
 public record TrackSyncState(
         boolean exists,

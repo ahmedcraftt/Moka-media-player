@@ -1,6 +1,6 @@
 package infrastructure.media;
 
-import domain.model.Track;
+import domain.model.media.Track;
 
 public interface MetadataManager {
     void write(Track track);

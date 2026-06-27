@@ -23,6 +23,21 @@
     -fx-border-width: 1;
 }
 
+.check-box {
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+}
+
+.check-box .box {
+    -fx-background-radius: 4;
+    -fx-background-color: #3a2a22;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.4), 8, 0.2, 0, 2);
+}
+
+.check-box:selected .mark {
+    -fx-background-color: white;
+}
+
 .button:focused,
 .slider:focused {
     -fx-effect: dropshadow(gaussian, rgba(200, 155, 109, 0.25), 12, 0.3, 0, 0);

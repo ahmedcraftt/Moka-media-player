@@ -1,16 +1,16 @@
 package gui.controllers;
 
-import domain.model.Metadata;
-import domain.model.Track;
-
+import domain.model.metadata.Metadata;
+import domain.model.media.Track;
 import infrastructure.media.MetadataManager;
+import platform.OS;
+import platform.OSDetector;
+
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
-import platform.OS;
-import platform.OSDetector;
 
 import java.awt.Desktop;
 import java.io.IOException;
@@ -90,7 +90,7 @@ public class LyricsViewController {
     }
 
     public void handelSearch(ActionEvent event) {
-        searchWeb("lyrics:" + track.getTitle());
+        if (track != null) searchWeb("lyrics:" + track.getTitle());
     }
 
     public void searchWeb(String query) {

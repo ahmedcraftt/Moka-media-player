@@ -1,49 +1,49 @@
-package domain.model;
+package domain.model.metadata;
 
-public class PodcastData implements MediaMetadata {
+public class AudioBookData implements MediaMetadata {
 
-    private int episodeNumber = 0;
-    private String channel = "Unknown";
-    private String host = "Unknown";
-    private String series = "Unknown";
+    private int chapterNumber = 0;
+    private String Author = "Unknown";
+    private String narrator = "Unknown";
+    private String bookSeries = "Unknown";
 
     @Override
     public String getArtist() {
-        return host;
+        return narrator;
     }
 
     @Override
     public void setArtist(String artist) {
-        this.host = artist;
+        this.narrator = artist;
     }
 
     @Override
     public String getSeries() {
-        return series;
+        return bookSeries;
     }
 
     @Override
     public void setSeries(String series) {
-        this.series = series;
+        this.bookSeries = series;
     }
 
     @Override
     public String getSeriesArtist() {
-        return channel;
+        return Author;
     }
 
     @Override
     public void setSeriesArtist(String seriesArtist) {
-        this.channel = seriesArtist;
+        this.Author = seriesArtist;
     }
 
     @Override
     public int getTrackNumber() {
-        return episodeNumber;
+        return chapterNumber;
     }
 
     @Override
     public void setTrackNumber(int trackNumber) {
-        this.episodeNumber = trackNumber;
+        this.chapterNumber = trackNumber;
     }
 }

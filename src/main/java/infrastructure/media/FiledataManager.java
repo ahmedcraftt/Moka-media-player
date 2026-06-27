@@ -1,7 +1,7 @@
 package infrastructure.media;
 
-import domain.model.Filedata;
-import domain.model.Track;
+import domain.model.metadata.Filedata;
+import domain.model.media.Track;
 
 import java.io.File;
 import java.io.IOException;

@@ -1,4 +1,4 @@
-package domain.model;
+package domain.model.media;
 
 import java.nio.file.Path;
 

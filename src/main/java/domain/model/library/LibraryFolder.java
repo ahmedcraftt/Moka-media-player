@@ -1,4 +1,4 @@
-package domain.library;
+package domain.model.library;
 
 import java.nio.file.Path;
 

@@ -1,6 +1,10 @@
 package infrastructure.factory;
 
-import domain.model.*;
+import domain.model.metadata.AudioBookData;
+import domain.model.metadata.MediaMetadata;
+import domain.model.metadata.PodcastData;
+import domain.model.metadata.SongData;
+import domain.model.media.MediaType;
 
 public final class MediaMetadataFactory {
     private MediaMetadataFactory() {

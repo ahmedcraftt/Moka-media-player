@@ -1,4 +1,4 @@
-package domain.library;
+package domain.model.library;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -35,7 +35,6 @@ public class Library {
         this.isDefault = value;
     }
 
-    // Optional helper if you still need paths directly
     public List<Path> getRootPaths() {
         return folders.stream()
                 .map(LibraryFolder::getPath)

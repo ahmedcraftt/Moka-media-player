@@ -1,8 +1,8 @@
 package infrastructure.storage;
 
 import application.dto.TrackDTO;
-import domain.model.TrackSyncState;
-import domain.model.Track;
+import domain.model.media.TrackSyncState;
+import domain.model.media.Track;
 import infrastructure.mapper.TrackMapper;
 
 import java.nio.file.Path;

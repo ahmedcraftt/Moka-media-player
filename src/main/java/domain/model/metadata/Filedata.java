@@ -1,4 +1,4 @@
-package domain.model;
+package domain.model.metadata;
 
 import java.nio.file.Path;
 import java.time.LocalDate;

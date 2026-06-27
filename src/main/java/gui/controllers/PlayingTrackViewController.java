@@ -1,8 +1,8 @@
 
 package gui.controllers;
 
-import application.sevice.PlayerService;
-import domain.model.Track;
+import application.service.PlayerService;
+import domain.model.media.Track;
 import gui.utils.ImageConverter;
 import javafx.animation.Animation;
 import javafx.animation.Interpolator;
@@ -102,10 +102,7 @@ public class PlayingTrackViewController {
         if (track == null) {
             lblTitle.setText("No Track Playing");
             lblArtist.setText("Unknown Artist");
-            imgTrack.setImage(new Image(
-                    Objects.requireNonNull(
-                            getClass().getResourceAsStream("/assets/images/unknown.jpg")
-                    )));
+            imgTrack.setImage(null);
             return;
         }
 
@@ -141,7 +138,7 @@ public class PlayingTrackViewController {
     }
 
     private void setupRotation() {
-        rotateTransition = new RotateTransition(Duration.seconds(32), spImageContainer);
+        rotateTransition = new RotateTransition(Duration.seconds(64), spImageContainer);
         rotateTransition.setByAngle(360);
         rotateTransition.setCycleCount(Animation.INDEFINITE);
         rotateTransition.setInterpolator(Interpolator.LINEAR);

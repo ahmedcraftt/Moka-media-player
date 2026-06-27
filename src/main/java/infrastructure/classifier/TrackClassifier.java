@@ -1,7 +1,7 @@
 package infrastructure.classifier;
 
-import domain.model.MediaType;
-import domain.model.Metadata;
+import domain.model.media.MediaType;
+import domain.model.metadata.Metadata;
 
 import java.nio.file.Path;
 import java.util.Arrays;

@@ -1,6 +1,10 @@
 package infrastructure.scanner;
 
-import domain.model.*;
+import domain.model.metadata.Metadata;
+import domain.model.media.MediaType;
+import domain.model.media.Track;
+import domain.model.media.TrackSyncState;
+import domain.model.media.TrackTask;
 import infrastructure.classifier.TrackClassifier;
 import infrastructure.factory.MediaMetadataFactory;
 import infrastructure.factory.TrackFactory;

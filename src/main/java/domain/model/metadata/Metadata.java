@@ -1,4 +1,4 @@
-package domain.model;
+package domain.model.metadata;
 
 import java.time.Year;
 
@@ -12,7 +12,6 @@ public class Metadata {
     private String description = "Unknown";
     private String lyrics = "Unknown";
     private String language = "Unknown";
-    private String series = "Unknown";
     private Year year = Year.of(0);
     private byte[] artwork;
 
@@ -28,16 +27,6 @@ public class Metadata {
 
     public String getLyrics() {
         return lyrics;
-    }
-
-    public String getSeries() {
-        return series;
-    }
-
-    public void setSeries(String series) {
-        if (!series.isBlank() && series != null) {
-            this.series = series;
-        } else this.series = "Unknown";
     }
 
     public String getDescription() {
@@ -132,7 +121,6 @@ public class Metadata {
                 ", \nbitrate=" + bitrate +
                 ", \nsampleRate=" + sampleRate +
                 ", \ndescription='" + description +
-                ", \nseries='" + series +
                 ", \nlanguage='" + language +
                 ", \nlyrics='" + lyrics +
                 '}';
