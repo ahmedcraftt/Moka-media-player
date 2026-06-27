@@ -44,3 +44,5 @@ natives
 
 # Data base
 *.db
+
+/home/Ahmed/IdeaProjects/java-mediaplayer/temp

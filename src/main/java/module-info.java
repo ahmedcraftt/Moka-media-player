@@ -11,7 +11,6 @@ module org.example.moka_music_player {
     requires jaudiotagger;
     requires annotations;
     requires com.google.gson;
-    requires AhmedUtilsV2;
     requires org.slf4j;
     requires java.desktop;
     requires java.sql;

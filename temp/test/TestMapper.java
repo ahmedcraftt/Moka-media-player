@@ -31,7 +31,7 @@ public final class TestMapper {
 
 
     public static void testToDto() {
-        Track track = TrackFactory.create("test", true, 1, MediaType.SONG, Path.of("hii/hiiii/hi.mp3"), LocalDate.now());
+        Track track = TrackFactory.create("temp/test", true, 1, MediaType.SONG, Path.of("hii/hiiii/hi.mp3"), LocalDate.now());
         TrackDTO dto = TrackMapper.toDTO(track);
         IO.println(dto.toString());
     }
