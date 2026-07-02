@@ -56,4 +56,20 @@ public class Library {
     public void setFolders(ArrayList<LibraryFolder> folders) {
         this.folders = folders;
     }
+
+    public void removeFolder(LibraryFolder folder) {
+        if (folder == null) return;
+
+        if (this.folders == null) {
+            this.folders = new ArrayList<>();
+            return;
+        }
+
+        try {
+            this.folders.remove(folder);
+        } catch (UnsupportedOperationException e) {
+            this.folders = new ArrayList<>(this.folders);
+            this.folders.remove(folder);
+        }
+    }
 }

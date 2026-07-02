@@ -3,6 +3,7 @@
 <?import java.net.URL?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckMenuItem?>
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.MenuButton?>
 <?import javafx.scene.control.MenuItem?>
@@ -26,10 +27,12 @@
             <HBox spacing="10.0">
                <children>
                    <TextField fx:id="tfSearchBar" promptText="Search" HBox.hgrow="ALWAYS"/>
-                   <MenuButton fx:id="btnSort" mnemonicParsing="false" text="sort">
+                   <MenuButton fx:id="btnSort" mnemonicParsing="false" text="sort by">
                        <items>
-                           <MenuItem mnemonicParsing="false" text="Action 1"/>
-                           <MenuItem mnemonicParsing="false" text="Action 2"/>
+                           <MenuItem fx:id="miTitle" mnemonicParsing="false" text="Title"/>
+                           <MenuItem fx:id="miNumOfTracks" mnemonicParsing="false" text="No. of Tracks"/>
+                           <MenuItem fx:id="miFavorite" mnemonicParsing="false" text="Favorite"/>
+                           <CheckMenuItem fx:id="cmiAscending" mnemonicParsing="false" text="Ascending"/>
                        </items>
                    </MenuButton>
                   <Button fx:id="btnAdd" text="+" />

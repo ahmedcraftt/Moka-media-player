@@ -5,11 +5,15 @@ import application.service.LibraryService;
 import application.service.MediaService;
 import application.service.PlayerService;
 import domain.model.library.MediaLibrary;
+import domain.model.media.Playlist;
 import domain.model.media.Track;
 import infrastructure.audio.AudioPlayer;
 import domain.audio.RepeatMode;
 import infrastructure.media.MetadataManager;
 
+import infrastructure.storage.ArtworkStorage;
+import infrastructure.storage.MetadataStorage;
+import infrastructure.storage.TrackStorage;
 import javafx.animation.*;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
@@ -62,13 +66,28 @@ public class MainViewController {
     private MetadataManager metadataManager;
     private MediaLibrary mediaLibrary;
     private AppState appState;
+    private ArtworkStorage artStorage;
+    private TrackStorage trackStorage;
+    private MetadataStorage metadataStorage;
 
-    private MediaListViewController controller;
+    private MediaListViewController mediaListViewController;
 
     private boolean seeking = false;
     private ViewMode currentViewMode = DEFAULT_STARTING_VIEW_MODE;
 
     static int skipSeconds = 10;
+
+    public void setArtworkStorage(ArtworkStorage artStorage) {
+        this.artStorage = artStorage;
+    }
+
+    public void setTrackStorage(TrackStorage trackStorage) {
+        this.trackStorage = trackStorage;
+    }
+
+    public void setMetadataStorage(MetadataStorage metadataStorage) {
+        this.metadataStorage = metadataStorage;
+    }
 
     public void setPlayer(AudioPlayer player) {
         this.player = player;
@@ -235,12 +254,11 @@ public class MainViewController {
             }
         });
     }
-    
+
     private Task<Void> getQueueLoadingTask() {
         Task<Void> task = new Task<>() {
             @Override
             protected Void call() {
-                // FIX: Removed initializeLibrary() completely from here to eliminate cross-thread UI mutations
                 player.enqueueAll(mediaService.getTracks());
                 return null;
             }
@@ -305,13 +323,13 @@ public class MainViewController {
     private void switchMediaView(List<Track> tracks, ViewMode mode) {
         loadMediaView(tracks);
         currentViewMode = mode;
-        if (controller != null) {
-            controller.setData(tracks);
-            controller.inti();
+        if (mediaListViewController != null) {
+            mediaListViewController.setData(tracks);
+            mediaListViewController.inti();
         }
     }
 
-    private void switchCategoryView(List<List<Track>> categoryList, ViewMode mode) {
+    private void switchCategoryView(List<Playlist> categoryList, ViewMode mode) {
         loadCategoryView(categoryList, mode);
         currentViewMode = mode;
     }
@@ -319,9 +337,11 @@ public class MainViewController {
     private void loadMediaView(List<Track> tracks) {
         try {
             FXMLLoader loader = loadView("/views/mediaList-view.fxml");
-            controller = loader.getController();
-            controller.setPlayerService(playerService);
-            controller.setMetadataManager(metadataManager);
+            mediaListViewController = loader.getController();
+            mediaListViewController.setPlayerService(playerService);
+            mediaListViewController.setMetadataManager(metadataManager);
+            mediaListViewController.setMetadataStorage(metadataStorage);
+            mediaListViewController.setMediaService(mediaService);
         } catch (IOException e) {
             System.err.println("CRITICAL: Could not find or load mediaList-view.fxml");
         }
@@ -342,15 +362,17 @@ public class MainViewController {
         }
     }
 
-    private void loadCategoryView(List<List<Track>> categoryList, ViewMode mode) {
+    private void loadCategoryView(List<Playlist> categoryList, ViewMode mode) {
         try {
             FXMLLoader loader = loadView("/views/category-view.fxml");
             CategoryViewController categoryViewController = loader.getController();
-            categoryViewController.setPlayer(player);
-            categoryViewController.setData(categoryList);
-            categoryViewController.setViewMode(mode);
+            categoryViewController.setPlayerService(playerService);
+            categoryViewController.setAppState(this.appState);
+            categoryViewController.setData(categoryList, mode);
+
         } catch (IOException e) {
             System.err.println("CRITICAL: Could not find or load category-view.fxml");
+            e.printStackTrace();
         }
     }
 
@@ -358,7 +380,12 @@ public class MainViewController {
         try {
             FXMLLoader loader = loadView("/views/playing-track-view.fxml");
             PlayingTrackViewController playingTrackViewController = loader.getController();
-            playingTrackViewController.setPlayerService(playerService);
+            playingTrackViewController.initializeDependencies(
+                    playerService,
+                    artStorage,
+                    trackStorage,
+                    metadataManager
+            );
             currentViewMode = ViewMode.TRACK;
         } catch (IOException e) {
             System.err.println("CRITICAL: Could not find or load playing-track-view.fxml");
@@ -402,7 +429,6 @@ public class MainViewController {
     }
 
     private void initializeLibrary() {
-        // Runs cleanly on the main FX Thread
         if (!libraryService.hasLibraries()) {
             Optional<String> pathResult = getResult();
             if (pathResult.isEmpty()) return;

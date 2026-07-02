@@ -1,11 +1,12 @@
 package gui.controllers;
 
+import application.service.MediaService;
 import domain.model.metadata.Filedata;
-import domain.model.metadata.MediaMetadata;
 import domain.model.metadata.Metadata;
 import domain.model.media.MediaType;
 import domain.model.media.Track;
 import infrastructure.media.MetadataManager;
+import infrastructure.storage.MetadataStorage;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -82,6 +83,9 @@ public class TrackDataViewController {
     private Track track;
 
     private MetadataManager metadataManager;
+    private MetadataStorage storage;
+    private MediaService mediaService;
+
 
     public void setTrack(Track track) {
         this.track = track;
@@ -95,6 +99,14 @@ public class TrackDataViewController {
 
     public void setMetadataManager(MetadataManager metadataManager) {
         this.metadataManager = metadataManager;
+    }
+
+    public void setStorage(MetadataStorage storage) {
+        this.storage = storage;
+    }
+
+    public void setMediaService(MediaService mediaService) {
+        this.mediaService = mediaService;
     }
 
     private void loadTrackData() {
@@ -115,19 +127,18 @@ public class TrackDataViewController {
         // Metadata
 
         Metadata metadata = track.getMetadata();
-        MediaMetadata mediaMetadata = track.getMediaMetadata();
 
         tfType.setText(safe(track.getType().getTitle()));
         tfBitrate.setText(String.valueOf(metadata.getBitrate()));
-        tfSamplerate.setText(String.valueOf(metadata.getSampleRate()));
+        tfSamplerate.setText(String.valueOf(metadata.getSamplerate()));
         tfLang.setText(safe(metadata.getLanguage()));
         tfTitle.setText(safe(metadata.getTitle()));
         tfGenre.setText(safe(metadata.getGenre()));
         taDescription.setText(safe(metadata.getDescription()));
-        tfArtist.setText(safe(mediaMetadata.getArtist()));
-        tfAlbumArtist.setText(safe(mediaMetadata.getSeriesArtist()));
-        tfAlbum.setText(safe(mediaMetadata.getSeries()));
-        tfAlbumNumber.setText(String.valueOf(mediaMetadata.getTrackNumber()));
+        tfArtist.setText(safe(metadata.getArtist()));
+        tfAlbumArtist.setText(safe(metadata.getSeriesArtist()));
+        tfAlbum.setText(safe(metadata.getSeries()));
+        tfAlbumNumber.setText(String.valueOf(metadata.getTrackNumber()));
 
         if (metadata.getYear() != null)
             tfYear.setText(String.valueOf(metadata.getYear().getValue()));
@@ -161,7 +172,6 @@ public class TrackDataViewController {
         }
 
         Metadata metadata = track.getMetadata();
-        MediaMetadata mediaMetadata = track.getMediaMetadata();
 
         String yearText = tfYear.getText().trim();
 
@@ -175,17 +185,18 @@ public class TrackDataViewController {
         String number = tfAlbumNumber.getText().trim();
 
         track.setType(MediaType.StringToMediaType(tfType.getText()));
+        IO.println("TrackDataViewController line 178:" + track.getType());
         metadata.setTitle(tfTitle.getText().trim());
         metadata.setGenre(tfGenre.getText().trim());
         metadata.setLanguage(tfLang.getText().trim());
         metadata.setDescription(taDescription.getText().trim());
-        mediaMetadata.setArtist(tfArtist.getText().trim());
-        mediaMetadata.setSeriesArtist(tfAlbumArtist.getText().trim());
-        mediaMetadata.setSeries(tfAlbum.getText().trim());
+        metadata.setArtist(tfArtist.getText().trim());
+        metadata.setSeriesArtist(tfAlbumArtist.getText().trim());
+        metadata.setSeries(tfAlbum.getText().trim());
 
         if (!number.isBlank()) {
             try {
-                mediaMetadata.setTrackNumber(Integer.parseInt(number));
+                metadata.setTrackNumber(Integer.parseInt(number));
             } catch (NumberFormatException e) {
                 System.out.println("Invalid album number");
             }
@@ -193,7 +204,14 @@ public class TrackDataViewController {
 
         metadataManager.write(track);
 
-        btnSave.fireEvent(new RefreshEvent());
+        storage.update(metadata);
+
+        mediaService.refreshMetadataCaches();
+
+        Stage stage = (Stage) btnSave.getScene().getWindow();
+        stage.getScene().getRoot().fireEvent(new RefreshEvent());
+
+        closeWindow();
     }
 
     @FXML
@@ -202,8 +220,10 @@ public class TrackDataViewController {
     }
 
     private void closeWindow() {
-        Stage stage = (Stage) btnCancel.getScene().getWindow();
-        stage.close();
+        if (btnCancel.getScene() != null && btnCancel.getScene().getWindow() != null) {
+            Stage stage = (Stage) btnCancel.getScene().getWindow();
+            stage.close();
+        }
     }
 
     private String safe(Object value) {

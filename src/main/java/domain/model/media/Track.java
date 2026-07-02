@@ -1,7 +1,6 @@
 package domain.model.media;
 
 import domain.model.metadata.Filedata;
-import domain.model.metadata.MediaMetadata;
 import domain.model.metadata.Metadata;
 
 import java.net.URI;
@@ -15,15 +14,8 @@ public class Track implements AudioSource, Displayable {
     private final Metadata metadata;
     private final LocalDate dateAdded;
     private MediaType type;
-    private MediaMetadata mediaMetadata;
     private boolean favorite = false;
     private int timesPlayed = 0;
-
-    public Track() {
-        metadata = new Metadata();
-        filedata = new Filedata();
-        dateAdded = LocalDate.now();
-    }
 
     public Track(String fileName, Path filePath) {
         metadata = new Metadata();
@@ -31,17 +23,22 @@ public class Track implements AudioSource, Displayable {
         filedata.setFileName(fileName);
         filedata.setFilePath(filePath);
         dateAdded = LocalDate.now();
+        IO.println("Track constructor(String fileName, Path filePath) called for " + this.getTitle());
     }
 
-    public Track(String title, boolean favorite, int timesPlayed, MediaType type, Path filepath, LocalDate dateAdded) {
-        metadata = new Metadata();
+    public Track(Metadata metadata, int metadataId, boolean favorite, int timesPlayed, MediaType type, Path filepath, LocalDate dateAdded) {
+        this.metadata = metadata;
+        this.metadata.setId(metadataId);
         filedata = new Filedata();
-        metadata.setTitle(title);
         filedata.setFilePath(filepath);
         setFavorite(favorite);
         setTimesPlayed(timesPlayed);
         setType(type);
         this.dateAdded = dateAdded;
+        IO.println("Track constructor(Metadata metadata,int metadataId,boolean " +
+                "favorite, int timesPlayed, MediaType type, " +
+                "Path filepath, LocalDate dateAdded) called  for " + this.getTitle());
+        IO.println("Track.java line 43:" + this.metadata.toText());
     }
 
     @Override
@@ -50,9 +47,41 @@ public class Track implements AudioSource, Displayable {
     }
 
     @Override
+    public String getDescription() {
+        return metadata.getDescription();
+    }
+
+    @Override
+    public String getArtworkPath() {
+        return metadata.getArtworkPath();
+    }
+
+    @Override
+    public String getGenre() {
+        return metadata.getGenre();
+    }
+
+    @Override
     public void setFavorite(boolean favorite) {
         this.favorite = favorite;
-        IO.println(this.favorite);
+    }
+
+    @Override
+    public URI getResource() {
+        return this.filedata.getFilePath().toUri();
+    }
+
+    public void incrementTimesPlayed() {
+        this.timesPlayed++;
+    }
+
+    @Override
+    public String getTitle() {
+        return metadata.getTitle();
+    }
+
+    public String getFileName() {
+        return filedata.getFileName();
     }
 
     public MediaType getType() {
@@ -91,37 +120,6 @@ public class Track implements AudioSource, Displayable {
     }
 
     @Override
-    public URI getResource() {
-        return this.filedata.getFilePath().toUri();
-    }
-
-    public void incrementTimesPlayed() {
-        this.timesPlayed++;
-    }
-
-    @Override
-    public String getTitle() {
-        return metadata.getTitle();
-    }
-
-    @Override
-    public byte[] getArtwork() {
-        return metadata.getArtwork();
-    }
-
-    public String getFileName() {
-        return filedata.getFileName();
-    }
-
-    public MediaMetadata getMediaMetadata() {
-        return mediaMetadata;
-    }
-
-    public void setMediaMetadata(MediaMetadata mediaMetadata) {
-        this.mediaMetadata = mediaMetadata;
-    }
-
-    @Override
     public boolean equals(Object other) {
         if (this == other) return true;
         if (!(other instanceof Track track)) return false;
@@ -148,5 +146,4 @@ public class Track implements AudioSource, Displayable {
                 ", \ndateAdded=" + dateAdded +
                 '}';
     }
-
 }

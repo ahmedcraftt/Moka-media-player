@@ -19,7 +19,7 @@ public class FoldersViewController {
     private TextField tfSearchBar;
 
     @FXML
-    private Button btnAdd;
+    private Button btnAdd, btnDelete;
 
     @FXML
     private ListView<LibraryFolder> lvFoldersList;
@@ -103,6 +103,7 @@ public class FoldersViewController {
 
     private void setupButtons() {
         btnAdd.setOnAction(event -> addFolder());
+        btnDelete.setOnAction(event -> deleteFolder());
     }
 
     private void addFolder() {
@@ -151,8 +152,34 @@ public class FoldersViewController {
 
         libraryService.save();
 
-        // 🔥 update UI instantly
         masterList.add(folder);
+    }
+
+    private void deleteFolder() {
+        if (libraryService == null) {
+            showError("Library service not initialized.");
+            return;
+        }
+
+        Library activeLibrary = libraryService.getActiveLibrary();
+        if (activeLibrary == null) {
+            showError("No active library available.");
+            return;
+        }
+
+        LibraryFolder selectedFolder = lvFoldersList.getSelectionModel().getSelectedItem();
+        if (selectedFolder == null) {
+            showError("No folder selected for deletion.");
+            return;
+        }
+
+        activeLibrary.removeFolder(selectedFolder);
+
+        libraryService.save();
+
+        masterList.remove(selectedFolder);
+
+        lvFoldersList.getSelectionModel().clearSelection();
     }
 
     private void refreshFolders() {

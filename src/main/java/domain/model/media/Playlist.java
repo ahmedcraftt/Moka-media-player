@@ -21,6 +21,20 @@ public class Playlist implements Displayable {
         this.favorite = favorite;
     }
 
+    @Override
+    public String getArtworkPath() {
+        if (tracks != null && !tracks.isEmpty()) {
+            // Borrow the artwork path of the first track as the playlist cover preview
+            return tracks.getFirst().getMetadata().getArtworkPath();
+        }
+        return null;
+    }
+
+    @Override
+    public String getTitle() {
+        return title;
+    }
+
     public boolean contains(Track track) {
         return tracks.contains(track);
     }
@@ -59,15 +73,6 @@ public class Playlist implements Displayable {
 
     public void setFavorite(boolean favorite) {
         this.favorite = favorite;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    @Override
-    public byte[] getArtwork() {
-        return tracks.getFirst().getArtwork();
     }
 
     public void setTitle(String title) {

@@ -2,20 +2,21 @@ package gui.controllers;
 
 import domain.model.media.Playlist;
 import domain.model.media.Track;
-import gui.utils.ImageConverter;
 import gui.utils.TimeFormater;
-
 import infrastructure.storage.PlaylistStorage;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.Objects;
 
 public class PlaylistDataViewController {
     @FXML
@@ -34,18 +35,39 @@ public class PlaylistDataViewController {
     private ListView<Track> lvTracks;
 
     private Playlist playlist;
-
     private Runnable onSaveSuccessCallback;
 
     public void setPlaylist(Playlist playlist) {
         if (playlist == null) throw new IllegalArgumentException("Playlist cannot be null");
         this.playlist = playlist;
 
-        imgArtwork.setImage(ImageConverter.convertToImage(playlist.getArtwork()));
         tfTitle.setText(playlist.getTitle());
         cbFavorite.setSelected(playlist.isFavorite());
 
+        String artworkPath = null;
+        if (playlist.getTracks() != null && !playlist.getTracks().isEmpty()) {
+            artworkPath = playlist.getTracks().getFirst().getMetadata().getArtworkPath();
+        }
+
+        if (artworkPath != null && !artworkPath.isBlank()) {
+            File file = new File(artworkPath);
+            if (file.exists()) {
+                imgArtwork.setImage(new Image(file.toURI().toString(), true));
+            } else {
+                loadDefaultHeaderArtwork();
+            }
+        } else {
+            loadDefaultHeaderArtwork();
+        }
+
         syncListViewSelection();
+    }
+
+    private void loadDefaultHeaderArtwork() {
+        imgArtwork.setImage(new Image(
+                Objects.requireNonNull(getClass().getResourceAsStream("/assets/images/unknown.jpg")).toString(),
+                true
+        ));
     }
 
     public void setTracks(List<Track> tracks) {
@@ -121,7 +143,20 @@ public class PlaylistDataViewController {
         private final CheckBox selectedCheckBox = new CheckBox();
         private final HBox root = new HBox(10);
 
+        private static Image defaultArtwork;
+
         public MyListCell() {
+            if (defaultArtwork == null) {
+                try {
+                    defaultArtwork = new Image(
+                            Objects.requireNonNull(MyListCell.class.getResourceAsStream("/assets/images/unknown.jpg")),
+                            40, 40, true, true
+                    );
+                } catch (Exception e) {
+                    System.err.println("Fallback cell asset path missing.");
+                }
+            }
+
             artworkView.setFitWidth(40);
             artworkView.setFitHeight(40);
             artworkView.setPreserveRatio(true);
@@ -155,10 +190,17 @@ public class PlaylistDataViewController {
 
             titleLabel.setText(item.getTitle() + " [" + TimeFormater.formatTime(item.getMetadata().getDurationInSeconds()) + "]");
 
-            if (item.getMetadata().getArtwork() != null) {
-                artworkView.setImage(ImageConverter.convertToImage(item.getMetadata().getArtwork()));
+            String artworkPath = item.getMetadata().getArtworkPath();
+
+            if (artworkPath != null && !artworkPath.isBlank()) {
+                File file = new File(artworkPath);
+                if (file.exists()) {
+                    artworkView.setImage(new Image(file.toURI().toString(), 40, 40, true, true, true));
+                } else {
+                    artworkView.setImage(defaultArtwork);
+                }
             } else {
-                artworkView.setImage(null);
+                artworkView.setImage(defaultArtwork);
             }
 
             if (getListView() != null) {

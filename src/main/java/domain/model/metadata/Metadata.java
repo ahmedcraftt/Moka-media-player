@@ -1,23 +1,73 @@
 package domain.model.metadata;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.Year;
+import java.util.Objects;
 
 public class Metadata {
 
+    private int id;
+    private int trackNumber = 0;
     private int durationInSeconds = 0;
     private long bitrate = 0;
-    private long sampleRate = 0;
+    private long samplerate = 0;
     private String title = "Unknown";
     private String genre = "Unknown";
     private String description = "Unknown";
     private String lyrics = "Unknown";
-    private String language = "Unknown";
+    private String series = "Unknown";
+    private String artist = "Unknown";
+    private String seriesArtist = "Unknown";
+    private String artworkPath;
+    private Language language;
     private Year year = Year.of(0);
-    private byte[] artwork;
 
     public Metadata() {
     }
 
+    public Metadata(
+            int id,
+            int durationInSeconds,
+            long bitrate,
+            long samplerate,
+            String title,
+            String genre,
+            String description,
+            String lyrics,
+            String language,
+            Year year,
+            String artworkPath,
+            String series,
+            String artist,
+            String seriesArtist,
+            int trackNumber
+    ) {
+        setId(id);
+        setDurationInSeconds(durationInSeconds);
+        setBitrate(bitrate);
+        setSamplerate(samplerate);
+        setTitle(title);
+        setGenre(genre);
+        setDescription(description);
+        setLyrics(lyrics);
+        setLanguage(language);
+        setYear(year);
+        setArtworkPath(artworkPath);
+        setSeries(series);
+        setArtist(artist);
+        setSeriesArtist(seriesArtist);
+        setTrackNumber(trackNumber);
+        IO.println("Metadata: " + this.toText());
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
 
     public void setLyrics(String lyrics) {
         if (!lyrics.isBlank() && lyrics != null) {
@@ -67,21 +117,13 @@ public class Metadata {
         this.durationInSeconds = Math.max(durationInSeconds, 0);
     }
 
-    public byte[] getArtwork() {
-        return artwork;
-    }
-
-    public void setArtwork(byte[] artwork) {
-        this.artwork = artwork;
-    }
-
     public void setLanguage(String language) {
         if (!language.isBlank() && language != null) {
-            this.language = language;
-        } else this.language = "Unknown";
+            this.language = new Language(language);
+        } else throw new IllegalArgumentException("Language cannot be null or blank");
     }
 
-    public String getLanguage() {
+    public Language getLanguage() {
         return language;
     }
 
@@ -103,12 +145,68 @@ public class Metadata {
         return bitrate;
     }
 
-    public void setSampleRate(long sampleRate) {
-        this.sampleRate = Math.max(sampleRate, 0);
+    public void setSamplerate(long samplerate) {
+        this.samplerate = Math.max(samplerate, 0);
     }
 
-    public long getSampleRate() {
-        return sampleRate;
+    public long getSamplerate() {
+        return samplerate;
+    }
+
+    public String getArtworkPath() {
+        return artworkPath;
+    }
+
+    public void setArtworkPath(String artworkPath) {
+        this.artworkPath = artworkPath;
+    }
+
+    public Path getArtworkFile() {
+        return artworkPath != null ? Paths.get(artworkPath) : null;
+    }
+
+    public void setSeries(String series) {
+        this.series = series;
+    }
+
+    public String getSeries() {
+        return series;
+    }
+
+    public void setArtist(String artist) {
+        this.artist = artist;
+    }
+
+    public String getArtist() {
+        return artist;
+    }
+
+    public void setSeriesArtist(String seriesArtist) {
+        this.seriesArtist = seriesArtist;
+    }
+
+    public String getSeriesArtist() {
+        return seriesArtist;
+    }
+
+    public void setTrackNumber(int trackNumber) {
+        this.trackNumber = trackNumber;
+    }
+
+    public int getTrackNumber() {
+        return trackNumber;
+    }
+
+    @Override
+    public int hashCode() {
+        return Integer.hashCode(id);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Metadata)) return false;
+        return id == ((Metadata) o).id;
     }
 
     @Override
@@ -119,10 +217,21 @@ public class Metadata {
                 ", \ndurationInSeconds=" + durationInSeconds +
                 ", \nyear=" + year +
                 ", \nbitrate=" + bitrate +
-                ", \nsampleRate=" + sampleRate +
+                ", \nsampleRate=" + samplerate +
                 ", \ndescription='" + description +
                 ", \nlanguage='" + language +
+                ", \nartist='" + this.getArtist() +
+                ", \ntrackNumber" + this.getTrackNumber() +
+                ", \nseries" + this.getSeries() +
+                ", \nseriesArtist" + this.getSeriesArtist() +
                 ", \nlyrics='" + lyrics +
                 '}';
+    }
+
+
+    public String toText() {
+        return "metadata object" +
+                "id:" + this.id +
+                "title:" + this.title;
     }
 }

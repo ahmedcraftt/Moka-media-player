@@ -9,7 +9,10 @@ public enum SortByModes {
     YEAR("year"),
     DATE_CREATED("created"),
     DATE_ADDED("added"),
-    DATE_MODIFIED("modified");
+    DATE_MODIFIED("modified"),
+    ALPHABETICAL("a-z"),
+    NUM_OF_TRACKS("No. of tracks"),
+    FAVORITE("favorite");
 
     private final String text;
 

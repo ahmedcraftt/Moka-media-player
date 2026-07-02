@@ -2,6 +2,7 @@ package infrastructure.factory;
 
 import domain.model.media.MediaType;
 import domain.model.media.Track;
+import domain.model.metadata.Metadata;
 
 import java.nio.file.Path;
 import java.time.LocalDate;
@@ -20,14 +21,15 @@ public final class TrackFactory {
     }
 
     public static Track create(
-            String title,
+            Metadata metadata,
+            int mediaId,
             boolean favorite,
             int timesPlayed,
             MediaType type,
             Path path,
             LocalDate dateAdded
     ) {
-        return new Track(title, favorite, timesPlayed, type, path, dateAdded);
+        return new Track(metadata, mediaId, favorite, timesPlayed, type, path, dateAdded);
     }
 
 }

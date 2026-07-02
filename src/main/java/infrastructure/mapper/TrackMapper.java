@@ -3,6 +3,7 @@ package infrastructure.mapper;
 import application.dto.TrackDTO;
 import domain.model.media.MediaType;
 import domain.model.media.Track;
+import domain.model.metadata.Metadata;
 import infrastructure.factory.TrackFactory;
 
 import java.io.IOException;
@@ -19,8 +20,9 @@ public class TrackMapper {
         } catch (IOException e) {
             throw new RuntimeException("Cannot read or parse last modified time of " + track.getFiledata().getFilePath());
         }
+        System.out.println("Mapping metadata ID: " + track.getMetadata().getId());
         return new TrackDTO(
-                track.getTitle()
+                track.getMetadata().getId()
                 , track.isFavorite()
                 , track.getTimesPlayed()
                 , String.valueOf(track.getFiledata().getFilePath())
@@ -31,9 +33,10 @@ public class TrackMapper {
         );
     }
 
-    public static Track fromDTO(TrackDTO dto) {
+    public static Track fromDTO(TrackDTO dto, Metadata metadata) {
         return TrackFactory.create(
-                dto.title(),
+                metadata,
+                dto.metadataId(),
                 dto.favorite(),
                 dto.timesPlayed(),
                 MediaType.StringToMediaType(dto.type()),

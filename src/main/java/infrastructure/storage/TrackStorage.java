@@ -3,6 +3,7 @@ package infrastructure.storage;
 import application.dto.TrackDTO;
 import domain.model.media.TrackSyncState;
 import domain.model.media.Track;
+import domain.model.metadata.Metadata;
 import infrastructure.mapper.TrackMapper;
 
 import java.nio.file.Path;
@@ -10,27 +11,48 @@ import java.sql.*;
 import java.util.List;
 
 public class TrackStorage {
+
+    private final MetadataStorage metadataStorage;
+
+    public TrackStorage(MetadataStorage metadataStorage) {
+        this.metadataStorage = metadataStorage;
+    }
+
     public void initialize() {
-        String sql = """
+        String createTableSql = """
                 CREATE TABLE IF NOT EXISTS tracks (
-                path Text PRIMARY KEY,
-                title TEXT NOT NULL,
+                path TEXT PRIMARY KEY,
+                metadata_id INTEGER,
                 favorite INTEGER NOT NULL,
                 times_played INTEGER NOT NULL,
                 media_type TEXT NOT NULL,
                 last_modified INTEGER NOT NULL,
                 size INTEGER NOT NULL,
-                dateAdded Text NOT NULL
+                dateAdded TEXT NOT NULL,
+                FOREIGN KEY(metadata_id) REFERENCES metadata(metadata_id) ON DELETE SET NULL
                 );
                 """;
 
-        try (
-                Connection connection = DatabaseManager.connect();
-                Statement statement = connection.createStatement()
-        ) {
-            statement.execute(sql);
+        String validationSql = "SELECT path, metadata_id, favorite, times_played FROM tracks LIMIT 0";
 
+        try (Connection connection = DatabaseManager.connect()) {
+            try (Statement statement = connection.createStatement()) {
+                statement.execute(createTableSql);
+            }
+
+            try (Statement statement = connection.createStatement()) {
+                statement.executeQuery(validationSql);
+            } catch (SQLException e) {
+                System.err.println("WARNING: 'tracks' table layout is outdated or corrupted. Re-initializing table...");
+
+                try (Statement statement = connection.createStatement()) {
+                    statement.execute("DROP TABLE IF EXISTS tracks;");
+                    statement.execute(createTableSql);
+                    System.out.println("SUCCESS: 'tracks' table successfully recreated.");
+                }
+            }
         } catch (SQLException e) {
+            System.err.println("CRITICAL: Failed to initialize Track storage subsystem.");
             e.printStackTrace();
         }
     }
@@ -39,42 +61,66 @@ public class TrackStorage {
         TrackDTO dto = TrackMapper.toDTO(track);
 
         String sql = """
-                INSERT INTO tracks(title, favorite, times_played, path, media_type, last_modified, size, dateAdded)
-                          VALUES(?,?,?,?,?,?,?,?)
-                          ON CONFLICT(path) DO UPDATE SET
-                              title = excluded.title,
-                              favorite = excluded.favorite,
-                              times_played = excluded.times_played,
-                              media_type = excluded.media_type,
-                              last_modified = excluded.last_modified,
-                              size = excluded.size,
-                              dateAdded = excluded.dateAdded;
+                INSERT INTO tracks(metadata_id, favorite, times_played, path, media_type, last_modified, size, dateAdded)
+                           VALUES(?,?,?,?,?,?,?,?)
+                           ON CONFLICT(path) DO UPDATE SET
+                               metadata_id = excluded.metadata_id,
+                               favorite = excluded.favorite,
+                               times_played = excluded.times_played,
+                               media_type = excluded.media_type,
+                               last_modified = excluded.last_modified,
+                               size = excluded.size,
+                               dateAdded = excluded.dateAdded;
                 """;
+
         try (
                 Connection connection = DatabaseManager.connect();
                 PreparedStatement statement = connection.prepareStatement(sql)
         ) {
-            statement.setString(1, dto.title());
-            statement.setInt(2, dto.favorite() ? 1 : 0);
-            statement.setInt(3, dto.timesPlayed());
-            statement.setString(4, dto.path());
-            statement.setString(5, dto.type());
-            statement.setLong(6, dto.lastModified());
-            statement.setLong(7, dto.size());
-            statement.setString(8, dto.dateAdded());
+            connection.setAutoCommit(false);
+            mapDtoToStatement(statement, dto);
             statement.executeUpdate();
+            connection.commit();
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
     public void saveAll(List<Track> tracks) {
-        for (Track track : tracks) {
-            save(track);
+        String sql = """
+                INSERT INTO tracks(metadata_id, favorite, times_played, path, media_type, last_modified, size, dateAdded)
+                           VALUES(?,?,?,?,?,?,?,?)
+                           ON CONFLICT(path) DO UPDATE SET
+                               metadata_id = excluded.metadata_id,
+                               favorite = excluded.favorite,
+                               times_played = excluded.times_played,
+                               media_type = excluded.media_type,
+                               last_modified = excluded.last_modified,
+                               size = excluded.size,
+                               dateAdded = excluded.dateAdded;
+                """;
+
+        try (Connection connection = DatabaseManager.connect()) {
+            connection.setAutoCommit(false);
+
+            try (PreparedStatement statement = connection.prepareStatement(sql)) {
+                for (Track track : tracks) {
+                    TrackDTO dto = TrackMapper.toDTO(track);
+                    mapDtoToStatement(statement, dto);
+                    statement.addBatch();
+                }
+                statement.executeBatch();
+                connection.commit();
+            } catch (SQLException e) {
+                connection.rollback();
+                throw e;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
     }
 
-    public Track loadTrack(String path) {
+    public Track load(String path) {
         String sql = "SELECT * FROM tracks WHERE path = ?";
 
         try (
@@ -84,13 +130,12 @@ public class TrackStorage {
             statement.setString(1, path);
 
             try (ResultSet resultSet = statement.executeQuery()) {
-
                 if (!resultSet.next()) {
                     return null;
                 }
 
                 TrackDTO dto = new TrackDTO(
-                        resultSet.getString("title"),
+                        resultSet.getInt("metadata_id"),
                         resultSet.getInt("favorite") == 1,
                         resultSet.getInt("times_played"),
                         resultSet.getString("path"),
@@ -100,9 +145,12 @@ public class TrackStorage {
                         resultSet.getString("dateAdded")
                 );
 
-                return TrackMapper.fromDTO(dto);
-            }
 
+                Metadata metadata = metadataStorage.load(dto.metadataId());
+                Track track = TrackMapper.fromDTO(dto, metadata);
+                IO.println("TrackStorage.java line 152 Track load(String path):" + track.getMetadata().toText());
+                return track;
+            }
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -113,7 +161,7 @@ public class TrackStorage {
 
         String sql = """
                 UPDATE tracks
-                SET title = ?,
+                SET metadata_id = ?,
                     favorite = ?,
                     times_played = ?,
                     media_type = ?,
@@ -127,8 +175,7 @@ public class TrackStorage {
                 Connection connection = DatabaseManager.connect();
                 PreparedStatement statement = connection.prepareStatement(sql)
         ) {
-
-            statement.setString(1, dto.title());
+            statement.setInt(1, dto.metadataId());
             statement.setInt(2, dto.favorite() ? 1 : 0);
             statement.setInt(3, dto.timesPlayed());
             statement.setString(4, dto.type());
@@ -138,34 +185,28 @@ public class TrackStorage {
             statement.setString(8, dto.path());
 
             statement.executeUpdate();
-
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
     public void delete(Path path) {
-
         String sql = "DELETE FROM tracks WHERE path = ?";
 
         try (
                 Connection conn = DatabaseManager.connect();
                 PreparedStatement stmt = conn.prepareStatement(sql)
         ) {
-
             stmt.setString(1, path.toString());
-
             stmt.executeUpdate();
-
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
     public TrackSyncState getState(Path path) {
-
         String sql = """
-                SELECT last_modified, size ,media_type
+                SELECT last_modified, size, media_type
                 FROM tracks
                 WHERE path = ?
                 """;
@@ -174,11 +215,9 @@ public class TrackStorage {
                 Connection connection = DatabaseManager.connect();
                 PreparedStatement statement = connection.prepareStatement(sql)
         ) {
-
             statement.setString(1, path.toString());
 
             try (ResultSet rs = statement.executeQuery()) {
-
                 if (!rs.next()) {
                     return new TrackSyncState(false, 0, 0, "");
                 }
@@ -190,9 +229,19 @@ public class TrackStorage {
                         rs.getString("media_type")
                 );
             }
-
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Cannot read last modified time for " + path, e);
         }
+    }
+
+    private void mapDtoToStatement(PreparedStatement statement, TrackDTO dto) throws SQLException {
+        statement.setInt(1, dto.metadataId());
+        statement.setInt(2, dto.favorite() ? 1 : 0);
+        statement.setInt(3, dto.timesPlayed());
+        statement.setString(4, dto.path());
+        statement.setString(5, dto.type());
+        statement.setLong(6, dto.lastModified());
+        statement.setLong(7, dto.size());
+        statement.setString(8, dto.dateAdded());
     }
 }

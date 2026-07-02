@@ -1,7 +1,7 @@
 package application.dto;
 
 public record TrackDTO(
-        String title,
+        int metadataId,
         boolean favorite,
         int timesPlayed,
         String path,
@@ -15,7 +15,6 @@ public record TrackDTO(
     public String toString() {
         return "TrackDTO{" +
                 "favorite=" + favorite +
-                ", title='" + title +
                 ", timesPlayed=" + timesPlayed +
                 ", path='" + path +
                 ", type='" + type +

@@ -4,14 +4,14 @@ import domain.model.metadata.Metadata;
 import domain.model.media.MediaType;
 import domain.model.media.Track;
 import domain.model.media.TrackSyncState;
-import domain.model.media.TrackTask;
 import infrastructure.classifier.TrackClassifier;
-import infrastructure.factory.MediaMetadataFactory;
 import infrastructure.factory.TrackFactory;
 import infrastructure.media.DataResolver;
 import infrastructure.media.FiledataManager;
 import infrastructure.media.MetadataManager;
 import infrastructure.storage.TrackStorage;
+import infrastructure.storage.MetadataStorage;
+import infrastructure.storage.ArtworkStorage;
 
 import java.io.IOException;
 import java.nio.file.*;
@@ -24,93 +24,105 @@ public class MediaScanner {
             "mp3", "flac", "wav", "m4a", "ogg", "aac", "opus", "wma", "alac"
     );
 
+    private final Object dbLock = new Object();
+
     private final MetadataManager metadataManager;
     private final FiledataManager filedataManager;
-    private final TrackStorage storage;
+    private final TrackStorage trackStorage;
+    private final MetadataStorage metadataStorage;
+    private final ArtworkStorage artworkStorage;
     private final TrackClassifier classifier = new TrackClassifier();
     private final DataResolver resolver = new DataResolver();
 
-    public MediaScanner(MetadataManager metadataManager, FiledataManager filedataManager, TrackStorage storage) {
+    public MediaScanner(
+            MetadataManager metadataManager,
+            FiledataManager filedataManager,
+            TrackStorage trackStorage,
+            MetadataStorage metadataStorage,
+            ArtworkStorage artworkStorage
+    ) {
         this.metadataManager = metadataManager;
         this.filedataManager = filedataManager;
-        this.storage = storage;
+        this.trackStorage = trackStorage;
+        this.metadataStorage = metadataStorage;
+        this.artworkStorage = artworkStorage;
     }
 
     public List<Track> scan(Path root) {
-
-        int threads = Math.max(2,
-                Runtime.getRuntime().availableProcessors());
-
-        ExecutorService pool =
-                Executors.newFixedThreadPool(threads);
+        int threads = Math.max(2, Runtime.getRuntime().availableProcessors());
+        ExecutorService pool = Executors.newFixedThreadPool(threads);
 
         try {
-
             List<Path> paths = discover(root);
+            List<ScanResult> results = processAll(paths, pool);
 
-            List<TrackTask> tasks = processAll(paths, pool);
+            persist(results);
 
-            persist(tasks);
-
-            return tasks.stream()
-                    .map(TrackTask::track)
+            return results.stream()
+                    .map(ScanResult::track)
                     .toList();
-
         } catch (Exception e) {
             e.printStackTrace();
-            throw new RuntimeException(e);
-
+            throw new MediaScanException(e);
         } finally {
             pool.shutdown();
         }
     }
 
-    private void persist(List<TrackTask> tasks) {
+    private void persist(List<ScanResult> results) {
+        synchronized (dbLock) {
+            for (ScanResult result : results) {
+                Track track = result.track();
+                if (track == null) continue;
 
-        for (TrackTask task : tasks) {
-
-            Path path = task.path();
-            Track track = task.track();
-
-            try {
-
-                TrackSyncState state = storage.getState(path);
-
-                boolean exists = state.exists();
-
-                boolean needsUpdate = exists &&
-                        (
-                                state.lastModified() != Files.getLastModifiedTime(path).toMillis()
-                                        || state.fileSize() != Files.size(path)
-                        );
-
-                if (exists && !needsUpdate) {
+                if (result.exists() && !result.needsUpdate()) {
                     continue;
                 }
 
-                if (needsUpdate) {
-                    storage.update(track);
+                Metadata md = track.getMetadata();
+                if (result.needsUpdate()) {
+                    metadataStorage.update(md);
+                    IO.println("MediaScanner.java persist() line83:" + md.toText());
+
                 } else {
-                    storage.save(track);
+                    int id = metadataStorage.saveAndGetId(md);
+                    md.setId(id);
                 }
 
-            } catch (Exception e) {
-                System.err.println("DB sync failed: " + path);
-                e.printStackTrace();
+                trackStorage.save(track);
             }
         }
     }
 
-    private List<TrackTask> processAll(List<Path> paths, ExecutorService pool) {
-
-        List<Future<TrackTask>> futures = new ArrayList<>();
+    private List<ScanResult> processAll(List<Path> paths, ExecutorService pool) {
+        List<Future<ScanResult>> futures = new ArrayList<>();
 
         for (Path path : paths) {
+            futures.add(pool.submit(() -> {
+                TrackSyncState state = trackStorage.getState(path);
+                boolean exists = state.exists();
+                boolean needsUpdate = false;
 
-            TrackSyncState state = storage.getState(path);
-            Track track = processTrack(path, state);
-            futures.add(pool.submit(() -> new TrackTask(path, track)));
+                if (exists) {
+                    long diskLastModified = Files.getLastModifiedTime(path).toMillis();
+                    long diskSize = Files.size(path);
 
+                    long dbModifiedSecs = state.lastModified() / 1000;
+                    long diskModifiedSecs = diskLastModified / 1000;
+
+                    needsUpdate = (dbModifiedSecs != diskModifiedSecs || state.fileSize() != diskSize);
+                }
+
+                Track track;
+                if (exists && !needsUpdate) {
+                    track = trackStorage.load(path.toString());
+                    IO.println("MediaScanner.java processAll() line 119:" + track.getMetadata().toText());
+                } else {
+                    track = processTrack(path, state);
+                }
+
+                return new ScanResult(track, exists, needsUpdate);
+            }));
         }
 
         return futures.stream()
@@ -118,53 +130,62 @@ public class MediaScanner {
                     try {
                         return f.get();
                     } catch (Exception e) {
-                        throw new RuntimeException(e);
+                        throw new MediaScanException(e);
                     }
                 })
                 .toList();
     }
 
     private Track processTrack(Path path, TrackSyncState state) {
-        Track track = storage.loadTrack(path.toString());
+        Track track = trackStorage.load(path.toString());
         if (track == null) {
             track = TrackFactory.create(path);
         }
 
-        if (!state.exists()) {
-            track.setType(
-                    classifier.classify(path, track.getMetadata())
-            );
-        } else {
-            track.setType(
-                    MediaType.StringToMediaType(state.mediaType())
-            );
+        int existingMetadataId = track.getMetadata() != null ? track.getMetadata().getId() : 0;
+
+        IO.println("MediaScanner.java processTrack() line144:" + track.getMetadata().toText());
+        filedataManager.read(track);
+        metadataManager.read(track);
+        IO.println("MediaScanner.java processTrack() line147:" + track.getMetadata().toText());
+
+        if (existingMetadataId > 0 && track.getMetadata() != null) {
+            track.getMetadata().setId(existingMetadataId);
         }
 
-        track.setMediaMetadata(
-                MediaMetadataFactory.create(track.getType())
-        );
+        if (!state.exists()) {
+            track.setType(classifier.classify(path, track.getMetadata()));
+        } else {
+            track.setType(MediaType.StringToMediaType(state.mediaType()));
+        }
 
-        filedataManager.read(track);
+        byte[] rawArtworkBytes = metadataManager.extractRawArtworkBytes(path);
 
-        metadataManager.read(track);
+        if (rawArtworkBytes != null && rawArtworkBytes.length > 0) {
+            String artworkHash = UUID.nameUUIDFromBytes(rawArtworkBytes).toString();
+            String artworkFileName = artworkHash + ".jpg";
+
+            String diskPath;
+            try {
+                diskPath = artworkStorage.saveArtwork(rawArtworkBytes, artworkFileName);
+            } catch (IOException e) {
+                throw new MediaScanException("failed to save artwork " + path);
+            }
+
+            track.getMetadata().setArtworkPath(diskPath);
+        }
 
         Metadata metadata = track.getMetadata();
-
-        metadata.setDurationInSeconds(
-                resolver.resolveMissingDuration(track)
-        );
-
-        metadata.setTitle(
-                resolver.resolveMissingTitle(track)
-        );
+        if (metadata != null) {
+            metadata.setDurationInSeconds(resolver.resolveMissingDuration(track));
+            metadata.setTitle(resolver.resolveMissingTitle(track));
+        }
 
         return track;
     }
 
     private List<Path> discover(Path root) throws IOException {
-
         try (var paths = Files.walk(root)) {
-
             return paths
                     .filter(Files::isRegularFile)
                     .filter(this::isAudioFile)
@@ -181,5 +202,8 @@ public class MediaScanner {
 
         String ext = name.substring(dot + 1);
         return SUPPORTED_EXTENSIONS.contains(ext);
+    }
+
+    private record ScanResult(Track track, boolean exists, boolean needsUpdate) {
     }
 }

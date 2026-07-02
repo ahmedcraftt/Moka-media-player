@@ -4,6 +4,7 @@ import application.service.AppState;
 import application.service.LibraryService;
 import application.service.MediaService;
 import application.service.PlayerService;
+import domain.model.media.Track;
 import gui.controllers.RefreshEvent;
 import infrastructure.audio.AudioEngine;
 import infrastructure.audio.AudioPlayer;
@@ -16,6 +17,8 @@ import infrastructure.media.MetadataManager;
 import domain.model.library.MediaLibrary;
 import gui.controllers.MainViewController;
 
+import infrastructure.storage.ArtworkStorage;
+import infrastructure.storage.MetadataStorage;
 import infrastructure.storage.TrackStorage;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -33,11 +36,23 @@ public class MainApplication extends Application {
     private final AudioPlayer player = new AudioPlayer(engine);
     private final MetadataManager metadataManager = new JaudiotaggerManager();
     private final FiledataManager filedataManager = new FiledataManager();
-    private final TrackStorage trackStorage = new TrackStorage();
-    private final MediaScanner scanner = new MediaScanner(metadataManager, filedataManager, trackStorage);
+    private final ArtworkStorage artworkStorage = new ArtworkStorage();
+    private final MetadataStorage metadataStorage = new MetadataStorage();
+    private final TrackStorage trackStorage = new TrackStorage(metadataStorage);
+    private final MediaScanner scanner = new MediaScanner(
+            metadataManager,
+            filedataManager,
+            trackStorage,
+            metadataStorage,
+            artworkStorage
+    );
     private final MediaLibrary library = new MediaLibrary();
     private final LibraryService libraryService = new LibraryService();
-    private final MediaService mediaService = new MediaService(scanner, library, libraryService);
+    private final MediaService mediaService = new MediaService(
+            scanner,
+            library,
+            libraryService
+    );
     private final PlayerService playerService = new PlayerService(player);
     private final AppState appState = new AppState();
 
@@ -47,6 +62,7 @@ public class MainApplication extends Application {
     @Override
     public void start(Stage stage) throws IOException {
         trackStorage.initialize();
+        metadataStorage.initialize();
 
         FXMLLoader loader = new FXMLLoader(MainApplication.class.getResource("/views/main-view.fxml"));
         Parent root = loader.load();
@@ -59,6 +75,9 @@ public class MainApplication extends Application {
         controller.setMetadataManager(metadataManager);
         controller.setMediaLibrary(library);
         controller.setAppState(appState);
+        controller.setArtworkStorage(artworkStorage);
+        controller.setTrackStorage(trackStorage);
+        controller.setMetadataStorage(metadataStorage);
 
         player.setVolume(startingVolume);
 
@@ -68,7 +87,7 @@ public class MainApplication extends Application {
                 )
         );
 
-        Scene scene = new Scene(root, 1000, 750);
+        Scene scene = new Scene(root, 1080, 750);
         setupKeyBindings(root, scene, stage);
 
         stage.setTitle("Moka Player ☕");
@@ -124,7 +143,11 @@ public class MainApplication extends Application {
         if (mediaService != null && trackStorage != null) {
             trackStorage.saveAll(mediaService.getTracks());
         }
-
+        /*
+        for (Track track : mediaService.getTracks()) {
+            metadataStorage.save(track.getMetadata());
+        }
+        */
         if (engine != null) {
             engine.release();
         }

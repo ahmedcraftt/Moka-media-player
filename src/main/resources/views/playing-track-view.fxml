@@ -19,15 +19,17 @@
             <StackPane fx:id="spImageContainer" styleClass="image-circle">
                 <children>
 
-                    <ImageView fx:id="imgTrack" fitHeight="320.0" fitWidth="320.0" preserveRatio="true"
+                    <ImageView fx:id="imgTrack" fitHeight="400.0" fitWidth="400.0" preserveRatio="true"
                                styleClass="track-image"/>
                 </children>
             </StackPane>
 
-            <Label fx:id="lblTitle" styleClass="track-title" text="No Track Playing"/>
+            <Label fx:id="lblTitle" maxWidth="500.0" styleClass="track-title" text="No Track Playing"
+                   textAlignment="CENTER"/>
 
-            <Label fx:id="lblArtist" styleClass="track-artist"/>
-            <Button fx:id="btnMore" mnemonicParsing="false" styleClass="more-button" text="change artwork"/>
+            <Label fx:id="lblArtist" maxWidth="350.0" styleClass="track-artist" textAlignment="CENTER"/>
+            <Button fx:id="btnChangeArtwork" mnemonicParsing="false" onAction="#handleChangeArtwork"
+                    styleClass="more-button" text="change artwork"/>
             <padding>
                 <Insets bottom="5.0"/>
             </padding>
