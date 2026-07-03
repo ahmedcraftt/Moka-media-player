@@ -67,8 +67,8 @@ public class MainViewController {
     private MediaLibrary mediaLibrary;
     private AppState appState;
     private ArtworkStorage artStorage;
-    private TrackStorage trackStorage;
     private MetadataStorage metadataStorage;
+    private TrackStorage trackStorage;
 
     private MediaListViewController mediaListViewController;
 
@@ -81,12 +81,12 @@ public class MainViewController {
         this.artStorage = artStorage;
     }
 
-    public void setTrackStorage(TrackStorage trackStorage) {
-        this.trackStorage = trackStorage;
-    }
-
     public void setMetadataStorage(MetadataStorage metadataStorage) {
         this.metadataStorage = metadataStorage;
+    }
+
+    public void setTrackStorage(TrackStorage trackStorage) {
+        this.trackStorage = trackStorage;
     }
 
     public void setPlayer(AudioPlayer player) {
@@ -201,7 +201,6 @@ public class MainViewController {
             case FOLDERS -> loadFoldersView();
             case SETTINGS -> IO.println("Settings not implemented yet");
         }
-        IO.println(viewMode);
     }
 
     private void setUpMenuOptions() {
@@ -341,6 +340,7 @@ public class MainViewController {
             mediaListViewController.setPlayerService(playerService);
             mediaListViewController.setMetadataManager(metadataManager);
             mediaListViewController.setMetadataStorage(metadataStorage);
+            mediaListViewController.setTrackStorage(trackStorage);
             mediaListViewController.setMediaService(mediaService);
         } catch (IOException e) {
             System.err.println("CRITICAL: Could not find or load mediaList-view.fxml");
@@ -383,7 +383,7 @@ public class MainViewController {
             playingTrackViewController.initializeDependencies(
                     playerService,
                     artStorage,
-                    trackStorage,
+                    metadataStorage,
                     metadataManager
             );
             currentViewMode = ViewMode.TRACK;
@@ -412,6 +412,7 @@ public class MainViewController {
             currentViewMode = ViewMode.LYRICS;
         } catch (IOException e) {
             System.err.println("CRITICAL: Could not find or load lyrics-view.fxml");
+            e.printStackTrace();
         }
     }
 

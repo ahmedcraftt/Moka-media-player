@@ -4,6 +4,8 @@
 @import "listview.css";
 @import "menu.css";
 @import "player.css";
+@import "texts.css";
+@import "scroll-pane.css";
 
 .root {
     -fx-font-family: "Segoe UI", "Helvetica Neue", sans-serif;

@@ -3,6 +3,16 @@ package gui.controllers;
 import domain.model.metadata.Metadata;
 import domain.model.media.Track;
 import infrastructure.media.MetadataManager;
+import javafx.animation.FadeTransition;
+import javafx.animation.ParallelTransition;
+import javafx.animation.TranslateTransition;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.effect.BlurType;
+import javafx.scene.effect.DropShadow;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Text;
+import javafx.scene.text.TextFlow;
+import javafx.util.Duration;
 import platform.OS;
 import platform.OSDetector;
 
@@ -22,20 +32,27 @@ import java.util.concurrent.CompletableFuture;
 
 public class LyricsViewController {
 
-    private final SearchEngine searchEngine = SearchEngine.GOOGLE; //will let user change through settings in the future
     @FXML
-    private TextArea taLyrics;
+    private ScrollPane spLyricsContainer;
+
     @FXML
-    private Button btnSave;
+    private TextArea taLyricsEditor;
+
     @FXML
-    private Button btnEdit;
+    private TextFlow tflLyricsView;
+
     @FXML
-    private Button btnSearch;
+    private Button btnSave, btnEdit, btnSearch;
+
+    private SwitchMode currentSwitchMode = SwitchMode.VIEW;
+
+    private final Text txtLyrics = new Text();
 
     private Track track;
     private MetadataManager metadataManager;
     private String oldLyrics;
 
+    private final SearchEngine searchEngine = SearchEngine.GOOGLE;
 
     public void setTrack(Track track) {
         this.track = track;
@@ -55,8 +72,11 @@ public class LyricsViewController {
 
         Metadata data = track.getMetadata();
 
-        taLyrics.setText(data.getLyrics());
-        oldLyrics = taLyrics.getText();
+        txtLyrics.setText(data.getLyrics());
+
+        taLyricsEditor.setText(data.getLyrics());
+
+        oldLyrics = data.getLyrics();
     }
 
     public void handleSave(ActionEvent event) {
@@ -66,26 +86,25 @@ public class LyricsViewController {
 
         Metadata metadata = track.getMetadata();
 
-        metadata.setLyrics(taLyrics.getText().trim());
+        metadata.setLyrics(taLyricsEditor.getText().trim());
 
         metadataManager.write(track);
 
-        taLyrics.setEditable(false);
-        btnSave.setVisible(false);
-        btnEdit.setText("edit");
-        oldLyrics = taLyrics.getText();
+        txtLyrics.setText(metadata.getLyrics());
+
+        oldLyrics = metadata.getLyrics();
+
+        switchToViewMode();
+
     }
 
     public void handelEdit(ActionEvent event) {
-        if (btnEdit.getText().equalsIgnoreCase("edit")) {
-            taLyrics.setEditable(true);
-            btnSave.setVisible(true);
-            btnEdit.setText("cancel");
-        } else if (btnEdit.getText().equalsIgnoreCase("cancel")) {
-            taLyrics.setText(oldLyrics);
-            taLyrics.setEditable(false);
-            btnSave.setVisible(false);
-            btnEdit.setText("edit");
+        switch (currentSwitchMode) {
+            case VIEW -> switchToEditMode();
+            case EDIT -> {
+                taLyricsEditor.setText(oldLyrics);
+                switchToViewMode();
+            }
         }
     }
 
@@ -111,9 +130,7 @@ public class LyricsViewController {
             Platform.runLater(() -> {
                 try {
                     Desktop.getDesktop().browse(new URI(finalUrl));
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                } catch (URISyntaxException e) {
+                } catch (IOException | URISyntaxException e) {
                     throw new RuntimeException(e);
                 }
             });
@@ -128,4 +145,128 @@ public class LyricsViewController {
         }
 
     }
+
+    @FXML
+    private void initialize() {
+        tflLyricsView.getChildren().setAll(txtLyrics);
+
+        txtLyrics.getStyleClass().add("lyrics-text");
+
+        txtLyrics.wrappingWidthProperty().bind(
+                tflLyricsView.widthProperty().subtract(24)
+        );
+
+        tflLyricsView.setVisible(true);
+        tflLyricsView.setManaged(true);
+
+        taLyricsEditor.setVisible(false);
+        taLyricsEditor.setManaged(false);
+    }
+
+    private void switchToEditMode() {
+        currentSwitchMode = SwitchMode.EDIT;
+        taLyricsEditor.setEditable(true);
+        btnSave.setVisible(true);
+        btnEdit.setText("Cancel");
+
+        taLyricsEditor.setTranslateX(30);
+        taLyricsEditor.setOpacity(0);
+
+        taLyricsEditor.setVisible(true);
+        taLyricsEditor.setManaged(true);
+
+        editModeTransaction();
+    }
+
+    private void editModeTransaction() {
+        TranslateTransition out = new TranslateTransition(Duration.millis(250), tflLyricsView);
+        out.setFromX(0);
+        out.setToX(-30);
+
+        FadeTransition fadeOut = new FadeTransition(Duration.millis(250), tflLyricsView);
+        fadeOut.setFromValue(1);
+        fadeOut.setToValue(0);
+
+        TranslateTransition in = new TranslateTransition(Duration.millis(250), taLyricsEditor);
+        in.setFromX(30);
+        in.setToX(0);
+
+        FadeTransition fadeIn = new FadeTransition(Duration.millis(250), taLyricsEditor);
+        fadeIn.setFromValue(0);
+        fadeIn.setToValue(1);
+
+        ParallelTransition transition =
+                new ParallelTransition(out, fadeOut, in, fadeIn);
+
+        transition.setOnFinished(e -> {
+            tflLyricsView.setVisible(false);
+            tflLyricsView.setManaged(false);
+            taLyricsEditor.requestFocus();
+        });
+
+        transition.play();
+    }
+
+    private void switchToViewMode() {
+        currentSwitchMode = SwitchMode.VIEW;
+        taLyricsEditor.setEditable(false);
+        btnSave.setVisible(false);
+        btnEdit.setText("edit");
+
+        taLyricsEditor.setVisible(false);
+        taLyricsEditor.setManaged(false);
+
+        tflLyricsView.setVisible(true);
+        tflLyricsView.setManaged(true);
+
+        viewModeTransaction();
+
+        spLyricsContainer.setEffect(new DropShadow(
+                BlurType.GAUSSIAN,
+                Color.rgb(200, 155, 109, 0.25),
+                12,
+                0.3,
+                0,
+                0
+        ));
+    }
+
+    private void viewModeTransaction() {
+        tflLyricsView.setTranslateX(30);
+        tflLyricsView.setOpacity(0);
+
+        tflLyricsView.setVisible(true);
+        tflLyricsView.setManaged(true);
+
+        TranslateTransition out = new TranslateTransition(Duration.millis(250), taLyricsEditor);
+        out.setFromX(0);
+        out.setToX(-30);
+
+        FadeTransition fadeOut = new FadeTransition(Duration.millis(250), taLyricsEditor);
+        fadeOut.setFromValue(1);
+        fadeOut.setToValue(0);
+
+        TranslateTransition in = new TranslateTransition(Duration.millis(250), tflLyricsView);
+        in.setFromX(30);
+        in.setToX(0);
+
+        FadeTransition fadeIn = new FadeTransition(Duration.millis(250), tflLyricsView);
+        fadeIn.setFromValue(0);
+        fadeIn.setToValue(1);
+
+        ParallelTransition transition =
+                new ParallelTransition(out, fadeOut, in, fadeIn);
+
+        transition.setOnFinished(e -> {
+            taLyricsEditor.setVisible(false);
+            taLyricsEditor.setManaged(false);
+        });
+
+        transition.play();
+    }
+
+    private enum SwitchMode {
+        EDIT, VIEW
+    }
+
 }
