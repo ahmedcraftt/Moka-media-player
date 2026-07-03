@@ -7,6 +7,7 @@ import gui.utils.TimeFormater;
 import infrastructure.media.MetadataManager;
 import infrastructure.storage.MetadataStorage;
 
+import infrastructure.storage.TrackStorage;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -44,6 +45,7 @@ public class MediaListViewController {
     private PlayerService playerService;
     private static MetadataManager metadataManager;
     private static MetadataStorage metadataStorage;
+    private static TrackStorage trackStorage;
     private static MediaService mediaService;
 
     private SortByModes currentSortMode = SortByModes.TITLE;
@@ -59,6 +61,10 @@ public class MediaListViewController {
 
     public void setMetadataStorage(MetadataStorage metadataStorage) {
         MediaListViewController.metadataStorage = metadataStorage;
+    }
+
+    public void setTrackStorage(TrackStorage trackStorage) {
+        MediaListViewController.trackStorage = trackStorage;
     }
 
     public void setMediaService(MediaService mediaService) {
@@ -212,7 +218,7 @@ public class MediaListViewController {
         TrackDataViewController controller = loader.getController();
         controller.setTrack(track);
         controller.setMetadataManager(metadataManager);
-        controller.setStorage(metadataStorage);
+        controller.setStorage(trackStorage);
         controller.setMediaService(mediaService);
 
         Stage stage = new Stage();

@@ -2,6 +2,8 @@ package domain.model.media;
 
 import domain.model.metadata.Filedata;
 import domain.model.metadata.Metadata;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.net.URI;
 import java.nio.file.Path;
@@ -9,6 +11,8 @@ import java.time.LocalDate;
 import java.util.Objects;
 
 public class Track implements AudioSource, Displayable {
+
+    private static final Logger logger = LoggerFactory.getLogger(Track.class);
 
     private final Filedata filedata;
     private final Metadata metadata;
@@ -23,22 +27,41 @@ public class Track implements AudioSource, Displayable {
         filedata.setFileName(fileName);
         filedata.setFilePath(filePath);
         dateAdded = LocalDate.now();
-        IO.println("Track constructor(String fileName, Path filePath) called for " + this.getTitle());
+
+        logger.debug("Track constructor(String, Path) called for: {}", this.getTitle());
     }
 
-    public Track(Metadata metadata, int metadataId, boolean favorite, int timesPlayed, MediaType type, Path filepath, LocalDate dateAdded) {
+    public Track(Metadata metadata,
+                 int metadataId,
+                 boolean favorite,
+                 int timesPlayed,
+                 MediaType type,
+                 LocalDate dateAdded,
+                 Path filepath,
+                 String filename,
+                 LocalDate dateCreated,
+                 LocalDate dateModified,
+                 LocalDate lastAccessed,
+                 String fileType,
+                 long fileSize
+    ) {
         this.metadata = metadata;
         this.metadata.setId(metadataId);
-        filedata = new Filedata();
-        filedata.setFilePath(filepath);
+        filedata = new Filedata(
+                filepath,
+                filename,
+                dateCreated,
+                dateModified,
+                lastAccessed,
+                fileType,
+                fileSize);
         setFavorite(favorite);
         setTimesPlayed(timesPlayed);
         setType(type);
         this.dateAdded = dateAdded;
-        IO.println("Track constructor(Metadata metadata,int metadataId,boolean " +
-                "favorite, int timesPlayed, MediaType type, " +
-                "Path filepath, LocalDate dateAdded) called  for " + this.getTitle());
-        IO.println("Track.java line 43:" + this.metadata.toText());
+
+        logger.debug("Track multi-arg constructor called for: {}", this.getTitle());
+        logger.debug("Metadata state: {}", this.metadata.toText());
     }
 
     @Override

@@ -3,6 +3,8 @@ package infrastructure.storage;
 import application.dto.MetadataDTO;
 import domain.model.metadata.Metadata;
 import infrastructure.mapper.MetadataMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -12,6 +14,8 @@ import java.sql.Statement;
 import java.util.List;
 
 public class MetadataStorage {
+
+    private static final Logger logger = LoggerFactory.getLogger(MetadataStorage.class);
 
     public void initialize() {
         String createTableSql = """
@@ -44,17 +48,17 @@ public class MetadataStorage {
             try (Statement statement = connection.createStatement()) {
                 statement.executeQuery(validationSql);
             } catch (SQLException e) {
-                System.err.println("WARNING: 'metadata' table layout is outdated or corrupted. Re-initializing table...");
+                logger.warn("'metadata' table layout is outdated or corrupted. Re-initializing table...", e);
 
                 try (Statement statement = connection.createStatement()) {
                     statement.execute("DROP TABLE IF EXISTS metadata;");
                     statement.execute(createTableSql);
-                    System.out.println("SUCCESS: 'metadata' table successfully recreated.");
+                    logger.info("'metadata' table successfully recreated.");
                 }
             }
         } catch (SQLException e) {
-            System.err.println("CRITICAL: Failed to initialize Metadata storage subsystem.");
-            e.printStackTrace();
+            // 3. Replaced critical err print stream with an error log level
+            logger.error("CRITICAL: Failed to initialize Metadata storage subsystem.", e);
         }
     }
 
@@ -76,7 +80,7 @@ public class MetadataStorage {
             mapDtoToStatement(statement, dto);
             statement.executeUpdate();
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.error("Failed to save metadata for track title: '{}'", dto.title(), e);
         }
     }
 
@@ -87,7 +91,7 @@ public class MetadataStorage {
                  description, lyrics, language, year, artwork_path,
                  series, artist, series_artist, track_number)
                  VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?)
-                \s""";
+                """;
 
         try (Connection connection = DatabaseManager.connect()) {
             connection.setAutoCommit(false);
@@ -105,7 +109,7 @@ public class MetadataStorage {
                 throw e;
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.error("Failed to execute batch metadata save operation.", e);
         }
     }
 
@@ -116,7 +120,7 @@ public class MetadataStorage {
                                       description, lyrics, language, year, artwork_path,\s
                                       series, artist, series_artist, track_number)
                  VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?)
-                \s""";
+                """;
         try (
                 Connection connection = DatabaseManager.connect();
                 PreparedStatement statement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)
@@ -127,14 +131,15 @@ public class MetadataStorage {
 
             try (ResultSet generatedKeys = statement.getGeneratedKeys()) {
                 if (generatedKeys.next()) {
-                    IO.println("MetadataStorage.jave saveAndGetId(Metadata metadata) line 130:" + metadata.getId() + " " + generatedKeys.getInt(1));
+                    logger.debug("Metadata identity mapping verified: domain ID = {}, generated DB ID = {}",
+                            metadata.getId(), generatedKeys.getInt(1));
                     connection.commit();
                     return generatedKeys.getInt(1);
                 }
             }
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.error("Database error occurred while running identity save for track: '{}'", dto.title(), e);
         }
         throw new RuntimeException("Failed to save track metadata record; identity generation failed.");
     }
@@ -169,12 +174,16 @@ public class MetadataStorage {
                     );
 
                     Metadata metadata = MetadataMapper.fromDTO(dto);
-                    IO.println("MetadataStorage.java line 172 Metadata load(int id):" + metadata.toText());
+
+                    if (metadata != null) {
+                        logger.debug("Successfully loaded metadata ID {}: {}", id, metadata.toText());
+                    }
+
                     return metadata;
                 }
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.error("Failed to load metadata record with ID: {}", id, e);
         }
         return null;
     }
@@ -188,7 +197,7 @@ public class MetadataStorage {
                  description = ?, lyrics = ?, language = ?, year = ?, artwork_path = ?,\s
                  series = ?, artist = ?, series_artist = ?, track_number = ?
                  WHERE metadata_id = ?
-                \s""";
+                """;
 
         try (
                 Connection connection = DatabaseManager.connect();
@@ -199,7 +208,7 @@ public class MetadataStorage {
 
             statement.executeUpdate();
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.error("Failed to update metadata record with ID: {}", dto.id(), e);
         }
     }
 
@@ -213,7 +222,7 @@ public class MetadataStorage {
             statement.setInt(1, id);
             statement.executeUpdate();
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.error("Failed to delete metadata record with ID: {}", id, e);
         }
     }
 

@@ -24,10 +24,11 @@
                 </children>
             </StackPane>
 
-            <Label fx:id="lblTitle" maxWidth="500.0" styleClass="track-title" text="No Track Playing"
+            <Label fx:id="lblTitle" alignment="CENTER" maxWidth="500.0" styleClass="track-title" text="No Track Playing"
                    textAlignment="CENTER"/>
 
-            <Label fx:id="lblArtist" maxWidth="350.0" styleClass="track-artist" textAlignment="CENTER"/>
+            <Label fx:id="lblArtist" alignment="CENTER" maxWidth="350.0" styleClass="track-artist"
+                   textAlignment="CENTER"/>
             <Button fx:id="btnChangeArtwork" mnemonicParsing="false" onAction="#handleChangeArtwork"
                     styleClass="more-button" text="change artwork"/>
             <padding>

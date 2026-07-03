@@ -1,0 +1,15 @@
+.lyrics-text {
+    -fx-font-size: 15px;
+    -fx-font-family: "Inter";
+    -fx-fill: #f2e6d9;
+}
+
+.lyrics-flow {
+    -fx-line-spacing: 5;
+    -fx-padding: 8 12;
+    -fx-background-color: #3a2a22;
+    -fx-background-radius: 8;
+    -fx-border-color: #583e32;
+    -fx-border-radius: 8;
+    -fx-text-alignment: center;
+}

@@ -2,8 +2,9 @@ package infrastructure.media;
 
 import domain.model.metadata.Filedata;
 import domain.model.media.Track;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -14,14 +15,16 @@ import java.time.ZoneId;
 
 public class FiledataManager {
 
+    private static final Logger logger = LoggerFactory.getLogger(FiledataManager.class);
+
     public void read(Track track) {
 
         Filedata data = track.getFiledata();
-
-        File file = new File(data.getFilePath().toUri());
         Path path = Path.of(data.getFilePath().toUri());
 
         try {
+            logger.debug("Reading filedata of track: {}", path);
+
             BasicFileAttributes attributes = Files.readAttributes(path, BasicFileAttributes.class);
 
             data.setDateCreated(toLocalDate(attributes.creationTime()));
@@ -30,9 +33,10 @@ public class FiledataManager {
             data.setFileSize(attributes.size());
             data.setFileType(Files.probeContentType(path));
 
+            logger.debug("track data: {}", data);
+
         } catch (IOException e) {
-            System.err.println("file data read failed for: " + track.getFiledata().getFilePath());
-            e.printStackTrace();
+            logger.error("File data read failed for: {}", track.getFiledata().getFilePath(), e);
         }
     }
 

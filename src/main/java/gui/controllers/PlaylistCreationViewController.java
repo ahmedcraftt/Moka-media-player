@@ -3,7 +3,6 @@ package gui.controllers;
 import domain.model.media.Playlist;
 import domain.model.media.Track;
 import gui.utils.TimeFormater;
-import infrastructure.factory.PlaylistFactory;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -46,7 +45,7 @@ public class PlaylistCreationViewController {
 
         boolean favorite = cbFavorite.isSelected();
 
-        createdPlaylist = PlaylistFactory.create(title, favorite);
+        createdPlaylist = new Playlist(title, favorite);
         createdPlaylist.addTracks(
                 lvTracks.getSelectionModel().getSelectedItems()
         );

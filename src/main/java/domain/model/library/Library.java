@@ -45,14 +45,6 @@ public class Library {
         folders.add(folder);
     }
 
-    public void repair() {
-
-        if (folders == null) {
-            folders = new ArrayList<>();
-        }
-
-    }
-
     public void setFolders(ArrayList<LibraryFolder> folders) {
         this.folders = folders;
     }

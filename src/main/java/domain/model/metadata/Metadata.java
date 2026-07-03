@@ -1,11 +1,15 @@
 package domain.model.metadata;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.Year;
-import java.util.Objects;
 
 public class Metadata {
+
+    private static final Logger logger = LoggerFactory.getLogger(Metadata.class);
 
     private int id;
     private int trackNumber = 0;
@@ -19,7 +23,7 @@ public class Metadata {
     private String series = "Unknown";
     private String artist = "Unknown";
     private String seriesArtist = "Unknown";
-    private String artworkPath;
+    private String artworkPath = "Unknown";
     private Language language;
     private Year year = Year.of(0);
 
@@ -58,7 +62,8 @@ public class Metadata {
         setArtist(artist);
         setSeriesArtist(seriesArtist);
         setTrackNumber(trackNumber);
-        IO.println("Metadata: " + this.toText());
+
+        logger.debug("Metadata initialized: {}", this.toText());
     }
 
     public int getId() {
@@ -70,7 +75,7 @@ public class Metadata {
     }
 
     public void setLyrics(String lyrics) {
-        if (!lyrics.isBlank() && lyrics != null) {
+        if (lyrics != null && !lyrics.isBlank()) {
             this.lyrics = lyrics;
         } else this.lyrics = "Unknown";
     }
@@ -84,7 +89,7 @@ public class Metadata {
     }
 
     public void setDescription(String description) {
-        if (!description.isBlank() && description != null) {
+        if (description != null && !description.isBlank()) {
             this.description = description;
         } else this.description = "Unknown";
     }
@@ -94,7 +99,7 @@ public class Metadata {
     }
 
     public void setGenre(String genre) {
-        if (!genre.isBlank() && genre != null) {
+        if (genre != null && !genre.isBlank()) {
             this.genre = genre;
         } else this.genre = "Unknown";
     }
@@ -104,7 +109,7 @@ public class Metadata {
     }
 
     public void setTitle(String title) {
-        if (!title.isBlank() && title != null) {
+        if (title != null && !title.isBlank()) {
             this.title = title;
         } else this.title = "Unknown";
     }
@@ -118,7 +123,7 @@ public class Metadata {
     }
 
     public void setLanguage(String language) {
-        if (!language.isBlank() && language != null) {
+        if (language != null && !language.isBlank()) {
             this.language = new Language(language);
         } else throw new IllegalArgumentException("Language cannot be null or blank");
     }
@@ -228,10 +233,7 @@ public class Metadata {
                 '}';
     }
 
-
     public String toText() {
-        return "metadata object" +
-                "id:" + this.id +
-                "title:" + this.title;
+        return "metadata object id: " + this.id + ", title: " + this.title;
     }
 }

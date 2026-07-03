@@ -20,17 +20,16 @@ public class ArtworkStorage {
         }
     }
 
-    public String saveArtwork(byte[] rawBytes, String mimeType) throws IOException {
+    public String saveArtwork(byte[] rawBytes, String fileName) throws IOException {
         if (rawBytes == null || rawBytes.length == 0) {
             return null;
         }
 
-        String extension = determineExtension(mimeType);
+        Path targetFile = storageDir.resolve(fileName);
 
-        String uniqueFilename = UUID.randomUUID() + extension;
-        Path targetFile = storageDir.resolve(uniqueFilename);
-
-        Files.write(targetFile, rawBytes);
+        if (Files.notExists(targetFile)) {
+            Files.write(targetFile, rawBytes);
+        }
 
         return targetFile.toAbsolutePath().toString();
     }

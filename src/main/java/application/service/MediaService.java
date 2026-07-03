@@ -4,11 +4,15 @@ import domain.model.library.MediaLibrary;
 import domain.model.media.Playlist;
 import domain.model.media.Track;
 import infrastructure.scanner.MediaScanner;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
 public class MediaService {
+
+    private static final Logger logger = LoggerFactory.getLogger(MediaService.class);
 
     private final MediaScanner scanner;
     private final MediaLibrary mediaLibrary;
@@ -33,7 +37,7 @@ public class MediaService {
 
     public void loadActiveLibrary() {
         if (libraryService.getActiveLibrary() == null) {
-            System.err.println("WARN: Attempted to load library, but no active library selection exists.");
+            logger.warn("Attempted to load library, but no active library selection exists.");
             return;
         }
 
@@ -52,12 +56,12 @@ public class MediaService {
     }
 
     private void rebuildMetadataCaches() {
-
         this.cachedTracks = mediaLibrary.getTracks();
         this.cachedPodcasts = mediaLibrary.getPodcasts();
         this.cachedSongs = mediaLibrary.getSongs();
         this.cachedAudioBooks = mediaLibrary.getAudiobooks();
-        IO.println("MediaService.java line 60:" + this.cachedTracks.size());
+
+        logger.debug("Tracks cache rebuilt. Total tracks: {}", this.cachedTracks.size());
 
         List<Track> allTracks = getTracks();
 
@@ -136,7 +140,6 @@ public class MediaService {
     public List<Track> getTracks() {
         return cachedTracks;
     }
-
 
     public List<Playlist> getAlbums() {
         return cachedAlbums;

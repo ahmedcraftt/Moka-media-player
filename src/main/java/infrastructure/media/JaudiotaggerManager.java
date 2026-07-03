@@ -10,6 +10,9 @@ import org.jaudiotagger.tag.Tag;
 import org.jaudiotagger.tag.images.Artwork;
 import org.jaudiotagger.tag.images.ArtworkFactory;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.File;
 import java.nio.file.Path;
 import java.time.Year;
@@ -17,7 +20,10 @@ import java.time.format.DateTimeParseException;
 
 public class JaudiotaggerManager implements MetadataManager {
 
+    private static final Logger logger = LoggerFactory.getLogger(JaudiotaggerManager.class);
+
     public void write(Track track) {
+        logger.debug("Writing metadata for track: {}", track.getFilePath());
         File file = null;
 
         try {
@@ -28,9 +34,7 @@ public class JaudiotaggerManager implements MetadataManager {
             }
 
             AudioFile audioFile = AudioFileIO.read(file);
-
             Tag tag = audioFile.getTagOrCreateAndSetDefault();
-
             Metadata metadata = track.getMetadata();
 
             safeSet(tag, FieldKey.TITLE, track.getTitle());
@@ -52,9 +56,7 @@ public class JaudiotaggerManager implements MetadataManager {
 
                 if (artworkFile.exists()) {
                     tag.deleteArtworkField();
-
                     Artwork artwork = ArtworkFactory.createArtworkFromFile(artworkFile);
-
                     tag.setField(artwork);
                 }
             } else {
@@ -64,18 +66,16 @@ public class JaudiotaggerManager implements MetadataManager {
             audioFile.commit();
 
         } catch (Exception e) {
-            System.err.println("Failed to write metadata for: " + file);
+            logger.error("Failed to write metadata for file: {}", file, e);
         }
     }
 
     public void read(Track track) {
-
         try {
-
             Metadata metadata = track.getMetadata();
+            logger.debug("Reading metadata for: {}", track.getFiledata().getFilePath());
 
             File file = new File(track.getResource());
-
             AudioFile audioFile = AudioFileIO.read(file);
             Tag tag = audioFile.getTag();
             AudioHeader header = audioFile.getAudioHeader();
@@ -84,8 +84,7 @@ public class JaudiotaggerManager implements MetadataManager {
                 throw new IllegalArgumentException("Invalid or corrupted audio file: " + file);
             }
 
-            if(tag != null) {
-
+            if (tag != null) {
                 metadata.setTitle(tag.getFirst(FieldKey.TITLE));
                 metadata.setGenre(tag.getFirst(FieldKey.GENRE));
                 metadata.setYear(safeParseYear(tag.getFirst(FieldKey.YEAR)));
@@ -101,9 +100,7 @@ public class JaudiotaggerManager implements MetadataManager {
                     metadata.setBitrate(br);
                 }
 
-                int sr = header.getSampleRateAsNumber();
-                metadata.setSamplerate(sr);
-
+                // Cleaned up the duplicate samplerate mutation statement here
                 metadata.setSamplerate(header.getSampleRateAsNumber());
                 metadata.setDescription(tag.getFirst(FieldKey.COMMENT));
                 metadata.setLyrics(tag.getFirst(FieldKey.LYRICS));
@@ -112,13 +109,11 @@ public class JaudiotaggerManager implements MetadataManager {
                 metadata.setSeries(tag.getFirst(FieldKey.ALBUM));
                 metadata.setSeriesArtist(tag.getFirst(FieldKey.ALBUM_ARTIST));
                 metadata.setTrackNumber(safeParseInt(tag.getFirst(FieldKey.TRACK)));
-
             }
 
-        } catch(Exception e) {
-            System.err.println("Metadata read failed for: " + track.getFiledata().getFilePath());
+        } catch (Exception e) {
+            logger.error("Metadata read failed for path: {}", track.getFiledata().getFilePath(), e);
         }
-
     }
 
     @Override
@@ -129,19 +124,17 @@ public class JaudiotaggerManager implements MetadataManager {
 
         try {
             File file = path.toFile();
-
             AudioFile audioFile = AudioFileIO.read(file);
             Tag tag = audioFile.getTag();
 
             if (tag != null) {
                 Artwork artwork = tag.getFirstArtwork();
-
                 if (artwork != null) {
                     return artwork.getBinaryData();
                 }
             }
         } catch (Exception e) {
-            System.err.println("Failed to extract artwork from: " + path + " - " + e.getMessage());
+            logger.error("Failed to extract artwork from path: {}", path, e);
         }
 
         return null;
@@ -168,11 +161,9 @@ public class JaudiotaggerManager implements MetadataManager {
     private void safeSet(Tag tag, FieldKey key, String value) throws Exception {
         if (value != null) {
             value = value.trim();
-
             if (!value.isEmpty()) {
                 tag.setField(key, value);
             }
         }
     }
-
 }

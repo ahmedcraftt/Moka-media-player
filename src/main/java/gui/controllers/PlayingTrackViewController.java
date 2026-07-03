@@ -4,7 +4,7 @@ import application.service.PlayerService;
 import domain.model.media.Track;
 import infrastructure.media.MetadataManager;
 import infrastructure.storage.ArtworkStorage;
-import infrastructure.storage.TrackStorage;
+import infrastructure.storage.MetadataStorage;
 import javafx.animation.Animation;
 import javafx.animation.Interpolator;
 import javafx.animation.RotateTransition;
@@ -22,12 +22,17 @@ import javafx.scene.shape.Circle;
 import javafx.stage.FileChooser;
 import javafx.util.Duration;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.Objects;
 
 public class PlayingTrackViewController {
+
+    private static final Logger logger = LoggerFactory.getLogger(PlayingTrackViewController.class);
 
     @FXML
     private Label lblTitle;
@@ -45,16 +50,16 @@ public class PlayingTrackViewController {
 
     private PlayerService playerService;
     private ArtworkStorage artworkStorage;
-    private TrackStorage trackStorage;
+    private MetadataStorage metadataStorage;
     private MetadataManager metadataManager;
 
     public void initializeDependencies(PlayerService playerService,
                                        ArtworkStorage artworkStorage,
-                                       TrackStorage trackStorage,
+                                       MetadataStorage metadataStorage,
                                        MetadataManager metadataManager) {
         this.playerService = playerService;
         this.artworkStorage = artworkStorage;
-        this.trackStorage = trackStorage;
+        this.metadataStorage = metadataStorage;
         this.metadataManager = metadataManager;
 
         playerService.currentTrackProperty().addListener((obs, oldT, newT) -> updateUI(newT));
@@ -98,7 +103,6 @@ public class PlayingTrackViewController {
         btnChangeArtwork.setVisible(false);
     }
 
-
     @FXML
     private void handleChangeArtwork() {
         Track currentTrack = playerService.getCurrentTrack();
@@ -120,17 +124,21 @@ public class PlayingTrackViewController {
 
                 if (brandNewDiskPath != null) {
                     currentTrack.getMetadata().setArtworkPath(brandNewDiskPath);
-
                     metadataManager.write(currentTrack);
+                    metadataStorage.update(currentTrack.getMetadata());
 
-                    trackStorage.update(currentTrack);
+                    logger.info("Successfully updated artwork for track '{}' to local path: {}",
+                            currentTrack.getTitle(), brandNewDiskPath);
 
                     updateUI(currentTrack);
                 } else {
+                    logger.warn("Artwork processing failed. Storage returned null path for file target: {}",
+                            selectedFile.getName());
                     showErrorAlert("Storage Error", "Could not save the artwork image to disk storage.");
                 }
             } catch (IOException e) {
-                e.printStackTrace();
+                logger.error("Exception encountered while reading or assigning new artwork file from input: {}",
+                        selectedFile.getAbsolutePath(), e);
                 showErrorAlert("File IO Error", "Failed to read selected file: " + e.getMessage());
             }
         }
@@ -166,7 +174,7 @@ public class PlayingTrackViewController {
             lblArtist.setText("Unknown Artist");
         }
 
-        System.out.println("showing:" + track);
+        logger.debug("Refreshing track display interface layout target: {}", track);
 
         String artworkPath = track.getMetadata().getArtworkPath();
 
@@ -176,6 +184,7 @@ public class PlayingTrackViewController {
                 String imageFileUrl = artworkFile.toURI().toString();
                 imgTrack.setImage(new Image(imageFileUrl, true));
             } else {
+                logger.warn("Configured artwork path missing on disk space: {}. Applying UI fallbacks.", artworkPath);
                 loadDefaultArtwork();
             }
         } else {

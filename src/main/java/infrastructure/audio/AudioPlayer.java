@@ -4,11 +4,15 @@ import domain.audio.PlaybackListener;
 import domain.audio.PlaybackState;
 import domain.audio.RepeatMode;
 import domain.model.media.Track;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class AudioPlayer {
+
+    private static final Logger logger = LoggerFactory.getLogger(AudioPlayer.class);
 
     /**
      * Core audio playback controller responsible for managing playback state,
@@ -68,7 +72,7 @@ public class AudioPlayer {
     }
 
     public void printStatus() {
-        System.out.println(this);
+        logger.debug("Current AudioPlayer status: {}", this);
     }
 
     // =========================
@@ -146,25 +150,25 @@ public class AudioPlayer {
      * <p>This method is automatically triggered by the AudioEngine when a track finishes.</p>
      */
     public void playNext() {
-        System.out.println("playing next");
+        logger.debug("playNext() triggered");
+
         switch (repeatMode) {
             case LOOP_CURRENT_ONE -> {
                 if (currentTrack != null) {
-                    System.out.println("looping " + currentTrack);
+                    logger.debug("Looping current track: {}", currentTrack);
                     play(currentTrack);
                 }
             }
 
-            case PLAY_ONE ->{
-                System.out.println("Stoping");
+            case PLAY_ONE -> {
+                logger.debug("Stopping playback - Play One mode");
                 stop();
             }
 
             case STOP_WHEN_QUEUE_END -> {
                 Track nextTrack = queue.next();
-
                 if (nextTrack != null) {
-                    System.out.println("playing " + nextTrack);
+                    logger.debug("Playing next track from queue: {}", nextTrack);
                     currentTrack = nextTrack;
                     play(currentTrack);
                 } else {
@@ -174,9 +178,8 @@ public class AudioPlayer {
 
             case LOOP_CURRENT_QUEUE -> {
                 Track nextTrack = queue.next();
-
                 if (nextTrack == null) {
-                    System.out.println("playing " + nextTrack);
+                    logger.debug("Queue end reached, looping queue.");
                     queue.reset();
                     nextTrack = queue.next();
                 }
@@ -197,16 +200,18 @@ public class AudioPlayer {
      * <p>If playback is at the beginning (progress == 0), it loads the previous track
      * from history. Otherwise, it resets the current track to the beginning.</p>
      */
-    public void playPrev(){
-        if (engine.getProgress()==0f) {
+    public void playPrev() {
+        if (engine.getProgress() == 0f) {
             if (currentTrack != null) {
                 Track prevTrack = queue.prev();
                 if (prevTrack != null) {
-                    System.out.println("playing: " + prevTrack);
+                    logger.debug("Playing previous track: {}", prevTrack);
                     play(prevTrack);
                 }
             }
-        }else engine.setProgress(0f);
+        } else {
+            engine.setProgress(0f);
+        }
     }
 
     /**
@@ -399,12 +404,14 @@ public class AudioPlayer {
 
     @Override
     public String toString() {
+        String trackInfo = (currentTrack != null) ? currentTrack.toText() : "None";
+
         return "\nAudioPlayer{" +
                 ", \nqueue= " + queue +
                 ", \nengine= " + engine +
                 ", \nstate= " + state +
                 ", \nrepeatMode= " + repeatMode +
-                ", \ncurrentTrack= " + currentTrack.toText() +
+                ", \ncurrentTrack= " + trackInfo +
                 '}';
     }
 }

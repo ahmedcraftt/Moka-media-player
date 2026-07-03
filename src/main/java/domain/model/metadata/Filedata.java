@@ -6,13 +6,31 @@ import java.time.LocalDate;
 public class Filedata {
 
     private Path filePath;
-    private String fileName = "Unknown";
+    private String fileName;
     private LocalDate dateCreated;
     private LocalDate dateModified;
     private LocalDate lastAccessed;
-    private String fileType = "Unknown";
-    private long fileSize = 0;
+    private String fileType;
+    private long fileSize;
     public Filedata() {
+    }
+
+    public Filedata(
+            Path path,
+            String fileName,
+            LocalDate dateCreated,
+            LocalDate dateModified,
+            LocalDate lastAccessed,
+            String fileType,
+            long fileSize
+    ) {
+        this.filePath = path;
+        this.fileName = fileName;
+        this.dateCreated = dateCreated;
+        this.dateModified = dateModified;
+        this.lastAccessed = lastAccessed;
+        this.fileType = fileType;
+        this.fileSize = fileSize;
     }
 
     public Path getFilePath() {

@@ -3,9 +3,6 @@ package infrastructure.mapper;
 import domain.model.media.Playlist;
 import application.dto.PlaylistDTO;
 import domain.model.library.MediaLibrary;
-import infrastructure.factory.PlaylistFactory;
-
-import static java.util.Arrays.stream;
 
 public class PlaylistMapper {
 
@@ -17,7 +14,7 @@ public class PlaylistMapper {
     }
 
     public static Playlist fromDTO(PlaylistDTO dto, MediaLibrary library) {
-        Playlist p = PlaylistFactory.create(dto.title(), dto.favorite());
+        Playlist p = new Playlist(dto.title(), dto.favorite());
 
         for (String path : dto.trackPaths()) {
             library.getTracks().stream()

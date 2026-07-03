@@ -18,7 +18,6 @@ public class ArchDetector {
             return CpuArch.ARM32;
         }
 
-        IO.println(arch);
         return CpuArch.UNKNOWN;
     }
 

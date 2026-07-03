@@ -40,7 +40,6 @@ module org.example.moka_music_player {
     opens infrastructure.scanner to javafx.base;
     opens infrastructure.storage to javafx.base;
     opens infrastructure.mapper to javafx.base;
-    opens infrastructure.factory to javafx.base;
     opens domain.audio to javafx.base;
     opens gui.utils to javafx.fxml;
     opens domain.model.media to com.google.gson, javafx.base;

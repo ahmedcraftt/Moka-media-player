@@ -568,7 +568,7 @@
     <routine id="213" parent="1" name="padr"/>
     <schema id="214" parent="1" name="main">
       <Current>1</Current>
-      <LastIntrospectionLocalTimestamp>2026-07-02.03:23:24</LastIntrospectionLocalTimestamp>
+      <LastIntrospectionLocalTimestamp>2026-07-03.12:41:09</LastIntrospectionLocalTimestamp>
     </schema>
     <argument id="215" parent="14">
       <ArgumentDirection>R</ArgumentDirection>
@@ -1925,6 +1925,18 @@
     </column>
     <column id="658" parent="629" name="metadata_id">
       <Position>9</Position>
+      <StoredType>integer|0s</StoredType>
+    </column>
+    <column id="659" parent="629" name="dateCreated">
+      <Position>10</Position>
+      <StoredType>integer|0s</StoredType>
+    </column>
+    <column id="660" parent="629" name="lastAccessed">
+      <Position>11</Position>
+      <StoredType>integer|0s</StoredType>
+    </column>
+    <column id="661" parent="629" name="fileType">
+      <Position>12</Position>
       <StoredType>integer|0s</StoredType>
     </column>
   </database-model>

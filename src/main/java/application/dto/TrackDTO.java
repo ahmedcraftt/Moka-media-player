@@ -1,5 +1,7 @@
 package application.dto;
 
+import org.jetbrains.annotations.NotNull;
+
 public record TrackDTO(
         int metadataId,
         boolean favorite,
@@ -8,9 +10,13 @@ public record TrackDTO(
         String type,
         long lastModified,
         long size,
-        String dateAdded
+        String dateAdded,
+        String dateCreated,
+        String lastAccessed,
+        String fileType
 ) {
 
+    @NotNull
     @Override
     public String toString() {
         return "TrackDTO{" +

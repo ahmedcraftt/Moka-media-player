@@ -4,7 +4,6 @@ import application.service.AppState;
 import application.service.LibraryService;
 import application.service.MediaService;
 import application.service.PlayerService;
-import domain.model.media.Track;
 import gui.controllers.RefreshEvent;
 import infrastructure.audio.AudioEngine;
 import infrastructure.audio.AudioPlayer;
@@ -27,10 +26,17 @@ import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.IOException;
 import java.util.Objects;
 
 public class MainApplication extends Application {
+
+    private static final Logger logger = LoggerFactory.getLogger(MainApplication.class);
+
+    public static final long START_TIME = System.nanoTime();
 
     private final AudioEngine engine = new VLCJAudioEngine();
     private final AudioPlayer player = new AudioPlayer(engine);
@@ -61,12 +67,21 @@ public class MainApplication extends Application {
 
     @Override
     public void start(Stage stage) throws IOException {
+        long t = System.nanoTime();
+
         trackStorage.initialize();
+        logger.debug("Track storage subsystem initialized in {} ms", (System.nanoTime() - t) / 1_000_000.0);
+        t = System.nanoTime();
+
         metadataStorage.initialize();
+        logger.debug("Metadata storage subsystem initialized in {} ms", (System.nanoTime() - t) / 1_000_000.0);
+        t = System.nanoTime();
 
         FXMLLoader loader = new FXMLLoader(MainApplication.class.getResource("/views/main-view.fxml"));
         Parent root = loader.load();
         MainViewController controller = loader.getController();
+        logger.debug("Main view FXML scene resolution took {} ms", (System.nanoTime() - t) / 1_000_000.0);
+        t = System.nanoTime();
 
         controller.setPlayer(player);
         controller.setMediaService(mediaService);
@@ -76,8 +91,9 @@ public class MainApplication extends Application {
         controller.setMediaLibrary(library);
         controller.setAppState(appState);
         controller.setArtworkStorage(artworkStorage);
-        controller.setTrackStorage(trackStorage);
         controller.setMetadataStorage(metadataStorage);
+        controller.setTrackStorage(trackStorage);
+        logger.debug("MainViewController Dependency injection took {} ms", (System.nanoTime() - t) / 1_000_000.0);
 
         player.setVolume(startingVolume);
 
@@ -99,6 +115,10 @@ public class MainApplication extends Application {
         root.addEventHandler(RefreshEvent.REFRESH, event -> controller.handleRefresh());
 
         stage.show();
+
+        long elapsed = System.nanoTime() - MainLauncher.START_TIME;
+        logger.info("Moka Player UI engine successfully built and loaded in {} seconds",
+                String.format("%.3f", (float) elapsed / 1_000_000_000.0f));
     }
 
     private void setupKeyBindings(Parent root, Scene scene, Stage stage) {
@@ -138,19 +158,25 @@ public class MainApplication extends Application {
 
     @Override
     public void stop() throws Exception {
-        System.out.println("Closing Moka Player...");
+        long start = System.nanoTime();
+        long t = start;
+
+        logger.info("Intercepted shutdown signal. Closing Moka Player...");
 
         if (mediaService != null && trackStorage != null) {
             trackStorage.saveAll(mediaService.getTracks());
         }
-        /*
-        for (Track track : mediaService.getTracks()) {
-            metadataStorage.save(track.getMetadata());
-        }
-        */
+        logger.debug("TrackStorage snapshot write-back took {} ms", (System.nanoTime() - t) / 1_000_000.0);
+        t = System.nanoTime();
+
         if (engine != null) {
             engine.release();
         }
+        logger.debug("AudioEngine native platform drivers released in {} ms", (System.nanoTime() - t) / 1_000_000.0);
+
+        long elapsed = System.nanoTime() - start;
+        logger.info("Total teardown context finalized in {} seconds. Application terminated.",
+                String.format("%.3f", (float) elapsed / 1_000_000_000.0f));
 
         super.stop();
     }

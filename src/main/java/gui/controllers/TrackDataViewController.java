@@ -7,6 +7,7 @@ import domain.model.media.MediaType;
 import domain.model.media.Track;
 import infrastructure.media.MetadataManager;
 import infrastructure.storage.MetadataStorage;
+import infrastructure.storage.TrackStorage;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -14,10 +15,14 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.time.Year;
 
 public class TrackDataViewController {
+
+    private static final Logger logger = LoggerFactory.getLogger(TrackDataViewController.class);
 
     // Read-only file info and metadata
 
@@ -83,7 +88,7 @@ public class TrackDataViewController {
     private Track track;
 
     private MetadataManager metadataManager;
-    private MetadataStorage storage;
+    private TrackStorage storage;
     private MediaService mediaService;
 
 
@@ -101,7 +106,7 @@ public class TrackDataViewController {
         this.metadataManager = metadataManager;
     }
 
-    public void setStorage(MetadataStorage storage) {
+    public void setStorage(TrackStorage storage) {
         this.storage = storage;
     }
 
@@ -179,13 +184,15 @@ public class TrackDataViewController {
             try {
                 metadata.setYear(Year.of(Integer.parseInt(yearText)));
             } catch (NumberFormatException e) {
-                System.out.println("Invalid year value");
+                logger.warn("Failed to parse track year value: '{}'", yearText);
             }
         }
         String number = tfAlbumNumber.getText().trim();
 
         track.setType(MediaType.StringToMediaType(tfType.getText()));
-        IO.println("TrackDataViewController line 178:" + track.getType());
+
+        logger.debug("Track media type updated to: {}", track.getType());
+
         metadata.setTitle(tfTitle.getText().trim());
         metadata.setGenre(tfGenre.getText().trim());
         metadata.setLanguage(tfLang.getText().trim());
@@ -198,13 +205,13 @@ public class TrackDataViewController {
             try {
                 metadata.setTrackNumber(Integer.parseInt(number));
             } catch (NumberFormatException e) {
-                System.out.println("Invalid album number");
+                logger.warn("Failed to parse track/album number sequence: '{}'", number);
             }
         }
 
         metadataManager.write(track);
 
-        storage.update(metadata);
+        storage.update(track);
 
         mediaService.refreshMetadataCaches();
 

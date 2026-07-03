@@ -5,12 +5,18 @@ import domain.model.media.TrackSyncState;
 import domain.model.media.Track;
 import domain.model.metadata.Metadata;
 import infrastructure.mapper.TrackMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.nio.file.Path;
 import java.sql.*;
 import java.util.List;
 
 public class TrackStorage {
+
+    private static final Logger logger = LoggerFactory.getLogger(TrackStorage.class);
+
+    private static final int SCHEMA_VERSION = 2;
 
     private final MetadataStorage metadataStorage;
 
@@ -19,41 +25,14 @@ public class TrackStorage {
     }
 
     public void initialize() {
-        String createTableSql = """
-                CREATE TABLE IF NOT EXISTS tracks (
-                path TEXT PRIMARY KEY,
-                metadata_id INTEGER,
-                favorite INTEGER NOT NULL,
-                times_played INTEGER NOT NULL,
-                media_type TEXT NOT NULL,
-                last_modified INTEGER NOT NULL,
-                size INTEGER NOT NULL,
-                dateAdded TEXT NOT NULL,
-                FOREIGN KEY(metadata_id) REFERENCES metadata(metadata_id) ON DELETE SET NULL
-                );
-                """;
-
-        String validationSql = "SELECT path, metadata_id, favorite, times_played FROM tracks LIMIT 0";
-
         try (Connection connection = DatabaseManager.connect()) {
-            try (Statement statement = connection.createStatement()) {
-                statement.execute(createTableSql);
-            }
 
-            try (Statement statement = connection.createStatement()) {
-                statement.executeQuery(validationSql);
-            } catch (SQLException e) {
-                System.err.println("WARNING: 'tracks' table layout is outdated or corrupted. Re-initializing table...");
+            createTableIfMissing(connection);
 
-                try (Statement statement = connection.createStatement()) {
-                    statement.execute("DROP TABLE IF EXISTS tracks;");
-                    statement.execute(createTableSql);
-                    System.out.println("SUCCESS: 'tracks' table successfully recreated.");
-                }
-            }
+            migrate(connection);
+
         } catch (SQLException e) {
-            System.err.println("CRITICAL: Failed to initialize Track storage subsystem.");
-            e.printStackTrace();
+            logger.error("Failed to initialize Track storage.", e);
         }
     }
 
@@ -61,8 +40,9 @@ public class TrackStorage {
         TrackDTO dto = TrackMapper.toDTO(track);
 
         String sql = """
-                INSERT INTO tracks(metadata_id, favorite, times_played, path, media_type, last_modified, size, dateAdded)
-                           VALUES(?,?,?,?,?,?,?,?)
+                INSERT INTO tracks(metadata_id, favorite, times_played, path, media_type,
+                                   last_modified, size, dateAdded,dateCreated,lastAccessed,fileType)
+                           VALUES(?,?,?,?,?,?,?,?,?,?,?)
                            ON CONFLICT(path) DO UPDATE SET
                                metadata_id = excluded.metadata_id,
                                favorite = excluded.favorite,
@@ -70,7 +50,10 @@ public class TrackStorage {
                                media_type = excluded.media_type,
                                last_modified = excluded.last_modified,
                                size = excluded.size,
-                               dateAdded = excluded.dateAdded;
+                               dateAdded = excluded.dateAdded,
+                               dateCreated = excluded.dateCreated,
+                               lastAccessed = excluded.lastAccessed,
+                               fileType = excluded.fileType;
                 """;
 
         try (
@@ -82,14 +65,15 @@ public class TrackStorage {
             statement.executeUpdate();
             connection.commit();
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.error("Failed to save track data for path: {}", dto.path(), e);
         }
     }
 
     public void saveAll(List<Track> tracks) {
         String sql = """
-                INSERT INTO tracks(metadata_id, favorite, times_played, path, media_type, last_modified, size, dateAdded)
-                           VALUES(?,?,?,?,?,?,?,?)
+                INSERT INTO tracks(metadata_id, favorite, times_played, path,
+                                   media_type, last_modified, size, dateAdded,dateCreated,lastAccessed,fileType)
+                           VALUES(?,?,?,?,?,?,?,?,?,?,?)
                            ON CONFLICT(path) DO UPDATE SET
                                metadata_id = excluded.metadata_id,
                                favorite = excluded.favorite,
@@ -97,7 +81,10 @@ public class TrackStorage {
                                media_type = excluded.media_type,
                                last_modified = excluded.last_modified,
                                size = excluded.size,
-                               dateAdded = excluded.dateAdded;
+                               dateAdded = excluded.dateAdded,
+                               dateCreated = excluded.dateCreated,
+                               lastAccessed = excluded.lastAccessed,
+                               fileType = excluded.fileType;
                 """;
 
         try (Connection connection = DatabaseManager.connect()) {
@@ -116,7 +103,7 @@ public class TrackStorage {
                 throw e;
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.error("Failed to execute batch track save operation.", e);
         }
     }
 
@@ -142,17 +129,23 @@ public class TrackStorage {
                         resultSet.getString("media_type"),
                         resultSet.getLong("last_modified"),
                         resultSet.getLong("size"),
-                        resultSet.getString("dateAdded")
+                        resultSet.getString("dateAdded"),
+                        resultSet.getString("dateCreated"),
+                        resultSet.getString("lastAccessed"),
+                        resultSet.getString("fileType")
                 );
-
 
                 Metadata metadata = metadataStorage.load(dto.metadataId());
                 Track track = TrackMapper.fromDTO(dto, metadata);
-                IO.println("TrackStorage.java line 152 Track load(String path):" + track.getMetadata().toText());
+
+                if (track != null && track.getMetadata() != null) {
+                    logger.debug("Loaded track metadata: {}", track.getMetadata().toText());
+                }
+
                 return track;
             }
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Error loading track from path: " + path, e);
         }
     }
 
@@ -167,7 +160,10 @@ public class TrackStorage {
                     media_type = ?,
                     last_modified = ?,
                     size = ?,
-                    dateAdded = ?
+                    dateAdded = ?,
+                    dateCreated = ?,
+                    lastAccessed = ?,
+                    fileType = ?
                 WHERE path = ?
                 """;
 
@@ -182,11 +178,15 @@ public class TrackStorage {
             statement.setLong(5, dto.lastModified());
             statement.setLong(6, dto.size());
             statement.setString(7, dto.dateAdded());
-            statement.setString(8, dto.path());
+            statement.setString(8, dto.dateCreated());
+            statement.setString(9, dto.lastAccessed());
+            statement.setString(10, dto.fileType());
+            statement.setString(11, dto.path());
+
 
             statement.executeUpdate();
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.error("Failed to update track record at path: {}", dto.path(), e);
         }
     }
 
@@ -200,7 +200,7 @@ public class TrackStorage {
             stmt.setString(1, path.toString());
             stmt.executeUpdate();
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.error("Failed to delete track record at path: {}", path, e);
         }
     }
 
@@ -243,5 +243,133 @@ public class TrackStorage {
         statement.setLong(6, dto.lastModified());
         statement.setLong(7, dto.size());
         statement.setString(8, dto.dateAdded());
+        statement.setString(9, dto.dateCreated());
+        statement.setString(10, dto.lastAccessed());
+        statement.setString(11, dto.fileType());
+    }
+
+    private void createTableIfMissing(Connection connection) throws SQLException {
+
+        String sql = """
+                CREATE TABLE IF NOT EXISTS tracks (
+                    path TEXT PRIMARY KEY,
+                    metadata_id INTEGER,
+                    favorite INTEGER NOT NULL,
+                    times_played INTEGER NOT NULL,
+                    media_type TEXT NOT NULL,
+                    last_modified INTEGER NOT NULL,
+                    size INTEGER NOT NULL,
+                    dateAdded TEXT NOT NULL,
+                    dateCreated TEXT NOT NULL,
+                    lastAccessed TEXT NOT NULL,
+                    fileType TEXT NOT NULL,
+                    FOREIGN KEY(metadata_id)
+                        REFERENCES metadata(metadata_id)
+                        ON DELETE SET NULL
+                );
+                """;
+
+        try (Statement stmt = connection.createStatement()) {
+            stmt.execute(sql);
+        }
+    }
+
+    private void migrate(Connection connection) throws SQLException {
+
+        int version = getSchemaVersion(connection);
+
+        while (version < SCHEMA_VERSION) {
+
+            switch (version) {
+
+                case 0 -> migrateToVersion1(connection);
+
+                case 1 -> migrateToVersion2(connection);
+
+                default -> throw new IllegalStateException(
+                        "Unknown database version: " + version);
+
+            }
+
+            version++;
+            setSchemaVersion(connection, version);
+        }
+    }
+
+    private int getSchemaVersion(Connection connection) throws SQLException {
+
+        try (Statement stmt = connection.createStatement();
+             ResultSet rs = stmt.executeQuery("PRAGMA user_version")) {
+
+            return rs.next() ? rs.getInt(1) : 0;
+        }
+    }
+
+    private void setSchemaVersion(Connection connection, int version)
+            throws SQLException {
+
+        try (Statement stmt = connection.createStatement()) {
+            stmt.execute("PRAGMA user_version = " + version);
+        }
+    }
+
+    private void migrateToVersion1(Connection connection) {
+
+        logger.info("Migrating database -> Version 1");
+
+        // Nothing needed because createTableIfMissing()
+        // already creates the newest schema.
+
+    }
+
+    private void migrateToVersion2(Connection connection)
+            throws SQLException {
+
+        logger.info("Migrating database -> Version 2");
+
+        executeIfMissing(connection,
+                "dateCreated",
+                "ALTER TABLE tracks ADD COLUMN dateCreated TEXT NOT NULL DEFAULT ''");
+
+        executeIfMissing(connection,
+                "lastAccessed",
+                "ALTER TABLE tracks ADD COLUMN lastAccessed TEXT NOT NULL DEFAULT ''");
+
+        executeIfMissing(connection,
+                "fileType",
+                "ALTER TABLE tracks ADD COLUMN fileType TEXT NOT NULL DEFAULT ''");
+    }
+
+    private void executeIfMissing(Connection connection,
+                                  String column,
+                                  String sql)
+            throws SQLException {
+
+        if (hasColumn(connection, column))
+            return;
+
+        try (Statement stmt = connection.createStatement()) {
+            stmt.execute(sql);
+        }
+
+        logger.info("Added '{}' column.", column);
+    }
+
+    private boolean hasColumn(Connection connection,
+                              String column)
+            throws SQLException {
+
+        try (Statement stmt = connection.createStatement();
+             ResultSet rs = stmt.executeQuery("PRAGMA table_info(tracks)")) {
+
+            while (rs.next()) {
+
+                if (column.equalsIgnoreCase(rs.getString("name"))) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 }

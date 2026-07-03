@@ -5,11 +5,16 @@ import platform.CpuArch;
 import platform.OS;
 import platform.OSDetector;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
 public final class VlcConfig {
+
+    private static final Logger logger = LoggerFactory.getLogger(VlcConfig.class);
 
     private VlcConfig() {
     }
@@ -40,7 +45,6 @@ public final class VlcConfig {
         };
 
         try {
-            // Folder containing the JAR
             Path appDir = Path.of(
                     VlcConfig.class
                             .getProtectionDomain()
@@ -53,14 +57,11 @@ public final class VlcConfig {
 
             if (Files.exists(vlcPath.resolve("plugins"))) {
                 System.setProperty("jna.library.path", vlcPath.toString());
-                System.setProperty("VLC_PLUGIN_PATH",
-                        vlcPath.resolve("plugins").toString());
+                System.setProperty("VLC_PLUGIN_PATH", vlcPath.resolve("plugins").toString());
 
-                System.out.println("✅ Using bundled VLC:");
-                System.out.println("   " + vlcPath);
+                logger.info("Using bundled VLC binaries resolved at: {}", vlcPath);
             } else {
-                System.out.println("⚠ Bundled VLC not found.");
-                System.out.println("Falling back to system VLC installation.");
+                logger.warn("Bundled VLC binaries not found at layout: {}. Falling back to standard system VLC paths.", vlcPath);
             }
 
         } catch (URISyntaxException e) {

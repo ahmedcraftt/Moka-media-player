@@ -2,6 +2,8 @@ package infrastructure.audio;
 
 import domain.model.media.AudioSource;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import uk.co.caprica.vlcj.factory.MediaPlayerFactory;
 import uk.co.caprica.vlcj.player.base.MediaPlayer;
 import uk.co.caprica.vlcj.player.base.MediaPlayerEventAdapter;
@@ -10,6 +12,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class VLCJAudioEngine implements AudioEngine {
+
+    private static final Logger logger = LoggerFactory.getLogger(VLCJAudioEngine.class);
 
     private final MediaPlayer mediaPlayer;
     private final MediaPlayerFactory factory;
@@ -29,7 +33,7 @@ public class VLCJAudioEngine implements AudioEngine {
         mediaPlayer.events().addMediaPlayerEventListener(new MediaPlayerEventAdapter() {
             @Override
             public void finished(MediaPlayer mediaPlayer) {
-                System.out.println("FINISHED EVENT FIRED");
+                logger.debug("VLCJ native media player event hook: [FINISHED] triggered.");
 
                 Runnable callback = currentOnFinished;
 
@@ -52,6 +56,9 @@ public class VLCJAudioEngine implements AudioEngine {
     public void play(AudioSource source, Runnable onTrackFinished) {
         this.currentOnFinished = onTrackFinished;
         String resource = source.getResource().toString();
+
+        logger.debug("Preparing native audio pipeline channel selection for resource: {}", resource);
+
         mediaPlayer.controls().stop();
         mediaPlayer.media().prepare(resource);
         mediaPlayer.controls().play();
@@ -123,6 +130,8 @@ public class VLCJAudioEngine implements AudioEngine {
      */
     @Override
     public void release() {
+        logger.info("Initiating teardown sequences for native VLCJ audio layers...");
+
         mediaPlayer.release();
         factory.release();
         callbackExecutor.shutdown();

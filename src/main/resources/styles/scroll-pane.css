@@ -1,0 +1,22 @@
+.scroll-pane {
+    -fx-background-color: #3a2a22;
+    -fx-background-insets: 0;
+    -fx-padding: 0;
+}
+
+.scroll-pane > .viewport {
+    -fx-background-color: #3a2a22;
+}
+
+.scroll-pane > .corner {
+    -fx-background-color: #3a2a22;
+}
+
+.scroll-pane .scroll-bar:vertical {
+    -fx-background-color: transparent;
+}
+
+.scroll-pane .thumb {
+    -fx-background-color: #241b16;
+    -fx-background-radius: 10;
+}
