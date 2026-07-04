@@ -8,6 +8,7 @@ import uk.co.caprica.vlcj.factory.MediaPlayerFactory;
 import uk.co.caprica.vlcj.player.base.MediaPlayer;
 import uk.co.caprica.vlcj.player.base.MediaPlayerEventAdapter;
 
+import java.net.URI;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -49,18 +50,17 @@ public class VLCJAudioEngine implements AudioEngine {
     /**
      * Starts playback of the given media source.
      *
-     * @param source audio source
+     * @param resource audio source
      * @param onTrackFinished callback triggered when playback completes
      */
     @Override
-    public void play(AudioSource source, Runnable onTrackFinished) {
+    public void play(URI resource, Runnable onTrackFinished) {
         this.currentOnFinished = onTrackFinished;
-        String resource = source.getResource().toString();
 
         logger.debug("Preparing native audio pipeline channel selection for resource: {}", resource);
 
         mediaPlayer.controls().stop();
-        mediaPlayer.media().prepare(resource);
+        mediaPlayer.media().prepare(String.valueOf(resource));
         mediaPlayer.controls().play();
     }
 

@@ -83,6 +83,32 @@ public class MediaScanner {
         }
     }
 
+    public void scanArtwork(Track track) {
+        Path path = track.getFilePath();
+
+        byte[] rawArtworkBytes = metadataManager.extractRawArtworkBytes(path);
+
+        logger.debug("Artwork byte length extracted: {}", (rawArtworkBytes == null ? "null" : rawArtworkBytes.length));
+
+        if (rawArtworkBytes != null && rawArtworkBytes.length > 0) {
+            String artworkHash = UUID.nameUUIDFromBytes(rawArtworkBytes).toString();
+            String artworkFileName = artworkHash + ".jpg";
+            String diskPath;
+
+            logger.debug("Processing artwork injection -> Title: '{}', Hash: {}, Existing Path: {}",
+                    track.getMetadata().getTitle(), artworkHash, track.getMetadata().getArtworkPath());
+
+            try {
+                diskPath = artworkStorage.saveArtwork(rawArtworkBytes, artworkFileName);
+            } catch (IOException e) {
+                logger.error("Failed to write artwork file to disk for track: {}", path, e);
+                throw new MediaScanException("failed to save artwork " + path);
+            }
+
+            track.getMetadata().setArtworkPath(diskPath);
+        }
+    }
+
     private void persist(List<TrackSyncResult> results) {
         synchronized (dbLock) {
             for (TrackSyncResult result : results) {
@@ -174,27 +200,7 @@ public class MediaScanner {
             track.setType(MediaType.StringToMediaType(state.mediaType()));
         }
 
-        byte[] rawArtworkBytes = metadataManager.extractRawArtworkBytes(path);
-
-        logger.debug("Artwork byte length extracted: {}", (rawArtworkBytes == null ? "null" : rawArtworkBytes.length));
-
-        if (rawArtworkBytes != null && rawArtworkBytes.length > 0) {
-            String artworkHash = UUID.nameUUIDFromBytes(rawArtworkBytes).toString();
-            String artworkFileName = artworkHash + ".jpg";
-            String diskPath;
-
-            logger.debug("Processing artwork injection -> Title: '{}', Hash: {}, Existing Path: {}",
-                    track.getMetadata().getTitle(), artworkHash, track.getMetadata().getArtworkPath());
-
-            try {
-                diskPath = artworkStorage.saveArtwork(rawArtworkBytes, artworkFileName);
-            } catch (IOException e) {
-                logger.error("Failed to write artwork file to disk for track: {}", path, e);
-                throw new MediaScanException("failed to save artwork " + path);
-            }
-
-            track.getMetadata().setArtworkPath(diskPath);
-        }
+        scanArtwork(track);
 
         Metadata metadata = track.getMetadata();
         if (metadata != null) {

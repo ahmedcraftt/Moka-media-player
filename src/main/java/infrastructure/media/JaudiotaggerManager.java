@@ -2,9 +2,11 @@ package infrastructure.media;
 
 import domain.model.metadata.Metadata;
 import domain.model.media.Track;
+import infrastructure.scanner.MediaScanException;
 import org.jaudiotagger.audio.AudioFileIO;
 import org.jaudiotagger.audio.AudioHeader;
 import org.jaudiotagger.audio.AudioFile;
+import org.jaudiotagger.tag.FieldDataInvalidException;
 import org.jaudiotagger.tag.FieldKey;
 import org.jaudiotagger.tag.Tag;
 import org.jaudiotagger.tag.images.Artwork;
@@ -14,9 +16,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.Year;
 import java.time.format.DateTimeParseException;
+import java.util.UUID;
 
 public class JaudiotaggerManager implements MetadataManager {
 
@@ -49,19 +54,7 @@ public class JaudiotaggerManager implements MetadataManager {
             safeSet(tag, FieldKey.ALBUM_ARTIST, metadata.getSeriesArtist());
             safeSet(tag, FieldKey.TRACK, String.valueOf(metadata.getTrackNumber()));
 
-            String artworkPath = metadata.getArtworkPath();
-
-            if (artworkPath != null && !artworkPath.isBlank()) {
-                File artworkFile = new File(artworkPath);
-
-                if (artworkFile.exists()) {
-                    tag.deleteArtworkField();
-                    Artwork artwork = ArtworkFactory.createArtworkFromFile(artworkFile);
-                    tag.setField(artwork);
-                }
-            } else {
-                tag.deleteArtworkField();
-            }
+            writeArtwork(metadata, tag);
 
             audioFile.commit();
 
@@ -138,6 +131,23 @@ public class JaudiotaggerManager implements MetadataManager {
         }
 
         return null;
+    }
+
+    private void writeArtwork(Metadata metadata, Tag tag) throws
+            FieldDataInvalidException, IOException {
+        String artworkPath = metadata.getArtworkPath();
+
+        if (artworkPath != null && !artworkPath.isBlank()) {
+            File artworkFile = new File(artworkPath);
+
+            if (artworkFile.exists()) {
+                tag.deleteArtworkField();
+                Artwork artwork = ArtworkFactory.createArtworkFromFile(artworkFile);
+                tag.setField(artwork);
+            }
+        } else {
+            tag.deleteArtworkField();
+        }
     }
 
     private int safeParseInt(String value) {

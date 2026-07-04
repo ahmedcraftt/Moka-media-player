@@ -4,6 +4,7 @@ import application.service.AppState;
 import application.service.LibraryService;
 import application.service.MediaService;
 import application.service.PlayerService;
+import domain.model.media.Track;
 import gui.controllers.RefreshEvent;
 import infrastructure.audio.AudioEngine;
 import infrastructure.audio.AudioPlayer;
@@ -15,11 +16,12 @@ import infrastructure.scanner.MediaScanner;
 import infrastructure.media.MetadataManager;
 import domain.model.library.MediaLibrary;
 import gui.controllers.MainViewController;
-
 import infrastructure.storage.ArtworkStorage;
 import infrastructure.storage.MetadataStorage;
 import infrastructure.storage.TrackStorage;
+
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -30,43 +32,78 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
+
+import static domain.audio.RepeatMode.*;
+
+/**
+ * Main JavaFX application entry point for Moka Player.
+ * <p>
+ * Responsibilities:
+ * - Initializes all core application services and infrastructure.
+ * - Creates and wires together the dependency graph manually
+ * (without a dependency injection framework).
+ * - Loads the main JavaFX UI and injects required services into the
+ * MainViewController.
+ * - Configures global keyboard shortcuts and application state.
+ * - Performs startup performance logging.
+ * - Handles graceful shutdown by persisting track data and releasing
+ * native audio resources.
+ * <p>
+ * Startup sequence:
+ * 1. Initialize SQLite storage.
+ * 2. Construct infrastructure and application services.
+ * 3. Load the JavaFX scene.
+ * 4. Inject dependencies into the controller.
+ * 5. Show the main window.
+ * 6. Fire an initial RefreshEvent to populate the UI.
+ * <p>
+ * Shutdown sequence:
+ * 1. Save track state.
+ * 2. Release VLCJ/native audio resources.
+ * 3. Log shutdown timings.
+ */
 
 public class MainApplication extends Application {
 
     private static final Logger logger = LoggerFactory.getLogger(MainApplication.class);
 
-    public static final long START_TIME = System.nanoTime();
-
-    private final AudioEngine engine = new VLCJAudioEngine();
-    private final AudioPlayer player = new AudioPlayer(engine);
+    private final AudioEngine audioEngine = new VLCJAudioEngine();
+    private final AudioPlayer audioPlayer = new AudioPlayer(audioEngine);
     private final MetadataManager metadataManager = new JaudiotaggerManager();
     private final FiledataManager filedataManager = new FiledataManager();
     private final ArtworkStorage artworkStorage = new ArtworkStorage();
     private final MetadataStorage metadataStorage = new MetadataStorage();
     private final TrackStorage trackStorage = new TrackStorage(metadataStorage);
-    private final MediaScanner scanner = new MediaScanner(
+    private final MediaScanner mediaScanner = new MediaScanner(
             metadataManager,
             filedataManager,
             trackStorage,
             metadataStorage,
             artworkStorage
     );
-    private final MediaLibrary library = new MediaLibrary();
+    private final MediaLibrary mediaLibrary = new MediaLibrary();
     private final LibraryService libraryService = new LibraryService();
     private final MediaService mediaService = new MediaService(
-            scanner,
-            library,
+            mediaScanner,
+            mediaLibrary,
             libraryService
     );
-    private final PlayerService playerService = new PlayerService(player);
+    private final PlayerService playerService = new PlayerService(audioPlayer);
     private final AppState appState = new AppState();
 
     private final int startingVolume = 50;
     private int oldVolume = startingVolume;
+    private Path startupFile;
 
     @Override
     public void start(Stage stage) throws IOException {
+        System.out.println(getParameters().getRaw());
+
         long t = System.nanoTime();
 
         trackStorage.initialize();
@@ -83,19 +120,19 @@ public class MainApplication extends Application {
         logger.debug("Main view FXML scene resolution took {} ms", (System.nanoTime() - t) / 1_000_000.0);
         t = System.nanoTime();
 
-        controller.setPlayer(player);
+        controller.setPlayer(audioPlayer);
         controller.setMediaService(mediaService);
         controller.setLibraryService(libraryService);
         controller.setPlayerService(playerService);
         controller.setMetadataManager(metadataManager);
-        controller.setMediaLibrary(library);
+        controller.setMediaLibrary(mediaLibrary);
         controller.setAppState(appState);
         controller.setArtworkStorage(artworkStorage);
         controller.setMetadataStorage(metadataStorage);
         controller.setTrackStorage(trackStorage);
         logger.debug("MainViewController Dependency injection took {} ms", (System.nanoTime() - t) / 1_000_000.0);
 
-        player.setVolume(startingVolume);
+        audioPlayer.setVolume(startingVolume);
 
         Image icon = new Image(
                 Objects.requireNonNull(
@@ -116,17 +153,40 @@ public class MainApplication extends Application {
 
         stage.show();
 
+        root.fireEvent(new RefreshEvent()); //refresh the mediaListView for first launch
+
+        setupStartupFile();
+
         long elapsed = System.nanoTime() - MainLauncher.START_TIME;
         logger.info("Moka Player UI engine successfully built and loaded in {} seconds",
                 String.format("%.3f", (float) elapsed / 1_000_000_000.0f));
+    }
+
+    private void setupStartupFile() {
+        if (startupFile != null) {
+            Track startupTrack = new Track(startupFile.getFileName().toString(), startupFile);
+
+            CompletableFuture
+                    .runAsync(() -> {
+                        metadataManager.read(startupTrack);
+                        filedataManager.read(startupTrack);
+                        mediaScanner.scanArtwork(startupTrack);
+                    })
+                    .thenRun(() -> Platform.runLater(() -> {
+                        playerService.setSelectTrack(startupTrack);
+                        playerService.playSelectedTrack();
+                        logger.debug("Playing starting track at{} :\n {}", startupFile, startupTrack);
+                    }));
+
+        }
     }
 
     private void setupKeyBindings(Parent root, Scene scene, Stage stage) {
         scene.setOnKeyPressed(event -> {
             switch (event.getCode()) {
                 case P -> playerService.playSelectedTrack();
-                case U -> {
-                    if (player.getState() == PlaybackState.PLAYING) {
+                case U, SPACE -> {
+                    if (audioPlayer.getState() == PlaybackState.PLAYING) {
                         playerService.pause();
                     } else {
                         playerService.resume();
@@ -134,15 +194,28 @@ public class MainApplication extends Application {
                 }
                 case D -> playerService.playNext();
                 case A -> playerService.playPrev();
-                case W -> player.setVolume(Math.min(100, player.getVolume() + 10));
-                case S -> player.setVolume(Math.max(0, player.getVolume() - 10));
+                case RIGHT -> playerService.skipForward(10);
+                case LEFT -> playerService.skipBackward(10);
+                case W -> audioPlayer.setVolume(Math.min(100, audioPlayer.getVolume() + 10));
+                case S -> audioPlayer.setVolume(Math.max(0, audioPlayer.getVolume() - 10));
                 case M -> {
-                    if (player.getVolume() != 0) {
-                        oldVolume = player.getVolume();
-                        player.setVolume(0);
+                    if (audioPlayer.getVolume() != 0) {
+                        oldVolume = audioPlayer.getVolume();
+                        audioPlayer.setVolume(0);
                     } else {
-                        player.setVolume(oldVolume);
+                        audioPlayer.setVolume(oldVolume);
                     }
+                }
+                case H -> playerService.shuffle();
+                case R -> {
+                    var nextMode = switch (audioPlayer.getRepeatMode()) {
+                        case STOP_WHEN_QUEUE_END -> LOOP_CURRENT_QUEUE;
+                        case LOOP_CURRENT_QUEUE -> LOOP_CURRENT_ONE;
+                        case LOOP_CURRENT_ONE -> PLAY_ONE;
+                        case PLAY_ONE -> STOP_WHEN_QUEUE_END;
+                    };
+                    audioPlayer.setRepeatMode(nextMode);
+                    logger.debug("Repeat mode changed to: {}", nextMode);
                 }
                 case F -> {
                     if (playerService.getCurrentTrack() != null) {
@@ -152,6 +225,19 @@ public class MainApplication extends Application {
                 }
                 case F11 -> stage.setFullScreen(!stage.isFullScreen());
                 case F5 -> root.fireEvent(new RefreshEvent());
+            }
+        });
+        scene.setOnMousePressed(event -> {
+            switch (event.getButton()) {
+                case FORWARD -> playerService.playNext();
+                case BACK -> playerService.playPrev();
+                case MIDDLE -> {
+                    if (audioPlayer.getState() == PlaybackState.PLAYING) {
+                        playerService.pause();
+                    } else {
+                        playerService.resume();
+                    }
+                }
             }
         });
     }
@@ -169,8 +255,8 @@ public class MainApplication extends Application {
         logger.debug("TrackStorage snapshot write-back took {} ms", (System.nanoTime() - t) / 1_000_000.0);
         t = System.nanoTime();
 
-        if (engine != null) {
-            engine.release();
+        if (audioEngine != null) {
+            audioEngine.release();
         }
         logger.debug("AudioEngine native platform drivers released in {} ms", (System.nanoTime() - t) / 1_000_000.0);
 
@@ -179,5 +265,13 @@ public class MainApplication extends Application {
                 String.format("%.3f", (float) elapsed / 1_000_000_000.0f));
 
         super.stop();
+    }
+
+    @Override
+    public void init() {
+        List<String> args = getParameters().getRaw();
+        if (!args.isEmpty()) {
+            startupFile = Paths.get(args.get(0));
+        }
     }
 }

@@ -28,9 +28,20 @@ public class PlayerService {
     private final BooleanProperty playing =
             new SimpleBooleanProperty(false);
 
-    public PlayerService(AudioPlayer player) {
+    private final DoubleProperty volume =
+            new SimpleDoubleProperty(0.5); // Default to 50%
 
+    public PlayerService(AudioPlayer player) {
         this.player = player;
+
+        this.volume.set(player.getVolume() / 100.0);
+
+        this.volume.addListener((obs, oldVal, newVal) -> {
+            int targetVol = (int) Math.round(newVal.doubleValue() * 100);
+            if (player.getVolume() != targetVol) {
+                player.setVolume(targetVol);
+            }
+        });
 
         player.addPlaybackListener(new PlaybackListener() {
 
@@ -41,12 +52,20 @@ public class PlayerService {
 
             @Override
             public void onPlaybackStateChanged(PlaybackState state) {
-
                 Platform.runLater(() -> {
-
                     playbackState.set(state);
-
                     playing.set(state == PlaybackState.PLAYING);
+                });
+            }
+
+            @Override
+            public void onVolumeChanged(int newVolume) {
+                Platform.runLater(() -> {
+                    double targetSliderValue = newVolume / 100.0;
+                    // Break infinite event ping-pongs and drop float jitters
+                    if (Math.abs(volume.get() - targetSliderValue) > 0.01) {
+                        volume.set(targetSliderValue);
+                    }
                 });
             }
         });
@@ -57,17 +76,17 @@ public class PlayerService {
     // =========================
 
     public void playSelectedTrack() {
-
-        Track track = selectedTrack.get();
-
-        if (track == null || currentList.get() == null) {
+        Track selected = selectedTrack.get();
+        if (selected == null || currentList.get() == null) {
             return;
         }
-
-        player.playFromList(track, currentList.get());
+        playFromList(selected, currentList.get());
     }
 
     public void playFromList(Track selected, List<Track> trackList) {
+        if (!trackList.contains(selected)) {
+            trackList.add(0, selected);
+        }
         player.playFromList(selected, trackList);
     }
 
@@ -99,6 +118,10 @@ public class PlayerService {
     // Properties
     // =========================
 
+    public DoubleProperty volumeProperty() {
+        return volume;
+    }
+
     public ObjectProperty<Track> currentTrackProperty() {
         return currentTrack;
     }
@@ -122,6 +145,14 @@ public class PlayerService {
     // =========================
     // Getters and setters
     // =========================
+
+    public double getVolume() {
+        return volume.get();
+    }
+
+    public void setVolume(double vol) {
+        this.volume.set(vol);
+    }
 
     public Track getCurrentTrack() {
         return currentTrack.get();
@@ -153,5 +184,13 @@ public class PlayerService {
 
     public boolean isPlaying() {
         return playing.get();
+    }
+
+    public void skipForward(int i) {
+        player.skipForward(i);
+    }
+
+    public void skipBackward(int i) {
+        player.skipBackward(i);
     }
 }

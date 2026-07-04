@@ -390,8 +390,9 @@ public class PlaylistViewController {
             String artworkPath = item.getArtworkPath();
 
             if (item instanceof Track track) {
-                title.setText(track.getTitle() + " " + TimeFormater.formatTime(track.getMetadata().getDurationInSeconds()));
-                info.setText(track.getMetadata().getArtist() != null ? track.getMetadata().getArtist() : "Unknown Artist");
+                title.setText(track.getTitle());
+                info.setText(TimeFormater.formatTime(track.getMetadata().getDurationInSeconds())
+                        + " " + track.getMetadata().getArtist());
 
                 btnInfo.setOnAction(event -> {
                     try {
@@ -402,7 +403,10 @@ public class PlaylistViewController {
                 });
 
             } else if (item instanceof Playlist playlist) {
-                title.setText(playlist.getTitle() + " " + TimeFormater.formatTime(playlist.getTotalDurationSeconds()));
+                title.setText(playlist.getTitle() + " d " +
+                        playlist.size() + " Tracks " +
+                        TimeFormater.formatTime(playlist.getTotalDurationSeconds())
+                );
 
                 if (playlist.getTracks() != null && !playlist.getTracks().isEmpty()) {
                     info.setText("First track: " + playlist.getTracks().getFirst().getTitle());

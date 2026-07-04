@@ -1,6 +1,6 @@
 package infrastructure.audio;
 
-import domain.model.media.AudioSource;
+import java.net.URI;
 
 public interface AudioEngine {
 
@@ -28,7 +28,7 @@ public interface AudioEngine {
      * </ul>
      */
 
-    void play(AudioSource source, Runnable onTrackFinished);
+    void play(URI resource, Runnable onTrackFinished);
     void pause();
     void stop();
     void resume();

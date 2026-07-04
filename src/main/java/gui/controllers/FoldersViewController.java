@@ -1,6 +1,7 @@
 package gui.controllers;
 
 import application.service.LibraryService;
+import application.service.MediaService;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
@@ -26,6 +27,8 @@ public class FoldersViewController {
 
     private LibraryService libraryService;
 
+    private MediaService mediaService;
+
     private final ObservableList<LibraryFolder> masterList =
             FXCollections.observableArrayList();
 
@@ -34,6 +37,10 @@ public class FoldersViewController {
     public void setLibraryService(LibraryService libraryService) {
         this.libraryService = libraryService;
         refreshFolders();
+    }
+
+    public void setMediaService(MediaService mediaService) {
+        this.mediaService = mediaService;
     }
 
     @FXML
@@ -153,6 +160,8 @@ public class FoldersViewController {
         libraryService.save();
 
         masterList.add(folder);
+
+        mediaService.refreshActiveLibrary();
     }
 
     private void deleteFolder() {
@@ -180,6 +189,8 @@ public class FoldersViewController {
         masterList.remove(selectedFolder);
 
         lvFoldersList.getSelectionModel().clearSelection();
+
+        mediaService.refreshActiveLibrary();
     }
 
     private void refreshFolders() {

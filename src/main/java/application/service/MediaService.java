@@ -1,5 +1,6 @@
 package application.service;
 
+import domain.model.library.Library;
 import domain.model.library.MediaLibrary;
 import domain.model.media.Playlist;
 import domain.model.media.Track;
@@ -36,14 +37,25 @@ public class MediaService {
     }
 
     public void loadActiveLibrary() {
-        if (libraryService.getActiveLibrary() == null) {
-            logger.warn("Attempted to load library, but no active library selection exists.");
+        reloadActiveLibrary();
+    }
+
+    public void refreshActiveLibrary() {
+        reloadActiveLibrary();
+    }
+
+    private void reloadActiveLibrary() {
+        Library activeLibrary = libraryService.getActiveLibrary();
+
+        if (activeLibrary == null) {
+            logger.warn("No active library selected.");
             return;
         }
 
         Set<Track> uniqueTracks = new HashSet<>();
-        for (var path : libraryService.getActiveLibrary().getRootPaths()) {
-            List<Track> scanned = scanner.scan(path);
+
+        for (var folder : activeLibrary.getRootPaths()) {
+            List<Track> scanned = scanner.scan(folder);
             if (scanned != null) {
                 uniqueTracks.addAll(scanned);
             }
@@ -51,9 +63,9 @@ public class MediaService {
 
         mediaLibrary.clear();
         mediaLibrary.addAll(new ArrayList<>(uniqueTracks));
-
         rebuildMetadataCaches();
     }
+
 
     private void rebuildMetadataCaches() {
         this.cachedTracks = mediaLibrary.getTracks();

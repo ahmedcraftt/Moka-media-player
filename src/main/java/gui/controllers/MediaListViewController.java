@@ -239,6 +239,8 @@ public class MediaListViewController {
         private final Label artistLabel = new Label();
         private final HBox root = new HBox(10);
 
+        private static final double MAX_WIDTH = 500;
+
         private static Image defaultArtwork;
 
         public MyListCell() {
@@ -256,6 +258,8 @@ public class MediaListViewController {
             artworkView.setFitWidth(40);
             artworkView.setFitHeight(40);
             artworkView.setPreserveRatio(true);
+
+            titleLabel.setMaxWidth(MAX_WIDTH);
 
             VBox textBox = new VBox(5);
             textBox.getChildren().addAll(titleLabel, artistLabel);
@@ -290,12 +294,12 @@ public class MediaListViewController {
 
             long duration = (item.getMetadata() != null) ? item.getMetadata().getDurationInSeconds() : 0;
             String displayTitle = item.getTitle() != null ? item.getTitle() : "Unknown Track";
-            titleLabel.setText(displayTitle + " " + TimeFormater.formatTime(duration));
+            titleLabel.setText(displayTitle);
 
             String artist = (item.getMetadata() != null && item.getMetadata().getArtist() != null)
                     ? item.getMetadata().getArtist()
                     : "Unknown Artist";
-            artistLabel.setText(artist);
+            artistLabel.setText(TimeFormater.formatTime(duration) + " " + artist);
 
             String artworkPath = (item.getMetadata() != null) ? item.getMetadata().getArtworkPath() : null;
 

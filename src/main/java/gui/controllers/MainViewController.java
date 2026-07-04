@@ -101,7 +101,7 @@ public class MainViewController {
         updatePlayButton();
         updateFavoriteButton();
         setupLabel();
-
+        setUpVolumeSlider();
     }
 
     public void setMetadataManager(MetadataManager metadataManager) {
@@ -163,7 +163,6 @@ public class MainViewController {
         setUpViewButtons();
         setUpControlButtons();
         setUpMenuOptions();
-        setUpVolumeSlider();
         setUpProgressSlider();
 
         Task<Void> task = getQueueLoadingTask();
@@ -292,8 +291,7 @@ public class MainViewController {
     }
 
     private void setUpVolumeSlider() {
-        volumeSlider.valueProperty().addListener((obs, oldVal, newVal) ->
-                player.setVolume((int) (newVal.doubleValue() * 100)));
+        volumeSlider.valueProperty().bindBidirectional(playerService.volumeProperty());
     }
 
     private void setUpProgressSlider() {
@@ -397,6 +395,7 @@ public class MainViewController {
             FXMLLoader loader = loadView("/views/folders-view.fxml");
             FoldersViewController foldersViewController = loader.getController();
             foldersViewController.setLibraryService(libraryService);
+            foldersViewController.setMediaService(mediaService);
             currentViewMode = ViewMode.FOLDERS;
         } catch (IOException e) {
             System.err.println("CRITICAL: Could not find or load folders-view.fxml");

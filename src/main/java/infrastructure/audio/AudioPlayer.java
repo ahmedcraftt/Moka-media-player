@@ -7,6 +7,7 @@ import domain.model.media.Track;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -92,10 +93,11 @@ public class AudioPlayer {
 
     public void play(Track track){
         if (track == null) return;
+        Path trackPath = track.getFilePath();
         currentTrack = track;
         currentTrack.incrementTimesPlayed();
         notifyTrackChanged();
-        engine.play(track, this::playNext);
+        engine.play(trackPath.toUri(), this::playNext);
         state = PlaybackState.PLAYING;
         notifyPlaybackStateChanged();
         printStatus();
@@ -118,6 +120,8 @@ public class AudioPlayer {
     public void playFromList(Track selected, List<Track> list) {
         if (selected == null || list == null || list.isEmpty()) return;
 
+        logger.debug("Current AudioPlayer list size: {}", list);
+
         queue.clear();
 
         int index = list.indexOf(selected);
@@ -134,6 +138,7 @@ public class AudioPlayer {
         }
 
         play(selected);
+
     }
 
     /**
@@ -282,7 +287,11 @@ public class AudioPlayer {
      * @param volume volume level (values below 0 are clamped to 0 and ones above 100 clamped to 100)
      */
     public void setVolume(int volume) {
-        engine.setVolume(Math.clamp(volume, 0, 100));
+        int clamped = Math.clamp(volume, 0, 100);
+        if (engine.getVolume() != clamped) {
+            engine.setVolume(clamped);
+            notifyVolumeChanged(clamped);
+        }
     }
 
     public int getVolume() {
@@ -350,6 +359,12 @@ public class AudioPlayer {
         }
     }
 
+    private void notifyVolumeChanged(int volume) {
+        for (PlaybackListener listener : listeners) {
+            listener.onVolumeChanged(volume);
+        }
+    }
+
     // =========================
     // Getters and Setters
     // =========================
@@ -414,4 +429,5 @@ public class AudioPlayer {
                 ", \ncurrentTrack= " + trackInfo +
                 '}';
     }
+
 }

@@ -13,7 +13,6 @@ module org.example.moka_music_player {
     requires java.desktop;
     requires java.sql;
     requires uk.co.caprica.vlcj;
-    requires annotations;
 
     // Export packages that need to be accessed by other modules or the JVM
     exports gui.main;
