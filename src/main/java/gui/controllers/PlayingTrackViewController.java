@@ -2,9 +2,11 @@ package gui.controllers;
 
 import application.service.PlayerService;
 import domain.model.media.Track;
+import gui.utils.DialogFactory;
 import infrastructure.media.MetadataManager;
 import infrastructure.storage.ArtworkStorage;
 import infrastructure.storage.MetadataStorage;
+
 import javafx.animation.Animation;
 import javafx.animation.Interpolator;
 import javafx.animation.RotateTransition;
@@ -109,7 +111,7 @@ public class PlayingTrackViewController {
         if (currentTrack == null) return;
 
         FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Select New Album Artwork");
+        fileChooser.setTitle("Select New Track Artwork");
         fileChooser.getExtensionFilters().addAll(
                 new FileChooser.ExtensionFilter("Image Files", "*.png", "*.jpg", "*.jpeg", "*.bmp")
         );
@@ -200,10 +202,7 @@ public class PlayingTrackViewController {
     }
 
     private void showErrorAlert(String title, String message) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(message);
+        Alert alert = DialogFactory.error(title, null, message);
         alert.showAndWait();
     }
 

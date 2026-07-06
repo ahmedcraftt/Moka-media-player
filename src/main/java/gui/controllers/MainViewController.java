@@ -7,6 +7,7 @@ import application.service.PlayerService;
 import domain.model.library.MediaLibrary;
 import domain.model.media.Playlist;
 import domain.model.media.Track;
+import gui.utils.DialogFactory;
 import infrastructure.audio.AudioPlayer;
 import domain.audio.RepeatMode;
 import infrastructure.media.MetadataManager;
@@ -456,10 +457,10 @@ public class MainViewController {
     }
 
     private static Optional<String> getResult() {
-        Alert alert = new Alert(Alert.AlertType.WARNING);
-        alert.setTitle("No Libraries Found");
-        alert.setHeaderText("No media libraries available");
-        alert.setContentText("Please create your first library.");
+        Alert alert = DialogFactory.warnings(
+                "No Libraries Found",
+                "No media libraries available",
+                "Please create your first library.");
         alert.showAndWait();
 
         TextInputDialog pathDialog = new TextInputDialog();

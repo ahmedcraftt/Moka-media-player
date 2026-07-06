@@ -7,6 +7,7 @@ import domain.model.library.MediaLibrary;
 import domain.model.media.Displayable;
 import domain.model.media.Playlist;
 import domain.model.media.Track;
+import gui.utils.DialogFactory;
 import gui.utils.TimeFormater;
 import infrastructure.mapper.PlaylistMapper;
 import infrastructure.storage.PlaylistStorage;
@@ -199,11 +200,12 @@ public class PlaylistViewController {
                 currentPlaylist.removeTrack(track);
             }
             case Playlist playlist -> {
-                Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-                alert.setTitle("Delete Playlist?");
+                Alert alert = DialogFactory.confirmation(
+                        "Delete Playlist?",
+                        "Delete this playlist",
+                        "Are you sure you want to delete this playlist?"
+                );
 
-                alert.setHeaderText("Delete this playlist?");
-                alert.setContentText("Are you sure you want to delete this playlist?");
                 Optional<ButtonType> result = alert.showAndWait();
 
                 if (result.isPresent() && result.get() == ButtonType.OK) {
@@ -365,9 +367,7 @@ public class PlaylistViewController {
     }
 
     private void showError(String msg) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle("Error");
-        alert.setContentText(msg);
+        Alert alert = DialogFactory.error("Error", null, msg);
         alert.showAndWait();
     }
 

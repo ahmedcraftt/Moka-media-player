@@ -2,6 +2,7 @@ package gui.controllers;
 
 import application.service.LibraryService;
 import application.service.MediaService;
+import gui.utils.DialogFactory;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
@@ -13,6 +14,7 @@ import domain.model.library.LibraryFolder;
 
 import java.io.File;
 import java.nio.file.Path;
+import java.util.Optional;
 
 public class FoldersViewController {
 
@@ -182,15 +184,26 @@ public class FoldersViewController {
             return;
         }
 
-        activeLibrary.removeFolder(selectedFolder);
+        Alert alert = DialogFactory.confirmation(
+                "Delete Folder",
+                "Delete this folder",
+                "Are you sure you want to delete this folder?"
+        );
 
-        libraryService.save();
+        Optional<ButtonType> result = alert.showAndWait();
 
-        masterList.remove(selectedFolder);
+        if (result.isPresent() && result.get() == ButtonType.OK) {
+            activeLibrary.removeFolder(selectedFolder);
 
-        lvFoldersList.getSelectionModel().clearSelection();
+            libraryService.save();
 
-        mediaService.refreshActiveLibrary();
+            masterList.remove(selectedFolder);
+
+            lvFoldersList.getSelectionModel().clearSelection();
+
+            mediaService.refreshActiveLibrary();
+        }
+
     }
 
     private void refreshFolders() {
@@ -210,10 +223,7 @@ public class FoldersViewController {
     }
 
     private void showError(String message) {
-
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setHeaderText(null);
-        alert.setContentText(message);
+        Alert alert = DialogFactory.error("Error", null, message);
         alert.showAndWait();
     }
 }

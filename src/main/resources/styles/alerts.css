@@ -1,0 +1,46 @@
+.dialog-pane {
+    -fx-background-color: #1a1410;
+    -fx-border-color: #3a2a22;
+    -fx-border-width: 2;
+}
+
+.dialog-pane .header-panel {
+    -fx-background-color: #221a16;
+}
+
+.dialog-pane .header-panel .label {
+    -fx-text-fill: #f2e6d9;
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+}
+
+.dialog-pane .content.label {
+    -fx-text-fill: #e8d8c3;
+    -fx-font-size: 14px;
+}
+
+.dialog-pane .button {
+    -fx-background-color: #3a2a22;
+    -fx-text-fill: #f2e6d9;
+    -fx-background-radius: 8;
+}
+
+.dialog-pane .button:hover {
+    -fx-background-color: #5a3d2e;
+}
+
+.dialog-pane .button:pressed {
+    -fx-background-color: #7a4f3a;
+}
+
+.dialog-pane > .graphic-container {
+    -fx-background-color: transparent;
+}
+
+.app-dialog {
+    -fx-background-color: #1a1410;
+}
+
+.app-dialog .button {
+    -fx-background-color: #3a2a22;
+}

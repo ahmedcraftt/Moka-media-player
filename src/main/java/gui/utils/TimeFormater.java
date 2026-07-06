@@ -1,6 +1,6 @@
 package gui.utils;
 
-public class TimeFormater {
+public final class TimeFormater {
 
     public static String formatTime(long seconds) {
         long hours = seconds / 3600;
