@@ -47,6 +47,7 @@ public class MediaListViewController {
     private static MetadataStorage metadataStorage;
     private static TrackStorage trackStorage;
     private static MediaService mediaService;
+    private static Runnable onSaveSuccessCallback;
 
     private SortByModes currentSortMode = SortByModes.TITLE;
 
@@ -61,6 +62,10 @@ public class MediaListViewController {
 
     public void setMetadataStorage(MetadataStorage metadataStorage) {
         MediaListViewController.metadataStorage = metadataStorage;
+    }
+
+    public void setOnSaveSuccessCallback(Runnable onSaveSuccessCallback) {
+        MediaListViewController.onSaveSuccessCallback = onSaveSuccessCallback;
     }
 
     public void setTrackStorage(TrackStorage trackStorage) {
@@ -220,6 +225,7 @@ public class MediaListViewController {
         controller.setMetadataManager(metadataManager);
         controller.setStorage(trackStorage);
         controller.setMediaService(mediaService);
+        controller.setOnSaveSuccessCallback(onSaveSuccessCallback);
 
         Stage stage = new Stage();
         Image icon = new Image(

@@ -3,6 +3,7 @@ package gui.controllers;
 import domain.model.media.Playlist;
 import domain.model.media.Track;
 import gui.utils.TimeFormater;
+import javafx.collections.transformation.FilteredList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -28,8 +29,12 @@ public class PlaylistCreationViewController {
     private ListView<Track> lvTracks;
     @FXML
     private Button btnSave;
+    @FXML
+    private TextField tfSearch;
 
     private Playlist createdPlaylist;
+
+    private FilteredList<Track> filteredTrackList;
 
     public void setTracks(List<Track> tracks) {
         lvTracks.getItems().addAll(tracks);
@@ -58,12 +63,26 @@ public class PlaylistCreationViewController {
         }
     }
 
+    private void handleSearch() {
+        String query = tfSearch.getText().toLowerCase().trim();
+
+        filteredTrackList.setPredicate(track -> {
+            if (query.isEmpty()) {
+                return true;
+            }
+
+            return track.getTitle() != null &&
+                    track.getTitle().toLowerCase().contains(query);
+        });
+    }
+
     public Playlist getCreatedPlaylist() {
         return createdPlaylist;
     }
 
     @FXML
     public void initialize() {
+        filteredTrackList = new FilteredList<>(lvTracks.getItems());
         lvTracks.setCellFactory(list -> new MyListCell());
         lvTracks.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
     }

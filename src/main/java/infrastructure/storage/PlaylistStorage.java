@@ -75,4 +75,9 @@ public class PlaylistStorage {
                     .toList();
         }
     }
+
+    public static void delete(Playlist playlist) throws IOException {
+        PlaylistDTO dto = PlaylistMapper.toDTO(playlist);
+        Files.delete(BASE_DIR.resolve(dto.title() + ".json"));
+    }
 }

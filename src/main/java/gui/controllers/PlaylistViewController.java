@@ -26,6 +26,9 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
@@ -33,12 +36,14 @@ import java.util.stream.Collectors;
 
 public class PlaylistViewController {
 
+    private static final Logger logger = LoggerFactory.getLogger(PlaylistViewController.class);
+
     @FXML
     private ListView<Displayable> listView;
     @FXML
     private TextField tfSearchBar;
     @FXML
-    private Button btnBack, btnAdd, btnFavorites, btnRecentlyAdded, btnMostPlayed, btnRecentlyPlayed;
+    private Button btnBack, btnAdd, btnDelete, btnFavorites, btnRecentlyAdded, btnMostPlayed, btnRecentlyPlayed;
     @FXML
     private MenuButton btnSort;
     @FXML
@@ -49,7 +54,11 @@ public class PlaylistViewController {
     private final Set<ViewMode> viewModes = new HashSet<>(Set.of(ViewMode.ALBUM, ViewMode.ARTISTS, ViewMode.GENRE));
 
     private final ObservableList<Playlist> playlists = FXCollections.observableArrayList();
-    private final ObservableList<Displayable> filteredPlaylists = FXCollections.observableArrayList();
+    private final ObservableList<Displayable> filteredDisplayables = FXCollections.observableArrayList();
+
+    private Displayable selectedItem;
+
+    private Playlist currentPlaylist;
 
     private MediaLibrary mediaLibrary;
     private PlayerService playerService;
@@ -142,10 +151,10 @@ public class PlaylistViewController {
                 .sorted(playlistComparator)
                 .toList();
 
-        filteredPlaylists.setAll(processed);
+        filteredDisplayables.setAll(processed);
 
-        if (appState != null && (appState.getCurrentView() == null || appState.getCurrentView().isEmpty() || listView.getItems() == filteredPlaylists)) {
-            listView.setItems(filteredPlaylists);
+        if (appState != null && (appState.getCurrentView() == null || appState.getCurrentView().isEmpty() || listView.getItems() == filteredDisplayables)) {
+            listView.setItems(filteredDisplayables);
         }
     }
 
@@ -158,8 +167,8 @@ public class PlaylistViewController {
         if (tracks.isEmpty()) return;
 
         Comparator<Track> trackComparator = switch (currentSortMode) {
-            case TITLE ->
-                    Comparator.comparing(t -> t.getTitle() != null ? t.getTitle() : "", String.CASE_INSENSITIVE_ORDER);
+            case TITLE -> Comparator.comparing(t -> t.getTitle().trim() != null ? t.getTitle() :
+                    "", String.CASE_INSENSITIVE_ORDER);
             case FAVORITE -> Comparator.comparing((Track t) -> !t.isFavorite());
             default ->
                     Comparator.comparing(t -> t.getTitle() != null ? t.getTitle() : "", String.CASE_INSENSITIVE_ORDER);
@@ -182,31 +191,66 @@ public class PlaylistViewController {
         }
     }
 
-    private void setUpListView() {
-        listView.setCellFactory(lv -> new MyListCell());
-        listView.getSelectionModel().selectedItemProperty().addListener(
-                (obs, oldVal, newVal) -> {
-                    if (newVal != null) {
-                        handleItemClick(newVal);
+    @FXML
+    private void handleDelete() {
+        switch (selectedItem) {
+            case Track track -> {
+                listView.getItems().remove(selectedItem);
+                currentPlaylist.removeTrack(track);
+            }
+            case Playlist playlist -> {
+                Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+                alert.setTitle("Delete Playlist?");
+
+                alert.setHeaderText("Delete this playlist?");
+                alert.setContentText("Are you sure you want to delete this playlist?");
+                Optional<ButtonType> result = alert.showAndWait();
+
+                if (result.isPresent() && result.get() == ButtonType.OK) {
+                    listView.getItems().remove(selectedItem);
+                    try {
+                        PlaylistStorage.delete(playlist);
+                    } catch (IOException ex) {
+                        throw new RuntimeException(ex);
                     }
                 }
-        );
+
+            }
+            default -> throw new IllegalStateException("Unexpected value: " + selectedItem);
+        }
+    }
+
+    private void setUpListView() {
+        listView.setCellFactory(lv -> new MyListCell());
+        listView.setOnMouseClicked(event -> {
+            Displayable item = listView.getSelectionModel().getSelectedItem();
+            if (item != null) {
+                handleItemClick(item);
+                if (event.getClickCount() >= 2) {
+                    handleItemDoubleClick(item);
+                }
+            }
+        });
     }
 
     private void setUpListViewItems() {
         if (appState.getCurrentView().isEmpty()) {
-            listView.setItems(filteredPlaylists);
+            listView.setItems(filteredDisplayables);
         } else {
             listView.setItems(appState.getCurrentView());
         }
     }
 
-    private void handleItemClick(Displayable item) {
+    private void handleItemDoubleClick(Displayable item) {
         if (item instanceof Playlist p) {
             openPlaylist(p);
         } else if (item instanceof Track t) {
             playTrack(t);
         }
+    }
+
+    private void handleItemClick(Displayable item) {
+        this.selectedItem = item;
     }
 
     private void playTrack(Track t) {
@@ -216,6 +260,7 @@ public class PlaylistViewController {
 
     private void openPlaylist(Playlist p) {
         openList(p.getTracks());
+        this.currentPlaylist = p;
     }
 
     private void openList(List<Track> list) {
@@ -314,7 +359,7 @@ public class PlaylistViewController {
                 PlaylistStorage.save(playlist);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error(e.getMessage());
             showError("Failed to create playlist");
         }
     }

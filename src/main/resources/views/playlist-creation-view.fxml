@@ -27,6 +27,7 @@
                         <CheckBox fx:id="cbFavorite" mnemonicParsing="false" text="Favorite"/>
                     </children>
                 </HBox>
+                <TextField fx:id="tfSearch" promptText="Search"/>
                 <ListView fx:id="lvTracks" VBox.vgrow="ALWAYS"/>
                 <Button fx:id="btnSave" mnemonicParsing="false" onAction="#handelSave" text="Save"/>
             </children>

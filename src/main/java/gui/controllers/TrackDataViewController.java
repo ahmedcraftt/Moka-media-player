@@ -90,6 +90,7 @@ public class TrackDataViewController {
     private MetadataManager metadataManager;
     private TrackStorage storage;
     private MediaService mediaService;
+    private Runnable onSaveSuccessCallback;
 
 
     public void setTrack(Track track) {
@@ -112,6 +113,10 @@ public class TrackDataViewController {
 
     public void setMediaService(MediaService mediaService) {
         this.mediaService = mediaService;
+    }
+
+    public void setOnSaveSuccessCallback(Runnable onSaveSuccessCallback) {
+        this.onSaveSuccessCallback = onSaveSuccessCallback;
     }
 
     private void loadTrackData() {
@@ -217,6 +222,10 @@ public class TrackDataViewController {
 
         Stage stage = (Stage) btnSave.getScene().getWindow();
         stage.getScene().getRoot().fireEvent(new RefreshEvent());
+
+        if (onSaveSuccessCallback != null) {
+            onSaveSuccessCallback.run();
+        }
 
         closeWindow();
     }

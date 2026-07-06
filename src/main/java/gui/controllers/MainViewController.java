@@ -340,6 +340,7 @@ public class MainViewController {
             mediaListViewController.setMetadataStorage(metadataStorage);
             mediaListViewController.setTrackStorage(trackStorage);
             mediaListViewController.setMediaService(mediaService);
+            mediaListViewController.setOnSaveSuccessCallback(this::handleRefresh);
         } catch (IOException e) {
             System.err.println("CRITICAL: Could not find or load mediaList-view.fxml");
         }
@@ -457,13 +458,13 @@ public class MainViewController {
     private static Optional<String> getResult() {
         Alert alert = new Alert(Alert.AlertType.WARNING);
         alert.setTitle("No Libraries Found");
-        alert.setHeaderText("No music libraries available");
+        alert.setHeaderText("No media libraries available");
         alert.setContentText("Please create your first library.");
         alert.showAndWait();
 
         TextInputDialog pathDialog = new TextInputDialog();
         pathDialog.setTitle("Library Setup");
-        pathDialog.setHeaderText("Enter Music Folder Path");
+        pathDialog.setHeaderText("Enter the path of your media folder");
         return pathDialog.showAndWait();
     }
 }

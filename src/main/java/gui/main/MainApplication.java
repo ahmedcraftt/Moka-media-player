@@ -39,6 +39,7 @@ import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
 import static domain.audio.RepeatMode.*;
+import static gui.main.MainLauncher.*;
 
 /**
  * Main JavaFX application entry point for Moka Player.
@@ -102,7 +103,7 @@ public class MainApplication extends Application {
 
     @Override
     public void start(Stage stage) throws IOException {
-        System.out.println(getParameters().getRaw());
+        logger.debug(getParameters().getRaw().toString());
 
         long t = System.nanoTime();
 
@@ -157,7 +158,7 @@ public class MainApplication extends Application {
 
         setupStartupFile();
 
-        long elapsed = System.nanoTime() - MainLauncher.START_TIME;
+        long elapsed = System.nanoTime() - START_TIME;
         logger.info("Moka Player UI engine successfully built and loaded in {} seconds",
                 String.format("%.3f", (float) elapsed / 1_000_000_000.0f));
     }
@@ -194,8 +195,8 @@ public class MainApplication extends Application {
                 }
                 case D -> playerService.playNext();
                 case A -> playerService.playPrev();
-                case RIGHT -> playerService.skipForward(10);
-                case LEFT -> playerService.skipBackward(10);
+                case E -> playerService.skipForward(10);
+                case Q -> playerService.skipBackward(10);
                 case W -> audioPlayer.setVolume(Math.min(100, audioPlayer.getVolume() + 10));
                 case S -> audioPlayer.setVolume(Math.max(0, audioPlayer.getVolume() - 10));
                 case M -> {
