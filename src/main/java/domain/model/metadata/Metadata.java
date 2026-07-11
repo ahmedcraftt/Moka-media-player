@@ -18,11 +18,11 @@ public class Metadata {
     private long samplerate = 0;
     private String title = "Unknown";
     private String genre = "Unknown";
-    private String description = "Unknown";
-    private String lyrics = "Unknown";
-    private String series = "Unknown";
+    private String description = "";
+    private String lyrics = "";
+    private String series = "";
     private String artist = "Unknown";
-    private String seriesArtist = "Unknown";
+    private String seriesArtist = "";
     private String artworkPath = "Unknown";
     private Language language;
     private Year year = Year.of(0);
@@ -77,7 +77,7 @@ public class Metadata {
     public void setLyrics(String lyrics) {
         if (lyrics != null && !lyrics.isBlank()) {
             this.lyrics = lyrics;
-        } else this.lyrics = "Unknown";
+        } else this.lyrics = "";
     }
 
     public String getLyrics() {
@@ -91,7 +91,7 @@ public class Metadata {
     public void setDescription(String description) {
         if (description != null && !description.isBlank()) {
             this.description = description;
-        } else this.description = "Unknown";
+        } else this.description = "";
     }
 
     public String getGenre() {

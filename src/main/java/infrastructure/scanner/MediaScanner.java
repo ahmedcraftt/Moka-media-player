@@ -34,7 +34,6 @@ public class MediaScanner {
     private final TrackStorage trackStorage;
     private final MetadataStorage metadataStorage;
     private final ArtworkStorage artworkStorage;
-    private final TrackClassifier classifier = new TrackClassifier();
     private final DataResolver resolver = new DataResolver();
 
     public MediaScanner(
@@ -51,12 +50,15 @@ public class MediaScanner {
         this.artworkStorage = artworkStorage;
     }
 
-    public List<Track> scan(Path root) {
+    public List<Track> scan(List<Path> paths) {
+        if (paths == null || paths.isEmpty()) {
+            return Collections.emptyList();
+        }
+
         int threads = Math.max(2, Runtime.getRuntime().availableProcessors());
         ExecutorService pool = Executors.newFixedThreadPool(threads);
 
         try {
-            List<Path> paths = discover(root);
             List<TrackSyncResult> results = processAll(paths, pool);
 
             persist(results);
@@ -65,7 +67,7 @@ public class MediaScanner {
                     .map(TrackSyncResult::track)
                     .toList();
         } catch (Exception e) {
-            logger.error("Media scanner critically failed on root path: {}", root, e);
+            logger.error("Media scanner critically failed while processing explicit paths list", e);
             throw new MediaScanException(e);
         } finally {
             pool.shutdown();
@@ -80,6 +82,19 @@ public class MediaScanner {
                 pool.shutdownNow();
                 Thread.currentThread().interrupt();
             }
+        }
+    }
+
+    public List<Track> scan(Path root) {
+        try {
+            List<Path> paths = discover(root);
+            return scan(paths);
+        } catch (MediaScanException e) {
+            logger.error("Media scanner critically failed on root path: {}", root, e.getCause());
+            throw e;
+        } catch (Exception e) {
+            logger.error("Media scanner critically failed during path discovery on root: {}", root, e);
+            throw new MediaScanException(e);
         }
     }
 
@@ -195,7 +210,7 @@ public class MediaScanner {
         }
 
         if (!state.exists()) {
-            track.setType(classifier.classify(path, track.getMetadata()));
+            track.setType(TrackClassifier.classify(path, track.getMetadata()));
         } else {
             track.setType(MediaType.StringToMediaType(state.mediaType()));
         }
@@ -221,7 +236,7 @@ public class MediaScanner {
         }
     }
 
-    private boolean isAudioFile(Path path) {
+    public boolean isAudioFile(Path path) {
         String name = path.getFileName().toString().toLowerCase();
         int dot = name.lastIndexOf('.');
         if (dot == -1) return false;

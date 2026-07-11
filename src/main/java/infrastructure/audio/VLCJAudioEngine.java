@@ -1,7 +1,5 @@
 package infrastructure.audio;
 
-import domain.model.media.AudioSource;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.co.caprica.vlcj.factory.MediaPlayerFactory;
@@ -60,7 +58,7 @@ public class VLCJAudioEngine implements AudioEngine {
         logger.debug("Preparing native audio pipeline channel selection for resource: {}", resource);
 
         mediaPlayer.controls().stop();
-        mediaPlayer.media().prepare(String.valueOf(resource));
+        mediaPlayer.media().prepare(resource.toString());
         mediaPlayer.controls().play();
     }
 
@@ -158,6 +156,11 @@ public class VLCJAudioEngine implements AudioEngine {
         if (newTime < 0) newTime = 0;
 
         mediaPlayer.controls().setTime(newTime);
+    }
+
+    @Override
+    public int getDuration() {
+        return Math.toIntExact((mediaPlayer.media().info().duration()) / 1000);
     }
 
 }

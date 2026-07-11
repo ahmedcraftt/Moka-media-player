@@ -23,7 +23,7 @@ public class TrackClassifier {
     private static final Pattern PODCAST_PATTERN = Pattern.compile(".*(s\\d+e\\d+|episode\\s*\\d+|ep\\s*\\d+).*");
     private static final Pattern AUDIOBOOK_PATTERN = Pattern.compile(".*(chapter\\s*\\d+|part\\s*\\d+|volume\\s*\\d+|book\\s*\\d+).*");
 
-    public MediaType classify(Path path, Metadata metadata) {
+    public static MediaType classify(Path path, Metadata metadata) {
 
         int songScore = 0;
         int podcastScore = 0;
@@ -41,7 +41,7 @@ public class TrackClassifier {
         int podcastBoost = 0;
 
         if (duration <= 300) {
-            songBoost += 6;
+            songBoost += 7;
             abookBoost -= 1;
         } else if (duration <= 600) {
             songBoost += 3;
@@ -93,7 +93,7 @@ public class TrackClassifier {
 
     }
 
-    private String safe(String s) {
+    private static String safe(String s) {
         return s == null ? "" : s;
     }
 

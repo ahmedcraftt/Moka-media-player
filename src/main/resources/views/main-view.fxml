@@ -111,6 +111,7 @@
          <children>
             <VBox id="controls" fx:id="vbControls" alignment="CENTER" spacing="20.0" styleClass="player-controls">
                <children>
+                  <Button fx:id="btnQueue" mnemonicParsing="false" text="Queue"/>
                   <Button fx:id="btnCurrentTrack" mnemonicParsing="false" text="Track" />
                   <Button fx:id="btnLyrics" mnemonicParsing="false" text="Lyrics" />
                   <MenuButton fx:id="btnRepeatAndStop" mnemonicParsing="false" text="repeat">

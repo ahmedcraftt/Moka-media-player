@@ -18,8 +18,8 @@ public class Track implements AudioSource, Displayable {
     private final Metadata metadata;
     private final LocalDate dateAdded;
     private MediaType type;
-    private boolean favorite = false;
-    private int timesPlayed = 0;
+    private int timesPlayed;
+    private boolean favorite;
 
     public Track(String fileName, Path filePath) {
         metadata = new Metadata();
@@ -169,4 +169,5 @@ public class Track implements AudioSource, Displayable {
                 ", \ndateAdded=" + dateAdded +
                 '}';
     }
+
 }

@@ -1,39 +1,15 @@
 package infrastructure.audio;
 
 import domain.model.media.Track;
-
 import java.util.*;
 
 public class PlaybackQueue {
-    /**
-     * Manages playback order, history, and navigation for audio tracks.
-     *
-     * <p>This class maintains three main structures:</p>
-     * <ul>
-     *   <li><b>trackQueue</b> → upcoming tracks (forward navigation)</li>
-     *   <li><b>history</b> → previously played tracks (backward navigation)</li>
-     *   <li><b>originalOrder</b> → base ordering used for reset/shuffle</li>
-     * </ul>
-     *
-     * <h2>Behavior</h2>
-     * <ul>
-     *   <li>next() advances forward and pushes current track into history</li>
-     *   <li>prev() pulls from history and restores current track to queue</li>
-     *   <li>reset() rebuilds the queue from original order (with optional shuffle)</li>
-     * </ul>
-     *
-     * <h2>Notes</h2>
-     * <ul>
-     *   <li>Duplicate tracks are prevented using an internal Set</li>
-     *   <li>Shuffle only affects future playback, not history</li>
-     *   <li>Looping is controlled externally via AudioPlayer</li>
-     * </ul>
-     */
-
     private final Deque<Track> trackQueue = new ArrayDeque<>();
     private final Deque<Track> history = new ArrayDeque<>();
     private final List<Track> originalOrder = new ArrayList<>();
+    private final List<Track> shuffledOrder = new ArrayList<>();
     private final Set<Track> trackSet = new HashSet<>();
+
     private Track currentTrack;
     private boolean shuffle = false;
     private boolean loopQueue = false;
@@ -41,25 +17,26 @@ public class PlaybackQueue {
     public void add(Track track) {
         if (track == null) return;
         if (trackSet.add(track)) {
-            trackQueue.add(track);
             originalOrder.add(track);
+            if (shuffle) {
+                shuffledOrder.add(track);
+            }
+            trackQueue.add(track);
         }
     }
 
     public void addAll(List<Track> tracks) {
-        if (tracks == null || tracks.isEmpty()) return;
+        if (tracks == null) return;
         for (Track t : tracks) {
-            if (trackSet.add(t)) {
-                trackQueue.add(t);
-                originalOrder.add(t);
-            }
+            add(t);
         }
     }
 
-    public void clear(){
+    public void clear() {
         trackQueue.clear();
         history.clear();
         originalOrder.clear();
+        shuffledOrder.clear();
         trackSet.clear();
         currentTrack = null;
     }
@@ -79,7 +56,6 @@ public class PlaybackQueue {
             }
             currentTrack = trackQueue.poll();
         }
-
         return currentTrack;
     }
 
@@ -94,109 +70,138 @@ public class PlaybackQueue {
         return null;
     }
 
-    public boolean isQueueEmpty() {
-        return trackQueue.isEmpty();
+    public Track peekNext() {
+        if (!trackQueue.isEmpty()) {
+            return trackQueue.peek();
+        }
+        if (loopQueue && !originalOrder.isEmpty()) {
+            List<Track> activeOrder = shuffle ? shuffledOrder : originalOrder;
+            return activeOrder.isEmpty() ? null : activeOrder.get(0);
+        }
+        return null;
+    }
+
+    public Track peekPrev() {
+        return history.peek();
     }
 
     public void remove(Track track) {
-        if (track != null) {
-            trackQueue.remove(track);
-            originalOrder.remove(track);
-            history.remove(track);
-            trackSet.remove(track);
-            if (track.equals(currentTrack)) {
-                currentTrack = null;
+        if (track == null) return;
+        trackQueue.remove(track);
+        originalOrder.remove(track);
+        shuffledOrder.remove(track);
+        history.remove(track);
+        trackSet.remove(track);
+        if (track.equals(currentTrack)) {
+            currentTrack = null;
+        }
+    }
+
+    public void reset() {
+        trackQueue.clear();
+        history.clear();
+
+        if (shuffle) {
+            shuffledOrder.clear();
+            shuffledOrder.addAll(originalOrder);
+            Collections.shuffle(shuffledOrder);
+            trackQueue.addAll(shuffledOrder);
+        } else {
+            trackQueue.addAll(originalOrder);
+        }
+
+        if (currentTrack != null) {
+            trackQueue.remove(currentTrack);
+        }
+    }
+
+    public void setupNavigationContext(Track selected, List<Track> fullList) {
+        clear();
+        addAll(fullList);
+        this.currentTrack = selected;
+
+        trackQueue.clear();
+        history.clear();
+
+        List<Track> activeOrder = shuffle ? shuffledOrder : originalOrder;
+        int index = activeOrder.indexOf(selected);
+        if (index == -1) return;
+
+        for (int i = index + 1; i < activeOrder.size(); i++) {
+            trackQueue.add(activeOrder.get(i));
+        }
+
+        for (int i = index - 1; i >= 0; i--) {
+            history.add(activeOrder.get(i));
+        }
+    }
+
+    public void setShuffle(boolean enable) {
+        if (this.shuffle == enable) return;
+        this.shuffle = enable;
+
+        if (shuffle) {
+            shuffledOrder.clear();
+            shuffledOrder.addAll(originalOrder);
+            Collections.shuffle(shuffledOrder);
+            shuffledOrder.remove(currentTrack);
+            shuffledOrder.addFirst(currentTrack);
+        }
+
+        trackQueue.clear();
+        List<Track> activeOrder = shuffle ? shuffledOrder : originalOrder;
+        for (Track t : activeOrder) {
+            if (!history.contains(t) && !t.equals(currentTrack)) {
+                trackQueue.add(t);
             }
         }
     }
 
-    public Track getCurrentTrack() {
-        return currentTrack;
+    public List<Track> getQueuedTracks() {
+        return shuffle ? new ArrayList<>(shuffledOrder) : new ArrayList<>(originalOrder);
     }
 
-    /**
-     * Only used internally by AudioPlayer during initialization
-     */
-    public void setCurrentTrack(Track track){
-        this.currentTrack=track;
-    }
-
-    /**
-     Enabling shuffle rebuilds queue and clears history
-     */
-    public void setShuffle(boolean enable) {
-        if (shuffle == enable) return;
-        shuffle = enable;
-        reset();
+    public int getNumberOfTracks() {
+        return originalOrder.size();
     }
 
     public boolean isShuffleEnabled() {
         return shuffle;
     }
 
-    public void clearHistory(){
-        history.clear();
-    }
-
-    public void pushHistory(Track track) {
-        history.push(track);
-    }
-
-    public void removeFromQueue(Track t){
-        trackQueue.remove(t);
-    }
-
     public void setLoopQueue(boolean enable) {
-        loopQueue = enable;
+        this.loopQueue = enable;
     }
 
     public boolean isLoopQueueEnabled() {
         return loopQueue;
     }
 
-    /**
-     * Rebuilds the queue from the original track order.
-     *
-     * <p>Behavior:</p>
-     * <ul>
-     *   <li>Clears current queue and history</li>
-     *   <li>Repopulates queue from originalOrder</li>
-     *   <li>Applies shuffle if enabled</li>
-     *   <li>Preserves currentTrack (excluded from queue)</li>
-     * </ul>
-     */
-    public void reset() {
-        Track oldCurrent = currentTrack;
+    public Track getCurrentTrack() {
+        return currentTrack;
+    }
 
-        trackQueue.clear();
-        history.clear();
+    public void setCurrentTrack(Track track) {
+        this.currentTrack = track;
+    }
 
-        List<Track> temp = new ArrayList<>(originalOrder);
-        if (shuffle) {
-            Collections.shuffle(temp);
-        }
+    public Deque<Track> getHistory() {
+        return history;
+    }
 
-        if (oldCurrent != null) {
-            temp.remove(oldCurrent);
-        }
-
-        trackQueue.addAll(temp);
-
-        if (oldCurrent != null) {
-            currentTrack = oldCurrent;
-        }
+    public boolean isQueueEmpty() {
+        return trackQueue.isEmpty();
     }
 
     @Override
     public String toString() {
         return "PlaybackQueue{" +
-                "\ncurrentTrack=" + currentTrack +
-                ", \ntrackQueue=" + trackQueue +
-                ", \nhistory=" + history +
-                ", \noriginalOrder=" + originalOrder +
-                ", \ntrackSet=" + trackSet +
-                ", \nshuffle=" + shuffle +
-                ", \nloopQueue=" + loopQueue +
+                "currentTrack=" + currentTrack +
+                ", trackQueue=" + trackQueue +
+                ", history=" + history +
+                ", originalOrder=" + originalOrder +
+                ", shuffle=" + shuffle +
+                ", loopQueue=" + loopQueue +
                 '}';
     }
 }

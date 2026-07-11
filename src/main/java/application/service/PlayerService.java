@@ -29,12 +29,17 @@ public class PlayerService {
             new SimpleBooleanProperty(false);
 
     private final DoubleProperty volume =
-            new SimpleDoubleProperty(0.5); // Default to 50%
+            new SimpleDoubleProperty(0.5);// Default to 50%
+
+    private final BooleanProperty shuffle =
+            new SimpleBooleanProperty(false);
 
     public PlayerService(AudioPlayer player) {
         this.player = player;
 
         this.volume.set(player.getVolume() / 100.0);
+
+        this.shuffle.set(player.isShuffle());
 
         this.volume.addListener((obs, oldVal, newVal) -> {
             int targetVol = (int) Math.round(newVal.doubleValue() * 100);
@@ -62,11 +67,15 @@ public class PlayerService {
             public void onVolumeChanged(int newVolume) {
                 Platform.runLater(() -> {
                     double targetSliderValue = newVolume / 100.0;
-                    // Break infinite event ping-pongs and drop float jitters
                     if (Math.abs(volume.get() - targetSliderValue) > 0.01) {
                         volume.set(targetSliderValue);
                     }
                 });
+            }
+
+            @Override
+            public void onShuffleChanged(boolean newShuffle) {
+                Platform.runLater(() -> shuffle.set(newShuffle));
             }
         });
     }
@@ -114,6 +123,17 @@ public class PlayerService {
         player.setShuffle(!player.isShuffle());
     }
 
+    public void removeTrackFromQueue(Track track) {
+        player.removeTrackFromQueue(track);
+    }
+
+    public void skipForward(int i) {
+        player.skipForward(i);
+    }
+
+    public void skipBackward(int i) {
+        player.skipBackward(i);
+    }
     // =========================
     // Properties
     // =========================
@@ -140,6 +160,10 @@ public class PlayerService {
 
     public BooleanProperty playingProperty() {
         return playing;
+    }
+
+    public BooleanProperty shuffleProperty() {
+        return shuffle;
     }
 
     // =========================
@@ -186,11 +210,4 @@ public class PlayerService {
         return playing.get();
     }
 
-    public void skipForward(int i) {
-        player.skipForward(i);
-    }
-
-    public void skipBackward(int i) {
-        player.skipBackward(i);
-    }
 }

@@ -1,20 +1,16 @@
 package gui.controllers;
 
-import application.service.AppState;
 import application.service.LibraryService;
 import application.service.MediaService;
 import application.service.PlayerService;
-import domain.model.library.MediaLibrary;
 import domain.model.media.Playlist;
 import domain.model.media.Track;
 import gui.utils.DialogFactory;
+import gui.utils.UIContext;
+import gui.utils.ViewLoader;
 import infrastructure.audio.AudioPlayer;
 import domain.audio.RepeatMode;
-import infrastructure.media.MetadataManager;
 
-import infrastructure.storage.ArtworkStorage;
-import infrastructure.storage.MetadataStorage;
-import infrastructure.storage.TrackStorage;
 import javafx.animation.*;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
@@ -27,6 +23,8 @@ import javafx.scene.Parent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -37,6 +35,8 @@ import java.util.Optional;
 import static domain.audio.PlaybackState.*;
 
 public class MainViewController {
+
+    private static final Logger logger = LoggerFactory.getLogger(MainViewController.class);
 
     @FXML
     private Button btnTracks, btnSongs, btnBooks, btnPodcasts;
@@ -60,16 +60,9 @@ public class MainViewController {
     @FXML private AnchorPane contentArea;
 
     private final ViewMode DEFAULT_STARTING_VIEW_MODE = ViewMode.TRACKS;
-    private MediaService mediaService;
-    private AudioPlayer player;
-    private LibraryService libraryService;
-    private PlayerService playerService;
-    private MetadataManager metadataManager;
-    private MediaLibrary mediaLibrary;
-    private AppState appState;
-    private ArtworkStorage artStorage;
-    private MetadataStorage metadataStorage;
-    private TrackStorage trackStorage;
+
+    private UIContext uiContext;
+    private ViewLoader viewLoader;
 
     private MediaListViewController mediaListViewController;
 
@@ -78,71 +71,11 @@ public class MainViewController {
 
     static int skipSeconds = 10;
 
-    public void setArtworkStorage(ArtworkStorage artStorage) {
-        this.artStorage = artStorage;
-    }
-
-    public void setMetadataStorage(MetadataStorage metadataStorage) {
-        this.metadataStorage = metadataStorage;
-    }
-
-    public void setTrackStorage(TrackStorage trackStorage) {
-        this.trackStorage = trackStorage;
-    }
-
-    public void setPlayer(AudioPlayer player) {
-        this.player = player;
-        if (player != null)
-            btnRepeatAndStop.setText(player.getRepeatMode().getText());
-    }
-
-    public void setPlayerService(PlayerService playerService) {
-        if (this.playerService != null) return;
-        this.playerService = playerService;
-        updatePlayButton();
-        updateFavoriteButton();
-        setupLabel();
-        setUpVolumeSlider();
-    }
-
-    public void setMetadataManager(MetadataManager metadataManager) {
-        this.metadataManager = metadataManager;
-    }
-
-    public void setMediaService(MediaService mediaService) {
-        this.mediaService = mediaService;
-    }
-
-    public void setLibraryService(LibraryService libraryService) {
-        this.libraryService = libraryService;
+    public void setUIContext(UIContext uiContext) {
+        this.uiContext = uiContext;
+        this.viewLoader = new ViewLoader(uiContext);
         initializeLibrary();
-    }
-
-    public void setMediaLibrary(MediaLibrary mediaLibrary) {
-        this.mediaLibrary = mediaLibrary;
-    }
-
-    public void setAppState(AppState appState) {
-        this.appState = appState;
-    }
-
-    public void updatePlayButton() {
-        playerService.playbackStateProperty().addListener((obs, oldState, newState) -> {
-            switch (newState) {
-                case PLAYING -> btnPlay.setText("⏸");
-                case PAUSED, STOPPED -> btnPlay.setText("▶");
-            }
-        });
-    }
-
-    public void updateFavoriteButton() {
-        playerService.currentTrackProperty().addListener((obs, oldTrack, newTrack) -> {
-            if (newTrack != null) {
-                setBtnFavoriteStyle(newTrack.isFavorite());
-            } else {
-                setBtnFavoriteStyle(false);
-            }
-        });
+        init();
     }
 
     public void setBtnFavoriteStyle(boolean favorite) {
@@ -154,22 +87,67 @@ public class MainViewController {
     }
 
     public void handleRefresh() {
-        Platform.runLater(() -> switchViewMode(currentViewMode));
+        Platform.runLater(() -> {
+            switchViewMode(currentViewMode);
+            uiContext.mediaService().refreshActiveLibrary();
+        });
     }
 
     @FXML
     private void initialize() {
         setButtonsEnabled(true);
-
         setUpViewButtons();
+    }
+
+    private void init() {
+        updatePlayButton();
+        updateFavoriteButton();
+        updateShuffleButton();
+        setupLabel();
+        setUpVolumeSlider();
         setUpControlButtons();
         setUpMenuOptions();
         setUpProgressSlider();
-
+        updateRepeatButton();
         Task<Void> task = getQueueLoadingTask();
         Thread thread = new Thread(task);
         thread.setDaemon(true);
         thread.start();
+    }
+
+    private void updatePlayButton() {
+        uiContext.playerService().playbackStateProperty().addListener((obs, oldState, newState) -> {
+            switch (newState) {
+                case PLAYING -> btnPlay.setText("⏸");
+                case PAUSED, STOPPED -> btnPlay.setText("▶");
+            }
+        });
+    }
+
+    private void updateFavoriteButton() {
+        uiContext.playerService().currentTrackProperty().addListener((obs, oldTrack, newTrack) -> {
+            if (newTrack != null) {
+                setBtnFavoriteStyle(newTrack.isFavorite());
+            } else {
+                setBtnFavoriteStyle(false);
+            }
+        });
+    }
+
+    private void updateShuffleButton() {
+        uiContext.playerService().shuffleProperty().addListener((obs, oldShuffle, newShuffle) -> {
+            if (newShuffle) {
+                btnShuffle.setText("shuffled");
+                btnShuffle.getStyleClass().add("activated-button");
+            } else {
+                btnShuffle.setText("unshuffled");
+                btnShuffle.getStyleClass().remove("activated-button");
+            }
+        });
+    }
+
+    private void updateRepeatButton() {
+        btnRepeatAndStop.setText(uiContext.player().getRepeatMode().getText());
     }
 
     private void setUpViewButtons() {
@@ -184,9 +162,11 @@ public class MainViewController {
         btnCurrentTrack.setOnAction(event -> switchViewMode(ViewMode.TRACK));
         btnFolders.setOnAction(event -> switchViewMode(ViewMode.FOLDERS));
         btnLyrics.setOnAction(event -> switchViewMode(ViewMode.LYRICS));
+        btnQueue.setOnAction(event -> switchViewMode(ViewMode.QUEUE));
     }
 
     private void switchViewMode(ViewMode viewMode) {
+        MediaService mediaService = uiContext.mediaService();
         switch (viewMode) {
             case TRACKS -> switchMediaView(new ArrayList<>(mediaService.getTracks()), viewMode);
             case SONGS -> switchMediaView(new ArrayList<>(mediaService.getSongs()), viewMode);
@@ -199,11 +179,13 @@ public class MainViewController {
             case TRACK -> loadPlayingTrackView();
             case LYRICS -> loadLyricsView();
             case FOLDERS -> loadFoldersView();
+            case QUEUE -> loadQueueView();
             case SETTINGS -> IO.println("Settings not implemented yet");
         }
     }
 
     private void setUpMenuOptions() {
+        AudioPlayer player = uiContext.player();
         miPlayOne.setOnAction(e -> {
             player.setRepeatMode(RepeatMode.PLAY_ONE);
             updateRepeatButton(RepeatMode.PLAY_ONE);
@@ -223,18 +205,20 @@ public class MainViewController {
     }
 
     private void setUpControlButtons() {
+        PlayerService playerService = uiContext.playerService();
         setBtnPlay();
         setBtnFavorite();
         btnNext.setOnAction(event -> playerService.playNext());
         btnPrev.setOnAction(event -> playerService.playPrev());
         btnShuffle.setOnAction(event -> playerService.shuffle());
-        btnFastForward.setOnAction(event -> player.skipForward(skipSeconds));
+        btnFastForward.setOnAction(event -> playerService.skipForward(skipSeconds));
         btnFastForward.setText(skipSeconds + " ⏩");
-        btnFastBackward.setOnAction(event -> player.skipBackward(skipSeconds));
+        btnFastBackward.setOnAction(event -> playerService.skipBackward(skipSeconds));
         btnFastBackward.setText("⏪ " + skipSeconds);
     }
 
     private void setBtnFavorite() {
+        PlayerService playerService = uiContext.playerService();
         btnFavorite.setOnAction(event -> {
             Track current = playerService.getCurrentTrack();
             if (current != null) {
@@ -245,6 +229,8 @@ public class MainViewController {
     }
 
     private void setBtnPlay() {
+        PlayerService playerService = uiContext.playerService();
+        AudioPlayer player = uiContext.player();
         btnPlay.setOnAction(event -> {
             switch (player.getState()) {
                 case STOPPED -> playerService.playSelectedTrack();
@@ -255,6 +241,8 @@ public class MainViewController {
     }
 
     private Task<Void> getQueueLoadingTask() {
+        AudioPlayer player = uiContext.player();
+        MediaService mediaService = uiContext.mediaService();
         Task<Void> task = new Task<>() {
             @Override
             protected Void call() {
@@ -271,6 +259,7 @@ public class MainViewController {
     }
 
     public void setupLabel() {
+        PlayerService playerService = uiContext.playerService();
         currentTrack.textProperty().bind(
                 Bindings.createStringBinding(() -> {
                     Track track = playerService.getCurrentTrack();
@@ -292,10 +281,12 @@ public class MainViewController {
     }
 
     private void setUpVolumeSlider() {
+        PlayerService playerService = uiContext.playerService();
         volumeSlider.valueProperty().bindBidirectional(playerService.volumeProperty());
     }
 
     private void setUpProgressSlider() {
+        AudioPlayer player = uiContext.player();
         Timeline progressTimeline = new Timeline(
                 new KeyFrame(Duration.millis(200), e -> {
                     if (!seeking && !progressSlider.isValueChanging()) {
@@ -321,9 +312,10 @@ public class MainViewController {
     private void switchMediaView(List<Track> tracks, ViewMode mode) {
         loadMediaView(tracks);
         currentViewMode = mode;
+        System.out.println(mediaListViewController == null);
         if (mediaListViewController != null) {
             mediaListViewController.setData(tracks);
-            mediaListViewController.inti();
+            mediaListViewController.init();
         }
     }
 
@@ -336,14 +328,11 @@ public class MainViewController {
         try {
             FXMLLoader loader = loadView("/views/mediaList-view.fxml");
             mediaListViewController = loader.getController();
-            mediaListViewController.setPlayerService(playerService);
-            mediaListViewController.setMetadataManager(metadataManager);
-            mediaListViewController.setMetadataStorage(metadataStorage);
-            mediaListViewController.setTrackStorage(trackStorage);
-            mediaListViewController.setMediaService(mediaService);
+            mediaListViewController.setUIContext(uiContext);
+            mediaListViewController.setViewLoader(viewLoader);
             mediaListViewController.setOnSaveSuccessCallback(this::handleRefresh);
         } catch (IOException e) {
-            System.err.println("CRITICAL: Could not find or load mediaList-view.fxml");
+            logger.error("CRITICAL: Could not find or load mediaList-view.fxml", e);
         }
     }
 
@@ -351,14 +340,14 @@ public class MainViewController {
         try {
             FXMLLoader loader = loadView("/views/playlist-view.fxml");
             PlaylistViewController playlistController = loader.getController();
-            playlistController.setMediaLibrary(mediaLibrary);
-            playlistController.setPlayerService(playerService);
-            playlistController.setTracksList(mediaService.getTracks());
+            playlistController.setUIContext(uiContext);
+            playlistController.setViewLoader(viewLoader);
+
             playlistController.setOnSaveSuccess(this::handleRefresh);
-            playlistController.setAppState(appState);
+
             currentViewMode = ViewMode.PLAYLIST;
         } catch (IOException e) {
-            System.err.println("Failed to load playlist-view.fxml");
+            logger.error("Failed to load playlist-view.fxml", e);
         }
     }
 
@@ -366,13 +355,11 @@ public class MainViewController {
         try {
             FXMLLoader loader = loadView("/views/category-view.fxml");
             CategoryViewController categoryViewController = loader.getController();
-            categoryViewController.setPlayerService(playerService);
-            categoryViewController.setAppState(this.appState);
+            categoryViewController.setUiContext(uiContext);
             categoryViewController.setData(categoryList, mode);
 
         } catch (IOException e) {
-            System.err.println("CRITICAL: Could not find or load category-view.fxml");
-            e.printStackTrace();
+            logger.error("CRITICAL: Could not find or load category-view.fxml", e);
         }
     }
 
@@ -380,15 +367,10 @@ public class MainViewController {
         try {
             FXMLLoader loader = loadView("/views/playing-track-view.fxml");
             PlayingTrackViewController playingTrackViewController = loader.getController();
-            playingTrackViewController.initializeDependencies(
-                    playerService,
-                    artStorage,
-                    metadataStorage,
-                    metadataManager
-            );
+            playingTrackViewController.setUiContext(uiContext);
             currentViewMode = ViewMode.TRACK;
         } catch (IOException e) {
-            System.err.println("CRITICAL: Could not find or load playing-track-view.fxml");
+            logger.error("CRITICAL: Could not find or load playing-track-view.fxml", e);
         }
     }
 
@@ -396,11 +378,11 @@ public class MainViewController {
         try {
             FXMLLoader loader = loadView("/views/folders-view.fxml");
             FoldersViewController foldersViewController = loader.getController();
-            foldersViewController.setLibraryService(libraryService);
-            foldersViewController.setMediaService(mediaService);
+            foldersViewController.setLibraryService(uiContext.libraryService());
+            foldersViewController.setMediaService(uiContext.mediaService());
             currentViewMode = ViewMode.FOLDERS;
         } catch (IOException e) {
-            System.err.println("CRITICAL: Could not find or load folders-view.fxml");
+            logger.error("CRITICAL: Could not find or load folders-view.fxml", e);
         }
     }
 
@@ -408,12 +390,23 @@ public class MainViewController {
         try {
             FXMLLoader loader = loadView("/views/lyrics-view.fxml");
             LyricsViewController lyricsViewController = loader.getController();
-            lyricsViewController.setTrack(playerService.getCurrentTrack());
-            lyricsViewController.setMetadataManager(metadataManager);
+            lyricsViewController.setTrack(uiContext.playerService().getCurrentTrack());
+            lyricsViewController.setMetadataManager(uiContext.metadataManager());
             currentViewMode = ViewMode.LYRICS;
         } catch (IOException e) {
-            System.err.println("CRITICAL: Could not find or load lyrics-view.fxml");
-            e.printStackTrace();
+            logger.error("CRITICAL: Could not find or load lyrics-view.fxml", e);
+        }
+    }
+
+    private void loadQueueView() {
+        try {
+            FXMLLoader loader = loadView("/views/queued-tracks-view.fxml");
+            QueuedTracksViewController queuedTracksViewController = loader.getController();
+            queuedTracksViewController.setUIContext(uiContext);
+            queuedTracksViewController.setViewLoader(viewLoader);
+            queuedTracksViewController.setOnSaveSuccessCallback(this::handleRefresh);
+        } catch (IOException e) {
+            logger.error("CRITICAL: Could not load queued-tracks-view.fxml", e);
         }
     }
 
@@ -431,13 +424,15 @@ public class MainViewController {
     }
 
     private void initializeLibrary() {
+        LibraryService libraryService = uiContext.libraryService();
         if (!libraryService.hasLibraries()) {
             Optional<String> pathResult = getResult();
             if (pathResult.isEmpty()) return;
 
-            TextInputDialog nameDialog = new TextInputDialog();
-            nameDialog.setTitle("Library Setup");
-            nameDialog.setHeaderText("Enter Library Name");
+            TextInputDialog nameDialog = DialogFactory.textInputDialog(
+                    "Library Setup",
+                    "Enter Library Name"
+            );
 
             Optional<String> nameResult = nameDialog.showAndWait();
             if (nameResult.isEmpty()) return;
@@ -453,7 +448,7 @@ public class MainViewController {
             libraryService.setActiveLibrary(libraryService.getLibraries().getFirst());
         }
 
-        mediaService.loadActiveLibrary();
+        uiContext.mediaService().loadActiveLibrary();
     }
 
     private static Optional<String> getResult() {
@@ -463,9 +458,11 @@ public class MainViewController {
                 "Please create your first library.");
         alert.showAndWait();
 
-        TextInputDialog pathDialog = new TextInputDialog();
-        pathDialog.setTitle("Library Setup");
-        pathDialog.setHeaderText("Enter the path of your media folder");
+        TextInputDialog pathDialog = DialogFactory.textInputDialog(
+                "Library Setup",
+                "Enter the path of your media folder"
+        );
+
         return pathDialog.showAndWait();
     }
 }

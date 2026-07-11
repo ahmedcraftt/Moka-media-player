@@ -9,4 +9,6 @@ public interface PlaybackListener {
     void onPlaybackStateChanged(PlaybackState state);
 
     void onVolumeChanged(int newVolume);
+
+    void onShuffleChanged(boolean shuffle);
 }

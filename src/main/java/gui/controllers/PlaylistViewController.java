@@ -3,12 +3,13 @@ package gui.controllers;
 import application.dto.PlaylistDTO;
 import application.service.AppState;
 import application.service.PlayerService;
-import domain.model.library.MediaLibrary;
 import domain.model.media.Displayable;
 import domain.model.media.Playlist;
 import domain.model.media.Track;
+import gui.controllers.listcells.OpenableDisplayableCell;
 import gui.utils.DialogFactory;
-import gui.utils.TimeFormater;
+import gui.utils.UIContext;
+import gui.utils.ViewLoader;
 import infrastructure.mapper.PlaylistMapper;
 import infrastructure.storage.PlaylistStorage;
 
@@ -21,16 +22,11 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -61,26 +57,17 @@ public class PlaylistViewController {
 
     private Playlist currentPlaylist;
 
-    private MediaLibrary mediaLibrary;
-    private PlayerService playerService;
-    private AppState appState;
+    private UIContext uiContext;
+    private ViewLoader viewLoader;
 
-    private static List<Track> tracksList;
     private static Runnable onSaveSuccess;
 
     private SortByModes currentSortMode = SortByModes.TITLE;
 
-    public void setMediaLibrary(MediaLibrary mediaLibrary) {
-        this.mediaLibrary = mediaLibrary;
+    public void setUIContext(UIContext uiContext) {
+        this.uiContext = uiContext;
         loadPlaylists();
-    }
-
-    public void setPlayerService(PlayerService playerService) {
-        this.playerService = playerService;
-    }
-
-    public void setAppState(AppState appState) {
-        this.appState = appState;
+        AppState appState = uiContext.appState();
         if (viewModes.contains(appState.getCurrentCategoryMode())) {
             appState.clearCurrentView();
         }
@@ -88,8 +75,8 @@ public class PlaylistViewController {
         appState.setCurrentCategoryMode(ViewMode.PLAYLIST);
     }
 
-    public void setTracksList(List<Track> tracksList) {
-        PlaylistViewController.tracksList = tracksList;
+    public void setViewLoader(ViewLoader viewLoader) {
+        this.viewLoader = viewLoader;
     }
 
     public void setOnSaveSuccess(Runnable onSaveSuccess) {
@@ -132,6 +119,7 @@ public class PlaylistViewController {
     }
 
     private void applyFilterAndSortPlaylists() {
+        AppState appState = uiContext.appState();
         String query = (tfSearchBar != null && tfSearchBar.getText() != null)
                 ? tfSearchBar.getText().toLowerCase().trim()
                 : "";
@@ -160,6 +148,7 @@ public class PlaylistViewController {
     }
 
     private void sortCurrentTracks() {
+        AppState appState = uiContext.appState();
         List<Track> tracks = listView.getItems().stream()
                 .filter(Track.class::isInstance)
                 .map(Track.class::cast)
@@ -187,9 +176,8 @@ public class PlaylistViewController {
         if (appState != null) {
             appState.setCurrentView(updatedTrackView);
         }
-        if (playerService != null) {
-            playerService.setCurrentList(tracks);
-        }
+
+        uiContext.playerService().setCurrentList(tracks);
     }
 
     @FXML
@@ -223,7 +211,8 @@ public class PlaylistViewController {
     }
 
     private void setUpListView() {
-        listView.setCellFactory(lv -> new MyListCell());
+        listView.setCellFactory(lv ->
+                new OpenableDisplayableCell(uiContext.playerService(), viewLoader, onSaveSuccess));
         listView.setOnMouseClicked(event -> {
             Displayable item = listView.getSelectionModel().getSelectedItem();
             if (item != null) {
@@ -236,6 +225,7 @@ public class PlaylistViewController {
     }
 
     private void setUpListViewItems() {
+        AppState appState = uiContext.appState();
         if (appState.getCurrentView().isEmpty()) {
             listView.setItems(filteredDisplayables);
         } else {
@@ -256,6 +246,7 @@ public class PlaylistViewController {
     }
 
     private void playTrack(Track t) {
+        PlayerService playerService = uiContext.playerService();
         playerService.setSelectTrack(t);
         playerService.playSelectedTrack();
     }
@@ -266,17 +257,17 @@ public class PlaylistViewController {
     }
 
     private void openList(List<Track> list) {
+        PlayerService playerService = uiContext.playerService();
         ObservableList<Displayable> tracks = FXCollections.observableArrayList();
         tracks.setAll(list != null ? list : List.of());
         if (playerService != null) {
             playerService.setCurrentList(list);
         }
         Platform.runLater(() -> {
+
             listView.getSelectionModel().clearSelection();
             listView.setItems(tracks);
-            if (appState != null) {
-                appState.setCurrentView(tracks);
-            }
+            uiContext.appState().setCurrentView(tracks);
             if (!tracks.isEmpty()) {
                 sortCurrentTracks();
             }
@@ -289,7 +280,7 @@ public class PlaylistViewController {
             List<PlaylistDTO> dtos = PlaylistStorage.load();
 
             for (PlaylistDTO dto : dtos) {
-                playlists.add(PlaylistMapper.fromDTO(dto, mediaLibrary));
+                playlists.add(PlaylistMapper.fromDTO(dto, uiContext.mediaLibrary()));
             }
 
             applyFilterAndSortPlaylists();
@@ -317,32 +308,33 @@ public class PlaylistViewController {
                 tfSearchBar.clear();
             }
             applyFilterAndSortPlaylists();
-            if (appState != null) {
-                appState.setCurrentView(FXCollections.emptyObservableList());
-            }
+            uiContext.appState().setCurrentView(FXCollections.emptyObservableList());
         });
     }
 
     private void setupButton(FilterMode mode) {
-        if (tracksList == null) return;
+        List<Track> tracks = uiContext.mediaService().getTracks();
+        if (tracks == null) return;
         List<Track> filtered = List.of();
         switch (mode) {
-            case FAVORITE -> filtered = tracksList.stream().filter(Track::isFavorite).toList();
+            case FAVORITE -> filtered = tracks.stream().filter(Track::isFavorite).toList();
             case RECENTLY_ADDED ->
-                    filtered = tracksList.stream().sorted(Comparator.comparing(Track::getDateAdded).reversed()).toList();
+                    filtered = tracks.stream().sorted(Comparator.comparing(Track::getDateAdded).reversed()).toList();
             case MOST_PLAYED ->
-                    filtered = tracksList.stream().sorted(Comparator.comparingInt(Track::getTimesPlayed).reversed()).toList();
+                    filtered = tracks.stream().sorted(Comparator.comparingInt(Track::getTimesPlayed).reversed()).toList();
         }
         openList(filtered);
     }
 
     private void createPlaylist() {
         try {
+            List<Track> tracks = uiContext.mediaService().getTracks();
+
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/playlist-creation-view.fxml"));
             Parent root = loader.load();
 
             PlaylistCreationViewController controller = loader.getController();
-            controller.setTracks(tracksList);
+            controller.setTracks(tracks);
 
             Image icon = new Image(Objects.requireNonNull(
                     getClass().getResourceAsStream("/assets/icons/app-icon.png")
@@ -350,7 +342,7 @@ public class PlaylistViewController {
 
             Stage stage = new Stage();
             stage.setTitle("Create playlist");
-            stage.setScene(new Scene(root));
+            stage.setScene(new Scene(root, 720, 580));
             stage.getIcons().add(icon);
             stage.showAndWait();
 
@@ -371,115 +363,4 @@ public class PlaylistViewController {
         alert.showAndWait();
     }
 
-    private static void loadPlaylistDataView(Playlist playlist) throws IOException {
-        FXMLLoader loader = new FXMLLoader(PlaylistViewController.class.getResource("/views/playlist-data-view.fxml"));
-        Parent root = loader.load();
-        PlaylistDataViewController controller = loader.getController();
-        controller.setPlaylist(playlist);
-        controller.setTracks(tracksList);
-        controller.setOnSaveSuccess(onSaveSuccess);
-
-        Stage stage = new Stage();
-        Image icon = new Image(Objects.requireNonNull(
-                MediaListViewController.class.getResourceAsStream("/assets/icons/app-icon.png")
-        ));
-        stage.getIcons().add(icon);
-        stage.setTitle("Track info");
-        stage.setScene(new Scene(root));
-        stage.showAndWait();
-    }
-
-    private static class MyListCell extends ListCell<Displayable> {
-
-        private final Label title = new Label();
-        private final Label info = new Label();
-        private final ImageView artworkView = new ImageView();
-        private final Button btnInfo = new Button("⋮");
-        private final HBox root = new HBox(10);
-
-        private static Image defaultArtwork;
-
-        public MyListCell() {
-            if (defaultArtwork == null) {
-                try {
-                    defaultArtwork = new Image(
-                            Objects.requireNonNull(MyListCell.class.getResourceAsStream("/assets/images/unknown.jpg")),
-                            40, 40, true, true
-                    );
-                } catch (Exception e) {
-                    System.err.println("Fallback cell asset path missing.");
-                }
-            }
-
-            artworkView.setFitWidth(40);
-            artworkView.setFitHeight(40);
-            artworkView.setPreserveRatio(true);
-
-            VBox textBox = new VBox(5);
-            textBox.getChildren().addAll(title, info);
-
-            HBox.setHgrow(textBox, Priority.ALWAYS);
-
-            root.getChildren().addAll(artworkView, textBox, btnInfo);
-        }
-
-        @Override
-        protected void updateItem(Displayable item, boolean empty) {
-            super.updateItem(item, empty);
-
-            if (empty || item == null) {
-                setGraphic(null);
-                return;
-            }
-
-            String artworkPath = item.getArtworkPath();
-
-            if (item instanceof Track track) {
-                title.setText(track.getTitle());
-                info.setText(TimeFormater.formatTime(track.getMetadata().getDurationInSeconds())
-                        + " " + track.getMetadata().getArtist());
-
-                btnInfo.setOnAction(event -> {
-                    try {
-                        MediaListViewController.loadDataView(track);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                });
-
-            } else if (item instanceof Playlist playlist) {
-                title.setText(playlist.getTitle() + " d " +
-                        playlist.size() + " Tracks " +
-                        TimeFormater.formatTime(playlist.getTotalDurationSeconds())
-                );
-
-                if (playlist.getTracks() != null && !playlist.getTracks().isEmpty()) {
-                    info.setText("First track: " + playlist.getTracks().getFirst().getTitle());
-                } else {
-                    info.setText("Empty Playlist");
-                }
-
-                btnInfo.setOnAction(event -> {
-                    try {
-                        loadPlaylistDataView(playlist);
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
-                });
-            }
-
-            if (artworkPath != null && !artworkPath.isBlank()) {
-                File file = new File(artworkPath);
-                if (file.exists()) {
-                    artworkView.setImage(new Image(file.toURI().toString(), 40, 40, true, true, true));
-                } else {
-                    artworkView.setImage(defaultArtwork);
-                }
-            } else {
-                artworkView.setImage(defaultArtwork);
-            }
-
-            setGraphic(root);
-        }
-    }
 }

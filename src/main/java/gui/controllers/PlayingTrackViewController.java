@@ -3,9 +3,7 @@ package gui.controllers;
 import application.service.PlayerService;
 import domain.model.media.Track;
 import gui.utils.DialogFactory;
-import infrastructure.media.MetadataManager;
-import infrastructure.storage.ArtworkStorage;
-import infrastructure.storage.MetadataStorage;
+import gui.utils.UIContext;
 
 import javafx.animation.Animation;
 import javafx.animation.Interpolator;
@@ -50,19 +48,13 @@ public class PlayingTrackViewController {
     private RotateTransition rotateTransition;
     private ScaleTransition scaleTransition;
 
-    private PlayerService playerService;
-    private ArtworkStorage artworkStorage;
-    private MetadataStorage metadataStorage;
-    private MetadataManager metadataManager;
+    private UIContext uiContext;
 
-    public void initializeDependencies(PlayerService playerService,
-                                       ArtworkStorage artworkStorage,
-                                       MetadataStorage metadataStorage,
-                                       MetadataManager metadataManager) {
-        this.playerService = playerService;
-        this.artworkStorage = artworkStorage;
-        this.metadataStorage = metadataStorage;
-        this.metadataManager = metadataManager;
+
+    public void setUiContext(UIContext uiContext) {
+        this.uiContext = uiContext;
+
+        PlayerService playerService = uiContext.playerService();
 
         playerService.currentTrackProperty().addListener((obs, oldT, newT) -> updateUI(newT));
         updateUI(playerService.getCurrentTrack());
@@ -107,6 +99,7 @@ public class PlayingTrackViewController {
 
     @FXML
     private void handleChangeArtwork() {
+        PlayerService playerService = uiContext.playerService();
         Track currentTrack = playerService.getCurrentTrack();
         if (currentTrack == null) return;
 
@@ -122,12 +115,11 @@ public class PlayingTrackViewController {
             try {
                 byte[] rawBytes = Files.readAllBytes(selectedFile.toPath());
 
-                String brandNewDiskPath = artworkStorage.saveArtwork(rawBytes, selectedFile.getName());
+                String brandNewDiskPath = uiContext.artStorage().saveArtwork(rawBytes, selectedFile.getName());
 
                 if (brandNewDiskPath != null) {
                     currentTrack.getMetadata().setArtworkPath(brandNewDiskPath);
-                    metadataManager.write(currentTrack);
-                    metadataStorage.update(currentTrack.getMetadata());
+                    uiContext.trackStorage().update(currentTrack);
 
                     logger.info("Successfully updated artwork for track '{}' to local path: {}",
                             currentTrack.getTitle(), brandNewDiskPath);
@@ -147,6 +139,7 @@ public class PlayingTrackViewController {
     }
 
     private void updateUI(Track track) {
+        PlayerService playerService = uiContext.playerService();
         if (!Platform.isFxApplicationThread()) {
             Platform.runLater(() -> updateUI(track));
             return;

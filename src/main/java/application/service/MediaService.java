@@ -19,11 +19,6 @@ public class MediaService {
     private final MediaLibrary mediaLibrary;
     private final LibraryService libraryService;
 
-    private List<Track> cachedTracks = new ArrayList<>();
-    private List<Track> cachedSongs = new ArrayList<>();
-    private List<Track> cachedPodcasts = new ArrayList<>();
-    private List<Track> cachedAudioBooks = new ArrayList<>();
-
     private List<Playlist> cachedAlbums = new ArrayList<>();
     private List<Playlist> cachedArtists = new ArrayList<>();
     private List<Playlist> cachedGenres = new ArrayList<>();
@@ -68,12 +63,6 @@ public class MediaService {
 
 
     private void rebuildMetadataCaches() {
-        this.cachedTracks = mediaLibrary.getTracks();
-        this.cachedPodcasts = mediaLibrary.getPodcasts();
-        this.cachedSongs = mediaLibrary.getSongs();
-        this.cachedAudioBooks = mediaLibrary.getAudiobooks();
-
-        logger.debug("Tracks cache rebuilt. Total tracks: {}", this.cachedTracks.size());
 
         List<Track> allTracks = getTracks();
 
@@ -126,31 +115,25 @@ public class MediaService {
                 .collect(Collectors.toList());
     }
 
-    public void refreshMetadataCaches() {
-        this.cachedTracks = mediaLibrary.getTracks();
-        this.cachedPodcasts = mediaLibrary.getPodcasts();
-        this.cachedSongs = mediaLibrary.getSongs();
-        this.cachedAudioBooks = mediaLibrary.getAudiobooks();
-    }
 
     public LibraryService getLibraryService() {
         return libraryService;
     }
 
     public List<Track> getSongs() {
-        return cachedSongs;
+        return mediaLibrary.getSongs();
     }
 
     public List<Track> getAudioBooks() {
-        return cachedAudioBooks;
+        return mediaLibrary.getAudiobooks();
     }
 
     public List<Track> getPodcasts() {
-        return cachedPodcasts;
+        return mediaLibrary.getPodcasts();
     }
 
     public List<Track> getTracks() {
-        return cachedTracks;
+        return mediaLibrary.getTracks();
     }
 
     public List<Playlist> getAlbums() {

@@ -8,7 +8,7 @@ package gui.main;
  * consumed by MainApplication for performance logging.
  */
 
-public class MainLauncher {
+public final class MainLauncher {
     static final long START_TIME = System.nanoTime();
 
     public static void main(String[] args) {

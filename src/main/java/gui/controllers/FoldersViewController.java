@@ -28,7 +28,6 @@ public class FoldersViewController {
     private ListView<LibraryFolder> lvFoldersList;
 
     private LibraryService libraryService;
-
     private MediaService mediaService;
 
     private final ObservableList<LibraryFolder> masterList =
@@ -131,6 +130,7 @@ public class FoldersViewController {
         }
 
         DirectoryChooser chooser = new DirectoryChooser();
+
         chooser.setTitle("Select Folder");
 
         File selected =

@@ -43,4 +43,6 @@ public interface AudioEngine {
     long getCurrentTime();
     long getTotalTime();
 
+    int getDuration();
+
 }

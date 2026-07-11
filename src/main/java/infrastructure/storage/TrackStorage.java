@@ -182,7 +182,7 @@ public class TrackStorage {
             statement.setString(9, dto.lastAccessed());
             statement.setString(10, dto.fileType());
             statement.setString(11, dto.path());
-
+            metadataStorage.update(track.getMetadata());
 
             statement.executeUpdate();
         } catch (SQLException e) {

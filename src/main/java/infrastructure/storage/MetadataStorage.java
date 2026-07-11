@@ -69,8 +69,23 @@ public class MetadataStorage {
                  INSERT INTO metadata(
                  duration_in_seconds, bitrate, samplerate, title, genre,
                  description, lyrics, language, year, artwork_path,
-                 series, artist, series_artist, track_number)
-                 VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+                 series, artist, series_artist, track_number,metadata_id)
+                 VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+                 ON CONFLICT(metadata_id) DO UPDATE SET
+                duration_in_seconds = excluded.duration_in_seconds,
+                bitrate = excluded.bitrate,
+                samplerate = excluded.samplerate,
+                title = excluded.title,
+                genre = excluded.genre,
+                description = excluded.description,
+                lyrics = excluded.lyrics,
+                language = excluded.language,
+                year = excluded.year,
+                artwork_path = excluded.artwork_path,
+                series = excluded.series,
+                artist = excluded.series_artist,
+                series_artist = excluded.series_artist,
+                track_number = excluded.track_number;
                 """;
 
         try (
@@ -84,40 +99,13 @@ public class MetadataStorage {
         }
     }
 
-    public void saveAll(List<Metadata> metadataList) {
-        String sql = """
-                 INSERT INTO metadata(
-                 duration_in_seconds, bitrate, samplerate, title, genre,
-                 description, lyrics, language, year, artwork_path,
-                 series, artist, series_artist, track_number)
-                 VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?)
-                """;
-
-        try (Connection connection = DatabaseManager.connect()) {
-            connection.setAutoCommit(false);
-
-            try (PreparedStatement statement = connection.prepareStatement(sql)) {
-                for (Metadata metadata : metadataList) {
-                    MetadataDTO dto = MetadataMapper.toDTO(metadata);
-                    mapDtoToStatement(statement, dto);
-                    statement.addBatch();
-                }
-                statement.executeBatch();
-                connection.commit();
-            } catch (SQLException e) {
-                connection.rollback();
-                throw e;
-            }
-        } catch (SQLException e) {
-            logger.error("Failed to execute batch metadata save operation.", e);
-        }
-    }
 
     public int saveAndGetId(Metadata metadata) {
         MetadataDTO dto = MetadataMapper.toDTO(metadata);
+        logger.debug("Saving metadata for track title: '{}'{}'", dto.title(), dto.genre());
         String sql = """
-                 INSERT INTO metadata(duration_in_seconds, bitrate, samplerate, title, genre,\s
-                                      description, lyrics, language, year, artwork_path,\s
+                 INSERT INTO metadata(duration_in_seconds, bitrate, samplerate, title, genre,
+                                      description, lyrics, language, year, artwork_path,
                                       series, artist, series_artist, track_number)
                  VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?)
                 """;

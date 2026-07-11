@@ -14,6 +14,14 @@
     -fx-border-width: 0 0 1 0;
 }
 
+.list-cell:current-track {
+    -fx-background-color: rgba(247, 201, 92, 0.18);
+    -fx-background-radius: 8;
+    -fx-border-color: #f7c95c;
+    -fx-border-width: 0 0 0 4;
+    -fx-effect: dropshadow(gaussian, rgba(247, 201, 92, 0.5), 12, 0.2, 0, 0);
+}
+
 .list-cell:hover {
     -fx-background-color: #2a1f1a;
     -fx-text-fill: #f2e6d9;

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.MenuButton?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<AnchorPane stylesheets="@../styles/main.css" xmlns="http://javafx.com/javafx/25.0.1"
+            xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.controllers.QueuedTracksViewController">
+    <children>
+        <StackPane fx:id="root" layoutX="-14.0" layoutY="-6.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
+                   AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <children>
+                <VBox alignment="TOP_RIGHT" spacing="6.0">
+                    <children>
+                        <HBox alignment="TOP_CENTER">
+                            <children>
+                                <VBox>
+                                    <children>
+                                        <Label fx:id="lblShuffle" alignment="CENTER" text="Shuffle"/>
+                                        <Label fx:id="lblNumOf"/>
+                                    </children>
+                                </VBox>
+                                <Region HBox.hgrow="ALWAYS"/>
+                                <MenuButton fx:id="mbOptions" mnemonicParsing="false" text="⋮">
+                                    <items>
+                                        <MenuItem fx:id="miSave" mnemonicParsing="false"
+                                                  text="Save the queue as a new playlist"/>
+                                        <MenuItem fx:id="miAdd" mnemonicParsing="false" text="Add track to queue"/>
+                                        <MenuItem fx:id="miClear" mnemonicParsing="false" text="Clear queue"/>
+                                    </items>
+                                </MenuButton>
+                            </children>
+                        </HBox>
+                        <ListView fx:id="lvQueue" VBox.vgrow="ALWAYS"/>
+                    </children>
+                    <padding>
+                        <Insets top="4.0"/>
+                    </padding>
+                </VBox>
+            </children>
+        </StackPane>
+    </children>
+</AnchorPane>

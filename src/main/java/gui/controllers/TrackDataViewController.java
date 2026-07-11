@@ -1,13 +1,10 @@
 package gui.controllers;
 
-import application.service.MediaService;
 import domain.model.metadata.Filedata;
 import domain.model.metadata.Metadata;
 import domain.model.media.MediaType;
 import domain.model.media.Track;
-import infrastructure.media.MetadataManager;
-import infrastructure.storage.MetadataStorage;
-import infrastructure.storage.TrackStorage;
+import gui.utils.UIContext;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -85,41 +82,24 @@ public class TrackDataViewController {
     @FXML
     private Button btnCancel;
 
-    private Track track;
-
-    private MetadataManager metadataManager;
-    private TrackStorage storage;
-    private MediaService mediaService;
     private Runnable onSaveSuccessCallback;
 
-
-    public void setTrack(Track track) {
-        this.track = track;
-
-        if (track == null) {
-            return;
-        }
-
-        loadTrackData();
-    }
-
-    public void setMetadataManager(MetadataManager metadataManager) {
-        this.metadataManager = metadataManager;
-    }
-
-    public void setStorage(TrackStorage storage) {
-        this.storage = storage;
-    }
-
-    public void setMediaService(MediaService mediaService) {
-        this.mediaService = mediaService;
-    }
+    private UIContext uiContext;
 
     public void setOnSaveSuccessCallback(Runnable onSaveSuccessCallback) {
         this.onSaveSuccessCallback = onSaveSuccessCallback;
     }
 
-    private void loadTrackData() {
+    public void setTrack(Track track) {
+        if (track == null) return;
+        loadTrackData(track);
+    }
+
+    public void setUIContext(UIContext uiContext) {
+        this.uiContext = uiContext;
+    }
+
+    private void loadTrackData(Track track) {
 
         // File data
 
@@ -143,6 +123,7 @@ public class TrackDataViewController {
         tfSamplerate.setText(String.valueOf(metadata.getSamplerate()));
         tfLang.setText(safe(metadata.getLanguage()));
         tfTitle.setText(safe(metadata.getTitle()));
+        System.out.println(metadata.getGenre());
         tfGenre.setText(safe(metadata.getGenre()));
         taDescription.setText(safe(metadata.getDescription()));
         tfArtist.setText(safe(metadata.getArtist()));
@@ -176,6 +157,7 @@ public class TrackDataViewController {
 
     @FXML
     public void handleSave(ActionEvent event) {
+        Track track = uiContext.playerService().getCurrentTrack();
 
         if (track == null) {
             return;
@@ -200,6 +182,7 @@ public class TrackDataViewController {
 
         metadata.setTitle(tfTitle.getText().trim());
         metadata.setGenre(tfGenre.getText().trim());
+        System.out.println(metadata.getGenre());
         metadata.setLanguage(tfLang.getText().trim());
         metadata.setDescription(taDescription.getText().trim());
         metadata.setArtist(tfArtist.getText().trim());
@@ -214,11 +197,9 @@ public class TrackDataViewController {
             }
         }
 
-        metadataManager.write(track);
+        uiContext.metadataManager().write(track);
 
-        storage.update(track);
-
-        mediaService.refreshMetadataCaches();
+        uiContext.trackStorage().update(track);
 
         Stage stage = (Stage) btnSave.getScene().getWindow();
         stage.getScene().getRoot().fireEvent(new RefreshEvent());

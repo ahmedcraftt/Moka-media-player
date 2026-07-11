@@ -3,24 +3,13 @@ package gui.utils;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.DialogPane;
+import javafx.scene.control.TextInputDialog;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
 import java.util.Objects;
 
 public final class DialogFactory {
-
-    private static void style(Dialog<?> dialog) {
-        DialogPane pane = dialog.getDialogPane();
-        boolean add = pane.getStylesheets().add(
-                Objects.requireNonNull(DialogFactory.class.getResource("/styles/main.css")).toExternalForm()
-        );
-        pane.getStyleClass().add("app-dialog");
-        Stage stage = (Stage) pane.getScene().getWindow();
-        stage.getIcons().add(new Image(
-                Objects.requireNonNull(DialogFactory.class.getResourceAsStream("/assets/icons/app-icon.png"))
-        ));
-    }
 
     public static Alert confirmation(String title, String header, String content) {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
@@ -40,10 +29,28 @@ public final class DialogFactory {
         return alert;
     }
 
-    private static void setData(Alert alert, String title, String header, String content) {
-        alert.setTitle(title);
-        alert.setHeaderText(header);
-        alert.setContentText(content);
-        style(alert);
+    public static TextInputDialog textInputDialog(String title, String header) {
+        TextInputDialog dialog = new TextInputDialog();
+        setData(dialog, title, header, null);
+        return dialog;
+    }
+
+    private static void setData(Dialog<?> dialog, String title, String header, String content) {
+        dialog.setTitle(title);
+        dialog.setHeaderText(header);
+        dialog.setContentText(content);
+        style(dialog);
+    }
+
+    private static void style(Dialog<?> dialog) {
+        DialogPane pane = dialog.getDialogPane();
+        boolean add = pane.getStylesheets().add(
+                Objects.requireNonNull(DialogFactory.class.getResource("/styles/main.css")).toExternalForm()
+        );
+        pane.getStyleClass().add("app-dialog");
+        Stage stage = (Stage) pane.getScene().getWindow();
+        stage.getIcons().add(new Image(
+                Objects.requireNonNull(DialogFactory.class.getResourceAsStream("/assets/icons/app-icon.png"))
+        ));
     }
 }

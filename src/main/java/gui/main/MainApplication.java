@@ -6,6 +6,7 @@ import application.service.MediaService;
 import application.service.PlayerService;
 import domain.model.media.Track;
 import gui.controllers.RefreshEvent;
+import gui.utils.UIContext;
 import infrastructure.audio.AudioEngine;
 import infrastructure.audio.AudioPlayer;
 import domain.audio.PlaybackState;
@@ -28,12 +29,14 @@ import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
+import javafx.stage.Window;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
@@ -73,6 +76,11 @@ public class MainApplication extends Application {
 
     private static final Logger logger = LoggerFactory.getLogger(MainApplication.class);
 
+    private static final int STARTING_VOLUME = 50;
+
+    private final List<Path> startupFiles = new ArrayList<>();
+    private final List<Track> startupTracks = new ArrayList<>();
+
     private final AudioEngine audioEngine = new VLCJAudioEngine();
     private final AudioPlayer audioPlayer = new AudioPlayer(audioEngine);
     private final MetadataManager metadataManager = new JaudiotaggerManager();
@@ -97,12 +105,30 @@ public class MainApplication extends Application {
     private final PlayerService playerService = new PlayerService(audioPlayer);
     private final AppState appState = new AppState();
 
-    private final int startingVolume = 50;
-    private int oldVolume = startingVolume;
-    private Path startupFile;
+    private final UIContext uiContext = new UIContext(
+            mediaService,
+            audioPlayer,
+            libraryService,
+            playerService,
+            metadataManager,
+            mediaLibrary,
+            appState,
+            artworkStorage,
+            metadataStorage,
+            trackStorage,
+            mediaScanner
+    );
+
+    private int oldVolume = STARTING_VOLUME;
+
+    private Path startupDirectory;
+
+    public static Stage primaryStage;
 
     @Override
     public void start(Stage stage) throws IOException {
+        primaryStage = stage;
+
         logger.debug(getParameters().getRaw().toString());
 
         long t = System.nanoTime();
@@ -121,19 +147,10 @@ public class MainApplication extends Application {
         logger.debug("Main view FXML scene resolution took {} ms", (System.nanoTime() - t) / 1_000_000.0);
         t = System.nanoTime();
 
-        controller.setPlayer(audioPlayer);
-        controller.setMediaService(mediaService);
-        controller.setLibraryService(libraryService);
-        controller.setPlayerService(playerService);
-        controller.setMetadataManager(metadataManager);
-        controller.setMediaLibrary(mediaLibrary);
-        controller.setAppState(appState);
-        controller.setArtworkStorage(artworkStorage);
-        controller.setMetadataStorage(metadataStorage);
-        controller.setTrackStorage(trackStorage);
+        controller.setUIContext(uiContext);
         logger.debug("MainViewController Dependency injection took {} ms", (System.nanoTime() - t) / 1_000_000.0);
 
-        audioPlayer.setVolume(startingVolume);
+        audioPlayer.setVolume(STARTING_VOLUME);
 
         Image icon = new Image(
                 Objects.requireNonNull(
@@ -154,33 +171,49 @@ public class MainApplication extends Application {
 
         stage.show();
 
-        root.fireEvent(new RefreshEvent()); //refresh the mediaListView for first launch
+        root.fireEvent(new RefreshEvent());
 
-        setupStartupFile();
+        setupStartupFiles();
+
+        setupStartupDirectory();
+
+        logger.info("Start up files {}", startupFiles);
 
         long elapsed = System.nanoTime() - START_TIME;
         logger.info("Moka Player UI engine successfully built and loaded in {} seconds",
                 String.format("%.3f", (float) elapsed / 1_000_000_000.0f));
     }
 
-    private void setupStartupFile() {
-        if (startupFile != null) {
-            Track startupTrack = new Track(startupFile.getFileName().toString(), startupFile);
-
+    private void setupStartupFiles() {
+        if (startupFiles != null && !startupFiles.isEmpty()) {
             CompletableFuture
-                    .runAsync(() -> {
-                        metadataManager.read(startupTrack);
-                        filedataManager.read(startupTrack);
-                        mediaScanner.scanArtwork(startupTrack);
-                    })
+                    .runAsync(() ->
+                            startupTracks.addAll(mediaScanner.scan(startupFiles)))
                     .thenRun(() -> Platform.runLater(() -> {
-                        playerService.setSelectTrack(startupTrack);
-                        playerService.playSelectedTrack();
-                        logger.debug("Playing starting track at{} :\n {}", startupFile, startupTrack);
+                        for (Track track : startupTracks) {
+                            playSelectedTrack(track);
+                        }
                     }));
-
         }
     }
+
+    private void setupStartupDirectory() {
+        if (startupDirectory == null) return;
+        CompletableFuture.runAsync(() ->
+                        startupTracks.addAll(mediaScanner.scan(startupDirectory)))
+                .thenRun(() -> Platform.runLater(() -> {
+                    for (Track track : startupTracks) {
+                        playSelectedTrack(track);
+                    }
+                }));
+    }
+
+    private void playSelectedTrack(Track track) {
+        playerService.setSelectTrack(track);
+        playerService.playSelectedTrack();
+        logger.debug("Playing starting track at{} :\n {}", track.getFilePath(), track);
+    }
+
 
     private void setupKeyBindings(Parent root, Scene scene, Stage stage) {
         scene.setOnKeyPressed(event -> {
@@ -252,6 +285,7 @@ public class MainApplication extends Application {
 
         if (mediaService != null && trackStorage != null) {
             trackStorage.saveAll(mediaService.getTracks());
+            if (!startupTracks.isEmpty()) trackStorage.saveAll(startupTracks);
         }
         logger.debug("TrackStorage snapshot write-back took {} ms", (System.nanoTime() - t) / 1_000_000.0);
         t = System.nanoTime();
@@ -260,6 +294,14 @@ public class MainApplication extends Application {
             audioEngine.release();
         }
         logger.debug("AudioEngine native platform drivers released in {} ms", (System.nanoTime() - t) / 1_000_000.0);
+        t = System.nanoTime();
+
+        for (Window window : Window.getWindows()) {
+            if (window instanceof Stage stage) {
+                stage.close();
+            }
+        }
+        logger.debug("Closing all sub stages in {} ms", (System.nanoTime() - t) / 1_000_000.0);
 
         long elapsed = System.nanoTime() - start;
         logger.info("Total teardown context finalized in {} seconds. Application terminated.",
@@ -272,7 +314,15 @@ public class MainApplication extends Application {
     public void init() {
         List<String> args = getParameters().getRaw();
         if (!args.isEmpty()) {
-            startupFile = Paths.get(args.get(0));
+            if (Files.isDirectory(Path.of(args.get(0)))) {
+                startupDirectory = Path.of(args.get(0));
+            }
+            for (String arg : args) {
+                Path path = Path.of(arg);
+                if (Files.exists(path) && mediaScanner.isAudioFile(path)) {
+                    startupFiles.add(path);
+                }
+            }
         }
     }
 }

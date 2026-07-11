@@ -1,32 +1,18 @@
 package gui.controllers;
 
-import application.service.MediaService;
+import application.service.AppState;
 import application.service.PlayerService;
 import domain.model.media.Track;
-import gui.utils.TimeFormater;
-import infrastructure.media.MetadataManager;
-import infrastructure.storage.MetadataStorage;
+import gui.controllers.listcells.MediaTrackCell;
+import gui.utils.UIContext;
 
-import infrastructure.storage.TrackStorage;
+import gui.utils.ViewLoader;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.VBox;
-import javafx.stage.Stage;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
+
 
 public class MediaListViewController {
 
@@ -42,42 +28,32 @@ public class MediaListViewController {
     private CheckMenuItem cmiAscending;
 
     private List<Track> currentData = new ArrayList<>();
-    private PlayerService playerService;
-    private static MetadataManager metadataManager;
-    private static MetadataStorage metadataStorage;
-    private static TrackStorage trackStorage;
-    private static MediaService mediaService;
+
     private static Runnable onSaveSuccessCallback;
 
-    private SortByModes currentSortMode = SortByModes.TITLE;
+    private ViewLoader viewLoader;
+    private UIContext uiContext;
 
-    public void setPlayerService(PlayerService playerService) {
-        if (this.playerService != null) return;
-        this.playerService = playerService;
-    }
-
-    public void setMetadataManager(MetadataManager metadataManager) {
-        MediaListViewController.metadataManager = metadataManager;
-    }
-
-    public void setMetadataStorage(MetadataStorage metadataStorage) {
-        MediaListViewController.metadataStorage = metadataStorage;
-    }
+    private SortByModes currentSortMode;
 
     public void setOnSaveSuccessCallback(Runnable onSaveSuccessCallback) {
         MediaListViewController.onSaveSuccessCallback = onSaveSuccessCallback;
     }
 
-    public void setTrackStorage(TrackStorage trackStorage) {
-        MediaListViewController.trackStorage = trackStorage;
+
+    public void setUIContext(UIContext uiContext) {
+        this.uiContext = uiContext;
+        currentSortMode = uiContext.appState().getCurrentSortByMode();
+        setupListView();
+        setupPlay();
     }
 
-    public void setMediaService(MediaService mediaService) {
-        MediaListViewController.mediaService = mediaService;
+    public void setViewLoader(ViewLoader viewLoader) {
+        this.viewLoader = viewLoader;
     }
 
-    public void inti() {
-        sort(SortByModes.TITLE);
+    public void init() {
+        sort(uiContext.appState().getCurrentSortByMode());
     }
 
     public void setData(List<Track> tracks) {
@@ -87,18 +63,18 @@ public class MediaListViewController {
 
     @FXML
     protected void initialize() {
-        setupListView();
-        setupSearch();
-        setupPlay();
         setupSort();
         setupRefresh();
+        setupSearch();
     }
 
     private void sort(SortByModes mode) {
+        AppState appState = uiContext.appState();
         this.currentSortMode = mode;
         if (btnSort != null) {
             btnSort.setText("sort by " + mode.toString().toLowerCase());
         }
+        appState.setCurrentSortByMode(mode);
         applyFilterAndSort();
     }
 
@@ -166,20 +142,21 @@ public class MediaListViewController {
         workingList.sort(hierarchicalComparator);
 
         contentList.getItems().setAll(workingList);
+        System.out.println("working-list:" + workingList.size());
 
-        if (playerService != null) {
-            playerService.setCurrentList(workingList);
-        }
+        uiContext.playerService().setCurrentList(workingList);
+
     }
 
     private void setupListView() {
-        contentList.setCellFactory(lv -> new MyListCell());
+        PlayerService playerService = uiContext.playerService();
+        contentList.setCellFactory(lv -> new MediaTrackCell(playerService, viewLoader, onSaveSuccessCallback));
         contentList.setOnMouseClicked(e -> {
             Track selected = contentList.getSelectionModel().getSelectedItem();
             if (selected != null) {
                 playerService.setSelectTrack(selected);
                 if (e.getClickCount() == 2) {
-                    playerService.playFromList(selected, contentList.getItems());
+                    playerService.playSelectedTrack();
                 }
             }
         });
@@ -198,6 +175,7 @@ public class MediaListViewController {
     }
 
     private void setupPlay() {
+        PlayerService playerService = uiContext.playerService();
         btnListPlay.setOnAction(e -> {
             List<Track> visibleItems = contentList.getItems();
             if (!visibleItems.isEmpty() && playerService != null) {
@@ -214,113 +192,4 @@ public class MediaListViewController {
         return s == null ? "" : s.toLowerCase();
     }
 
-    static void loadDataView(Track track) throws IOException {
-        FXMLLoader loader = new FXMLLoader(
-                MediaListViewController.class.getResource("/views/track-data-view.fxml")
-        );
-
-        Parent root = loader.load();
-        TrackDataViewController controller = loader.getController();
-        controller.setTrack(track);
-        controller.setMetadataManager(metadataManager);
-        controller.setStorage(trackStorage);
-        controller.setMediaService(mediaService);
-        controller.setOnSaveSuccessCallback(onSaveSuccessCallback);
-
-        Stage stage = new Stage();
-        Image icon = new Image(
-                Objects.requireNonNull(
-                        MediaListViewController.class.getResourceAsStream("/assets/icons/app-icon.png")
-                )
-        );
-        stage.getIcons().add(icon);
-        stage.setTitle("Track info");
-        stage.setScene(new Scene(root));
-        stage.showAndWait();
-    }
-    
-    private static class MyListCell extends ListCell<Track> {
-        private final ImageView artworkView = new ImageView();
-        private final Label titleLabel = new Label();
-        private final Label artistLabel = new Label();
-        private final HBox root = new HBox(10);
-
-        private static final double MAX_WIDTH = 500;
-
-        private static Image defaultArtwork;
-
-        public MyListCell() {
-            if (defaultArtwork == null) {
-                try {
-                    defaultArtwork = new Image(
-                            Objects.requireNonNull(MyListCell.class.getResourceAsStream("/assets/images/unknown.jpg")),
-                            40, 40, true, true
-                    );
-                } catch (Exception e) {
-                    System.err.println("Default cell artwork asset not found.");
-                }
-            }
-
-            artworkView.setFitWidth(40);
-            artworkView.setFitHeight(40);
-            artworkView.setPreserveRatio(true);
-
-            titleLabel.setMaxWidth(MAX_WIDTH);
-
-            VBox textBox = new VBox(5);
-            textBox.getChildren().addAll(titleLabel, artistLabel);
-
-            HBox.setHgrow(textBox, Priority.ALWAYS);
-
-            Button infoButton = new Button("⋮");
-            infoButton.getStyleClass().add("cell-menu-button");
-            root.getChildren().addAll(artworkView, textBox, infoButton);
-
-            infoButton.setOnAction(e -> openTrackInfo());
-        }
-
-        private void openTrackInfo() {
-            Track track = getItem();
-            if (track == null) return;
-            try {
-                loadDataView(track);
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
-        }
-
-        @Override
-        protected void updateItem(Track item, boolean empty) {
-            super.updateItem(item, empty);
-
-            if (empty || item == null) {
-                setGraphic(null);
-                return;
-            }
-
-            long duration = (item.getMetadata() != null) ? item.getMetadata().getDurationInSeconds() : 0;
-            String displayTitle = item.getTitle() != null ? item.getTitle() : "Unknown Track";
-            titleLabel.setText(displayTitle);
-
-            String artist = (item.getMetadata() != null && item.getMetadata().getArtist() != null)
-                    ? item.getMetadata().getArtist()
-                    : "Unknown Artist";
-            artistLabel.setText(TimeFormater.formatTime(duration) + " " + artist);
-
-            String artworkPath = (item.getMetadata() != null) ? item.getMetadata().getArtworkPath() : null;
-
-            if (artworkPath != null && !artworkPath.isBlank()) {
-                File file = new File(artworkPath);
-                if (file.exists()) {
-                    artworkView.setImage(new Image(file.toURI().toString(), 40, 40, true, true, true));
-                } else {
-                    artworkView.setImage(defaultArtwork);
-                }
-            } else {
-                artworkView.setImage(defaultArtwork);
-            }
-
-            setGraphic(root);
-        }
-    }
 }
