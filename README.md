@@ -91,4 +91,4 @@ cd moka-player
 
 ## License
 
-Free use.
+This project is licensed under the MIT License.
