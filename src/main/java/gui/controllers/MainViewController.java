@@ -60,23 +60,19 @@ public class MainViewController {
     @FXML private Slider progressSlider;
     @FXML private AnchorPane contentArea;
 
-    private final ViewMode DEFAULT_STARTING_VIEW_MODE = ViewMode.TRACKS;
-
     private AppContext appContext;
     private ViewLoader viewLoader;
 
     private MediaListViewController mediaListViewController;
 
     private boolean seeking = false;
-    private ViewMode currentViewMode = DEFAULT_STARTING_VIEW_MODE;
-    private ViewMode oldViewMode = DEFAULT_STARTING_VIEW_MODE;
-
-    private static int skipSeconds;
+    private ViewMode currentViewMode;
+    private ViewMode oldViewMode;
+    private int skipSeconds;
 
     public void setAppContext(AppContext appContext) {
         this.appContext = appContext;
         this.viewLoader = new ViewLoader(appContext);
-        skipSeconds = appContext.config().getPreferredSkipSeconds();
         initializeLibrary();
         init();
     }
@@ -107,6 +103,8 @@ public class MainViewController {
     }
 
     private void init() {
+        skipSeconds = appContext.config().getPreferredSkipSeconds();
+        currentViewMode = oldViewMode = appContext.config().getViewMode();
         setupButtonsVisibility();
         updatePlayButton();
         updateFavoriteButton();
@@ -414,10 +412,13 @@ public class MainViewController {
 
     private void loadLyricsView() {
         try {
+            PlayerService playerService = appContext.playerService();
             FXMLLoader loader = loadView("/views/lyrics-view.fxml");
             LyricsViewController lyricsViewController = loader.getController();
-            lyricsViewController.setTrack(appContext.playerService().getCurrentTrack());
-            lyricsViewController.setMetadataManager(appContext.metadataManager());
+            if (playerService.getCurrentTrack() != null) {
+                lyricsViewController.setTrack(playerService.getCurrentTrack());
+            } else lyricsViewController.setTrack(appContext.playerService().getSelectedTrack());
+            lyricsViewController.setAppContext(appContext);
             currentViewMode = ViewMode.LYRICS;
         } catch (IOException e) {
             logger.error("CRITICAL: Could not find or load lyrics-view.fxml", e);
@@ -428,9 +429,10 @@ public class MainViewController {
         try {
             FXMLLoader loader = loadView("/views/queued-tracks-view.fxml");
             QueuedTracksViewController queuedTracksViewController = loader.getController();
-            queuedTracksViewController.setUIContext(appContext);
+            currentViewMode = ViewMode.QUEUE;
+            queuedTracksViewController.setAppContext(appContext);
             queuedTracksViewController.setViewLoader(viewLoader);
-            queuedTracksViewController.setOnSaveSuccessCallback(this::handleRefresh);
+            queuedTracksViewController.setOnSave(this::handleRefresh);
         } catch (IOException e) {
             logger.error("CRITICAL: Could not load queued-tracks-view.fxml", e);
         }

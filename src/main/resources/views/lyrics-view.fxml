@@ -15,7 +15,7 @@
     <children>
         <HBox alignment="TOP_RIGHT" spacing="4.0">
             <children>
-                <Button fx:id="btnSave" mnemonicParsing="false" onAction="#handleSave" text="save" visible="false"/>
+                <Button fx:id="btnSave" mnemonicParsing="false" text="save" visible="false"/>
                 <Button fx:id="btnSearch" mnemonicParsing="false" onAction="#handelSearch"
                         text="search for lyrics on web"/>
             </children>

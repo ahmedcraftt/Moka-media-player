@@ -11,6 +11,7 @@ import infrastructure.audio.AudioEngine;
 import infrastructure.audio.AudioPlayer;
 import infrastructure.audio.VLCJAudioEngine;
 import infrastructure.media.FiledataManager;
+import infrastructure.media.JaudiotaggerManager;
 import infrastructure.media.MetadataManager;
 import infrastructure.scanner.MediaScanner;
 import infrastructure.storage.ArtworkStorage;
@@ -35,7 +36,7 @@ public final class AppContext {
 
     public AppContext() {
         filedataManager = new FiledataManager();
-        metadataManager = metadataManager();
+        metadataManager = new JaudiotaggerManager();
         artStorage = new ArtworkStorage();
         metadataStorage = new MetadataStorage();
         trackStorage = new TrackStorage(metadataStorage);
@@ -43,11 +44,11 @@ public final class AppContext {
         mediaLibrary = new MediaLibrary();
         libraryService = new LibraryService();
         mediaService = new MediaService(scanner, mediaLibrary, libraryService);
-        appState = new AppState();
         audioEngine = new VLCJAudioEngine();
         audioPlayer = new AudioPlayer(audioEngine);
         playerService = new PlayerService(audioPlayer);
         config = ConfigStorage.load();
+        appState = new AppState(config());
     }
 
     public AppConfig config() {
@@ -121,6 +122,5 @@ public final class AppContext {
                 "trackStorage=" + trackStorage + ", " +
                 "scanner=" + scanner + ']';
     }
-
 
 }

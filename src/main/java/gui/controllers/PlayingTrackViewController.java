@@ -68,7 +68,9 @@ public class PlayingTrackViewController {
         PlayerService playerService = appContext.playerService();
 
         playerService.currentTrackProperty().addListener((obs, oldT, newT) -> updateUI(newT));
-        updateUI(playerService.getCurrentTrack());
+        if (playerService.getCurrentTrack() != null) {
+            updateUI(playerService.getCurrentTrack());
+        } else updateUI(playerService.getSelectedTrack());
 
         playerService.playbackStateProperty().addListener((obs, oldState, newState) -> {
             switch (newState) {

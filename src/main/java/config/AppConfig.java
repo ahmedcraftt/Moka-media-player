@@ -1,12 +1,17 @@
 package config;
 
 import domain.audio.RepeatMode;
+import gui.controllers.SearchEngine;
+import gui.controllers.SortByModes;
+import gui.controllers.ViewMode;
+import javafx.scene.text.TextAlignment;
 
 public final class AppConfig {
 
     private int configVersion = 1;
     private PlayerConfig playerConfig = new PlayerConfig();
     private UIConfig uiConfig = new UIConfig();
+    private SearchConfig searchConfig = new SearchConfig();
 
     public PlayerConfig getPlayerConfig() {
         return playerConfig;
@@ -143,4 +148,37 @@ public final class AppConfig {
     public void setShuffle(boolean shuffle) {
         this.playerConfig.setShuffle(shuffle);
     }
+
+    public ViewMode getViewMode() {
+        return uiConfig.getStartingViewMode();
+    }
+
+    public void setViewMode(ViewMode viewMode) {
+        this.uiConfig.setStartingViewMode(viewMode);
+    }
+
+    public TextAlignment getTextAlignment() {
+        return uiConfig.getLyricsTextAlignment();
+    }
+
+    public void setTextAlignment(TextAlignment textAlignment) {
+        this.uiConfig.setLyricsTextAlignment(textAlignment);
+    }
+
+    public SortByModes getSortByMode() {
+        return uiConfig.getStartingSortByMode();
+    }
+
+    public void setSortByMode(SortByModes sortByMode) {
+        this.uiConfig.setStartingSortByMode(sortByMode);
+    }
+
+    public SearchEngine getSearchEngine() {
+        return searchConfig.getPreferredSearchEngine();
+    }
+
+    public void setSearchEngine(SearchEngine searchEngine) {
+        this.searchConfig.setPreferredSearchEngine(searchEngine);
+    }
+
 }

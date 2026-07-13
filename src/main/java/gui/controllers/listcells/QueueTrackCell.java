@@ -2,17 +2,17 @@ package gui.controllers.listcells;
 
 import application.service.PlayerService;
 import domain.model.media.Track;
+import gui.controllers.RefreshEvent;
 import gui.utils.ViewLoader;
 import javafx.scene.control.MenuButton;
 import javafx.scene.control.MenuItem;
 
 public class QueueTrackCell extends OpenableTrackCell {
-
-    public QueueTrackCell(PlayerService playerService, ViewLoader viewLoader, Runnable onSaveSuccessCallback) {
+    public QueueTrackCell(PlayerService playerService,
+                          ViewLoader viewLoader, Runnable onSaveSuccessCallback) {
         super(playerService, viewLoader, onSaveSuccessCallback);
         MenuButton options = new MenuButton("⋮");
         options.getStyleClass().add("menu-button");
-        options.getStylesheets().add("/styles/main.css");
         MenuItem info = new MenuItem("ℹ");
         MenuItem remove = new MenuItem("-");
         options.getItems().addAll(info, remove);
@@ -25,6 +25,7 @@ public class QueueTrackCell extends OpenableTrackCell {
     }
 
     private void removeFromQueue(Track track) {
+        root.fireEvent(new RefreshEvent());
         playerService.removeTrackFromQueue(track);
     }
 

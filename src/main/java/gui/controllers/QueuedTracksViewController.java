@@ -36,17 +36,17 @@ public class QueuedTracksViewController {
     @FXML
     private Label lblShuffle, lblNumOf;
 
-    private Runnable onSaveSuccessCallback;
+    private Runnable onSave;
     private ViewLoader viewLoader;
     private AppContext appContext;
 
-    public void setUIContext(AppContext appContext) {
+    public void setAppContext(AppContext appContext) {
         this.appContext = appContext;
         init();
     }
 
-    public void setOnSaveSuccessCallback(Runnable onSaveSuccessCallback) {
-        this.onSaveSuccessCallback = onSaveSuccessCallback;
+    public void setOnSave(Runnable onSave) {
+        this.onSave = onSave;
     }
 
     public void setViewLoader(ViewLoader viewLoader) {
@@ -94,7 +94,11 @@ public class QueuedTracksViewController {
 
     private void setupListView() {
         PlayerService playerService = appContext.playerService();
-        lvQueue.setCellFactory(lv -> new QueueTrackCell(playerService, viewLoader, onSaveSuccessCallback));
+        lvQueue.setCellFactory(lv -> new QueueTrackCell(
+                playerService,
+                viewLoader,
+                onSave
+        ));
         lvQueue.getItems().addAll(appContext.player().getQueuedTracks());
         lvQueue.setOnMouseClicked(e -> {
             Track selected = lvQueue.getSelectionModel().getSelectedItem();
@@ -121,5 +125,10 @@ public class QueuedTracksViewController {
         } catch (IOException e) {
             logger.error(e.getMessage());
         }
+    }
+
+    private void removeFromQueue(Track track) {
+        lvQueue.getItems().remove(track);
+        appContext.playerService().removeTrackFromQueue(track);
     }
 }

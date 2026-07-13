@@ -300,3 +300,168 @@ org.jaudiotagger.audio.exceptions.CannotReadException: No Reader associated with
 2026-07-13 18:00:29.709 INFO  [JavaFX Application Thread] gui.main.MainApplication - Intercepted shutdown signal. Closing Moka Player...
 2026-07-13 18:00:29.735 INFO  [JavaFX Application Thread] infrastructure.audio.VLCJAudioEngine - Initiating teardown sequences for native VLCJ audio layers...
 2026-07-13 18:00:29.738 INFO  [JavaFX Application Thread] gui.main.MainApplication - Total teardown context finalized in 0.029 seconds. Application terminated.
+2026-07-13 18:45:43.030 WARN  [JavaFX Application Thread] config.VLCConfig - Bundled VLC binaries not found at layout: /home/Ahmed/IdeaProjects/java-mediaplayer/target/natives/linux/X86_64. Falling back to standard system VLC paths.
+2026-07-13 18:45:43.032 INFO  [JavaFX Application Thread] bootstrap.VLCBootstrap - Bundled paths not found. Running system native discovery...
+2026-07-13 18:45:43.123 INFO  [JavaFX Application Thread] bootstrap.VLCBootstrap - VLC Native Engine loaded from: null
+2026-07-13 18:45:43.124 INFO  [JavaFX Application Thread] bootstrap.VLCBootstrap - VLC initialized successfully!
+2026-07-13 18:45:43.977 INFO  [JavaFX Application Thread] gui.main.MainApplication - Start up tracks []
+2026-07-13 18:45:43.979 INFO  [JavaFX Application Thread] gui.main.MainApplication - Moka Player UI engine successfully built and loaded in 1.465 seconds
+2026-07-13 18:45:47.315 INFO  [JavaFX Application Thread] infrastructure.audio.AudioPlayer - Navigation Ready. Prev:[null] Current:[｢THE AMAZING DIGITAL CIRCUS SONG｣ - Who I Was (201)] Next:[｢NATEWANTSTOBATTLE｣- Nightmare [PLEXSY COVER FT. @JeylinRocksOut] (211)]
+2026-07-13 18:46:04.243 INFO  [JavaFX Application Thread] gui.main.MainApplication - Intercepted shutdown signal. Closing Moka Player...
+2026-07-13 18:46:04.273 INFO  [JavaFX Application Thread] infrastructure.audio.VLCJAudioEngine - Initiating teardown sequences for native VLCJ audio layers...
+2026-07-13 18:46:04.276 INFO  [JavaFX Application Thread] gui.main.MainApplication - Total teardown context finalized in 0.033 seconds. Application terminated.
+2026-07-13 18:46:40.343 WARN  [JavaFX Application Thread] config.VLCConfig - Bundled VLC binaries not found at layout: /home/Ahmed/IdeaProjects/java-mediaplayer/target/natives/linux/X86_64. Falling back to standard system VLC paths.
+2026-07-13 18:46:40.346 INFO  [JavaFX Application Thread] bootstrap.VLCBootstrap - Bundled paths not found. Running system native discovery...
+2026-07-13 18:46:40.430 INFO  [JavaFX Application Thread] bootstrap.VLCBootstrap - VLC Native Engine loaded from: null
+2026-07-13 18:46:40.431 INFO  [JavaFX Application Thread] bootstrap.VLCBootstrap - VLC initialized successfully!
+2026-07-13 18:46:41.280 INFO  [JavaFX Application Thread] gui.main.MainApplication - Start up tracks []
+2026-07-13 18:46:41.282 INFO  [JavaFX Application Thread] gui.main.MainApplication - Moka Player UI engine successfully built and loaded in 1.435 seconds
+2026-07-13 18:46:43.020 INFO  [JavaFX Application Thread] infrastructure.audio.AudioPlayer - Navigation Ready. Prev:[null] Current:[｢THE AMAZING DIGITAL CIRCUS SONG｣ - Who I Was (201)] Next:[｢NATEWANTSTOBATTLE｣- Nightmare [PLEXSY COVER FT. @JeylinRocksOut] (211)]
+2026-07-13 18:46:53.934 INFO  [JavaFX Application Thread] gui.main.MainApplication - Intercepted shutdown signal. Closing Moka Player...
+2026-07-13 18:46:53.960 INFO  [JavaFX Application Thread] infrastructure.audio.VLCJAudioEngine - Initiating teardown sequences for native VLCJ audio layers...
+2026-07-13 18:46:53.963 INFO  [JavaFX Application Thread] gui.main.MainApplication - Total teardown context finalized in 0.030 seconds. Application terminated.
+2026-07-13 19:58:26.495 WARN  [JavaFX Application Thread] config.VLCConfig - Bundled VLC binaries not found at layout: /home/Ahmed/IdeaProjects/java-mediaplayer/target/natives/linux/X86_64. Falling back to standard system VLC paths.
+2026-07-13 19:58:26.498 INFO  [JavaFX Application Thread] bootstrap.VLCBootstrap - Bundled paths not found. Running system native discovery...
+2026-07-13 19:58:26.594 INFO  [JavaFX Application Thread] bootstrap.VLCBootstrap - VLC Native Engine loaded from: null
+2026-07-13 19:58:26.595 INFO  [JavaFX Application Thread] bootstrap.VLCBootstrap - VLC initialized successfully!
+2026-07-13 19:58:27.494 INFO  [JavaFX Application Thread] gui.main.MainApplication - Start up tracks []
+2026-07-13 19:58:27.495 INFO  [JavaFX Application Thread] gui.main.MainApplication - Moka Player UI engine successfully built and loaded in 1.497 seconds
+2026-07-13 19:58:29.866 INFO  [JavaFX Application Thread] infrastructure.audio.AudioPlayer - Navigation Ready. Prev:[null] Current:[｢THE AMAZING DIGITAL CIRCUS SONG｣ - Who I Was (201)] Next:[｢NATEWANTSTOBATTLE｣- Nightmare [PLEXSY COVER FT. @JeylinRocksOut] (211)]
+2026-07-13 19:58:39.990 INFO  [JavaFX Application Thread] gui.main.MainApplication - Intercepted shutdown signal. Closing Moka Player...
+2026-07-13 19:58:40.023 INFO  [JavaFX Application Thread] infrastructure.audio.VLCJAudioEngine - Initiating teardown sequences for native VLCJ audio layers...
+2026-07-13 19:58:40.026 INFO  [JavaFX Application Thread] gui.main.MainApplication - Total teardown context finalized in 0.036 seconds. Application terminated.
+2026-07-13 19:59:46.888 WARN  [JavaFX Application Thread] config.VLCConfig - Bundled VLC binaries not found at layout: /home/Ahmed/IdeaProjects/java-mediaplayer/target/natives/linux/X86_64. Falling back to standard system VLC paths.
+2026-07-13 19:59:46.891 INFO  [JavaFX Application Thread] bootstrap.VLCBootstrap - Bundled paths not found. Running system native discovery...
+2026-07-13 19:59:46.982 INFO  [JavaFX Application Thread] bootstrap.VLCBootstrap - VLC Native Engine loaded from: null
+2026-07-13 19:59:46.983 INFO  [JavaFX Application Thread] bootstrap.VLCBootstrap - VLC initialized successfully!
+2026-07-13 19:59:47.855 INFO  [JavaFX Application Thread] gui.main.MainApplication - Start up tracks []
+2026-07-13 19:59:47.856 INFO  [JavaFX Application Thread] gui.main.MainApplication - Moka Player UI engine successfully built and loaded in 1.471 seconds
+2026-07-13 19:59:53.630 INFO  [JavaFX Application Thread] infrastructure.audio.AudioPlayer - Navigation Ready. Prev:[null] Current:[｢THE AMAZING DIGITAL CIRCUS SONG｣ - Who I Was (201)] Next:[｢NATEWANTSTOBATTLE｣- Nightmare [PLEXSY COVER FT. @JeylinRocksOut] (211)]
+2026-07-13 20:00:09.328 INFO  [JavaFX Application Thread] gui.main.MainApplication - Intercepted shutdown signal. Closing Moka Player...
+2026-07-13 20:00:09.361 INFO  [JavaFX Application Thread] infrastructure.audio.VLCJAudioEngine - Initiating teardown sequences for native VLCJ audio layers...
+2026-07-13 20:00:09.364 INFO  [JavaFX Application Thread] gui.main.MainApplication - Total teardown context finalized in 0.036 seconds. Application terminated.
+2026-07-13 20:03:25.286 WARN  [JavaFX Application Thread] config.VLCConfig - Bundled VLC binaries not found at layout: /home/Ahmed/IdeaProjects/java-mediaplayer/target/natives/linux/X86_64. Falling back to standard system VLC paths.
+2026-07-13 20:03:25.289 INFO  [JavaFX Application Thread] bootstrap.VLCBootstrap - Bundled paths not found. Running system native discovery...
+2026-07-13 20:03:25.381 INFO  [JavaFX Application Thread] bootstrap.VLCBootstrap - VLC Native Engine loaded from: null
+2026-07-13 20:03:25.382 INFO  [JavaFX Application Thread] bootstrap.VLCBootstrap - VLC initialized successfully!
+2026-07-13 20:03:26.327 INFO  [JavaFX Application Thread] gui.main.MainApplication - Start up tracks []
+2026-07-13 20:03:26.328 INFO  [JavaFX Application Thread] gui.main.MainApplication - Moka Player UI engine successfully built and loaded in 1.535 seconds
+2026-07-13 20:03:31.058 INFO  [JavaFX Application Thread] gui.main.MainApplication - Intercepted shutdown signal. Closing Moka Player...
+2026-07-13 20:03:31.078 INFO  [JavaFX Application Thread] infrastructure.audio.VLCJAudioEngine - Initiating teardown sequences for native VLCJ audio layers...
+2026-07-13 20:03:31.080 INFO  [JavaFX Application Thread] gui.main.MainApplication - Total teardown context finalized in 0.023 seconds. Application terminated.
+2026-07-13 20:04:12.563 WARN  [JavaFX Application Thread] config.VLCConfig - Bundled VLC binaries not found at layout: /home/Ahmed/IdeaProjects/java-mediaplayer/target/natives/linux/X86_64. Falling back to standard system VLC paths.
+2026-07-13 20:04:12.567 INFO  [JavaFX Application Thread] bootstrap.VLCBootstrap - Bundled paths not found. Running system native discovery...
+2026-07-13 20:04:12.662 INFO  [JavaFX Application Thread] bootstrap.VLCBootstrap - VLC Native Engine loaded from: null
+2026-07-13 20:04:12.663 INFO  [JavaFX Application Thread] bootstrap.VLCBootstrap - VLC initialized successfully!
+2026-07-13 20:04:13.520 INFO  [JavaFX Application Thread] gui.main.MainApplication - Start up tracks []
+2026-07-13 20:04:13.521 INFO  [JavaFX Application Thread] gui.main.MainApplication - Moka Player UI engine successfully built and loaded in 1.477 seconds
+2026-07-13 20:04:25.787 INFO  [JavaFX Application Thread] gui.main.MainApplication - Intercepted shutdown signal. Closing Moka Player...
+2026-07-13 20:04:25.812 INFO  [JavaFX Application Thread] infrastructure.audio.VLCJAudioEngine - Initiating teardown sequences for native VLCJ audio layers...
+2026-07-13 20:04:25.815 INFO  [JavaFX Application Thread] gui.main.MainApplication - Total teardown context finalized in 0.028 seconds. Application terminated.
+2026-07-13 20:05:12.144 WARN  [JavaFX Application Thread] config.VLCConfig - Bundled VLC binaries not found at layout: /home/Ahmed/IdeaProjects/java-mediaplayer/target/natives/linux/X86_64. Falling back to standard system VLC paths.
+2026-07-13 20:05:12.146 INFO  [JavaFX Application Thread] bootstrap.VLCBootstrap - Bundled paths not found. Running system native discovery...
+2026-07-13 20:05:12.234 INFO  [JavaFX Application Thread] bootstrap.VLCBootstrap - VLC Native Engine loaded from: null
+2026-07-13 20:05:12.235 INFO  [JavaFX Application Thread] bootstrap.VLCBootstrap - VLC initialized successfully!
+2026-07-13 20:05:13.079 INFO  [JavaFX Application Thread] gui.main.MainApplication - Start up tracks []
+2026-07-13 20:05:13.080 INFO  [JavaFX Application Thread] gui.main.MainApplication - Moka Player UI engine successfully built and loaded in 1.419 seconds
+2026-07-13 20:05:24.468 INFO  [JavaFX Application Thread] gui.main.MainApplication - Intercepted shutdown signal. Closing Moka Player...
+2026-07-13 20:05:24.490 INFO  [JavaFX Application Thread] infrastructure.audio.VLCJAudioEngine - Initiating teardown sequences for native VLCJ audio layers...
+2026-07-13 20:05:24.492 INFO  [JavaFX Application Thread] gui.main.MainApplication - Total teardown context finalized in 0.024 seconds. Application terminated.
+2026-07-13 20:05:43.182 WARN  [JavaFX Application Thread] config.VLCConfig - Bundled VLC binaries not found at layout: /home/Ahmed/IdeaProjects/java-mediaplayer/target/natives/linux/X86_64. Falling back to standard system VLC paths.
+2026-07-13 20:05:43.185 INFO  [JavaFX Application Thread] bootstrap.VLCBootstrap - Bundled paths not found. Running system native discovery...
+2026-07-13 20:05:43.272 INFO  [JavaFX Application Thread] bootstrap.VLCBootstrap - VLC Native Engine loaded from: null
+2026-07-13 20:05:43.273 INFO  [JavaFX Application Thread] bootstrap.VLCBootstrap - VLC initialized successfully!
+2026-07-13 20:05:44.143 INFO  [JavaFX Application Thread] gui.main.MainApplication - Start up tracks []
+2026-07-13 20:05:44.145 INFO  [JavaFX Application Thread] gui.main.MainApplication - Moka Player UI engine successfully built and loaded in 1.462 seconds
+2026-07-13 20:06:47.273 INFO  [JavaFX Application Thread] gui.main.MainApplication - Intercepted shutdown signal. Closing Moka Player...
+2026-07-13 20:06:47.293 INFO  [JavaFX Application Thread] infrastructure.audio.VLCJAudioEngine - Initiating teardown sequences for native VLCJ audio layers...
+2026-07-13 20:06:47.295 INFO  [JavaFX Application Thread] gui.main.MainApplication - Total teardown context finalized in 0.022 seconds. Application terminated.
+2026-07-13 20:57:12.998 WARN  [JavaFX Application Thread] config.VLCConfig - Bundled VLC binaries not found at layout: /home/Ahmed/IdeaProjects/java-mediaplayer/target/natives/linux/X86_64. Falling back to standard system VLC paths.
+2026-07-13 20:57:13.003 INFO  [JavaFX Application Thread] bootstrap.VLCBootstrap - Bundled paths not found. Running system native discovery...
+2026-07-13 20:57:13.098 INFO  [JavaFX Application Thread] bootstrap.VLCBootstrap - VLC Native Engine loaded from: null
+2026-07-13 20:57:13.099 INFO  [JavaFX Application Thread] bootstrap.VLCBootstrap - VLC initialized successfully!
+2026-07-13 20:57:14.019 INFO  [JavaFX Application Thread] gui.main.MainApplication - Start up tracks []
+2026-07-13 20:57:14.020 INFO  [JavaFX Application Thread] gui.main.MainApplication - Moka Player UI engine successfully built and loaded in 1.530 seconds
+2026-07-13 20:57:17.425 INFO  [JavaFX Application Thread] gui.main.MainApplication - Intercepted shutdown signal. Closing Moka Player...
+2026-07-13 20:57:17.456 INFO  [JavaFX Application Thread] infrastructure.audio.VLCJAudioEngine - Initiating teardown sequences for native VLCJ audio layers...
+2026-07-13 20:57:17.459 INFO  [JavaFX Application Thread] gui.main.MainApplication - Total teardown context finalized in 0.034 seconds. Application terminated.
+2026-07-13 20:59:08.111 WARN  [JavaFX Application Thread] config.VLCConfig - Bundled VLC binaries not found at layout: /home/Ahmed/IdeaProjects/java-mediaplayer/target/natives/linux/X86_64. Falling back to standard system VLC paths.
+2026-07-13 20:59:08.113 INFO  [JavaFX Application Thread] bootstrap.VLCBootstrap - Bundled paths not found. Running system native discovery...
+2026-07-13 20:59:08.201 INFO  [JavaFX Application Thread] bootstrap.VLCBootstrap - VLC Native Engine loaded from: null
+2026-07-13 20:59:08.202 INFO  [JavaFX Application Thread] bootstrap.VLCBootstrap - VLC initialized successfully!
+2026-07-13 20:59:09.067 INFO  [JavaFX Application Thread] gui.main.MainApplication - Start up tracks []
+2026-07-13 20:59:09.068 INFO  [JavaFX Application Thread] gui.main.MainApplication - Moka Player UI engine successfully built and loaded in 1.431 seconds
+2026-07-13 20:59:23.256 INFO  [JavaFX Application Thread] infrastructure.audio.AudioPlayer - Navigation Ready. Prev:[null] Current:[CUPHEAD RAP SONG ► Cover by Caleb Hyles "You Signed a Contract" (204)] Next:["FAR AWAY" Jax's Goodbye | The Amazing Digital Circus - Caleb Hyles (Original Song) (258)]
+2026-07-13 20:59:44.019 INFO  [JavaFX Application Thread] gui.main.MainApplication - Intercepted shutdown signal. Closing Moka Player...
+2026-07-13 20:59:44.058 INFO  [JavaFX Application Thread] infrastructure.audio.VLCJAudioEngine - Initiating teardown sequences for native VLCJ audio layers...
+2026-07-13 20:59:44.061 INFO  [JavaFX Application Thread] gui.main.MainApplication - Total teardown context finalized in 0.042 seconds. Application terminated.
+2026-07-13 20:59:46.251 WARN  [JavaFX Application Thread] config.VLCConfig - Bundled VLC binaries not found at layout: /home/Ahmed/IdeaProjects/java-mediaplayer/target/natives/linux/X86_64. Falling back to standard system VLC paths.
+2026-07-13 20:59:46.254 INFO  [JavaFX Application Thread] bootstrap.VLCBootstrap - Bundled paths not found. Running system native discovery...
+2026-07-13 20:59:46.345 INFO  [JavaFX Application Thread] bootstrap.VLCBootstrap - VLC Native Engine loaded from: null
+2026-07-13 20:59:46.346 INFO  [JavaFX Application Thread] bootstrap.VLCBootstrap - VLC initialized successfully!
+2026-07-13 20:59:47.269 INFO  [JavaFX Application Thread] gui.main.MainApplication - Start up tracks []
+2026-07-13 20:59:47.271 INFO  [JavaFX Application Thread] gui.main.MainApplication - Moka Player UI engine successfully built and loaded in 1.522 seconds
+2026-07-13 21:00:39.268 WARN  [JavaFX Application Thread] config.VLCConfig - Bundled VLC binaries not found at layout: /home/Ahmed/IdeaProjects/java-mediaplayer/target/natives/linux/X86_64. Falling back to standard system VLC paths.
+2026-07-13 21:00:39.270 INFO  [JavaFX Application Thread] bootstrap.VLCBootstrap - Bundled paths not found. Running system native discovery...
+2026-07-13 21:00:39.352 INFO  [JavaFX Application Thread] bootstrap.VLCBootstrap - VLC Native Engine loaded from: null
+2026-07-13 21:00:39.353 INFO  [JavaFX Application Thread] bootstrap.VLCBootstrap - VLC initialized successfully!
+2026-07-13 21:00:40.181 INFO  [JavaFX Application Thread] gui.main.MainApplication - Start up tracks []
+2026-07-13 21:00:40.182 INFO  [JavaFX Application Thread] gui.main.MainApplication - Moka Player UI engine successfully built and loaded in 1.412 seconds
+2026-07-13 21:00:45.839 INFO  [JavaFX Application Thread] infrastructure.audio.AudioPlayer - Navigation Ready. Prev:[null] Current:[CUPHEAD RAP SONG ► Cover by Caleb Hyles "You Signed a Contract" (204)] Next:["FAR AWAY" Jax's Goodbye | The Amazing Digital Circus - Caleb Hyles (Original Song) (258)]
+2026-07-13 21:00:52.300 INFO  [JavaFX Application Thread] gui.main.MainApplication - Intercepted shutdown signal. Closing Moka Player...
+2026-07-13 21:00:52.330 INFO  [JavaFX Application Thread] infrastructure.audio.VLCJAudioEngine - Initiating teardown sequences for native VLCJ audio layers...
+2026-07-13 21:00:52.333 INFO  [JavaFX Application Thread] gui.main.MainApplication - Total teardown context finalized in 0.033 seconds. Application terminated.
+2026-07-13 21:02:39.006 WARN  [JavaFX Application Thread] config.VLCConfig - Bundled VLC binaries not found at layout: /home/Ahmed/IdeaProjects/java-mediaplayer/target/natives/linux/X86_64. Falling back to standard system VLC paths.
+2026-07-13 21:02:39.008 INFO  [JavaFX Application Thread] bootstrap.VLCBootstrap - Bundled paths not found. Running system native discovery...
+2026-07-13 21:02:39.102 INFO  [JavaFX Application Thread] bootstrap.VLCBootstrap - VLC Native Engine loaded from: null
+2026-07-13 21:02:39.103 INFO  [JavaFX Application Thread] bootstrap.VLCBootstrap - VLC initialized successfully!
+2026-07-13 21:02:40.298 INFO  [JavaFX Application Thread] gui.main.MainApplication - Start up tracks []
+2026-07-13 21:02:40.299 INFO  [JavaFX Application Thread] gui.main.MainApplication - Moka Player UI engine successfully built and loaded in 1.824 seconds
+2026-07-13 21:02:40.373 WARN  [JavaFX Application Thread] config.VLCConfig - Bundled VLC binaries not found at layout: /home/Ahmed/IdeaProjects/java-mediaplayer/target/natives/linux/X86_64. Falling back to standard system VLC paths.
+2026-07-13 21:02:40.377 INFO  [JavaFX Application Thread] bootstrap.VLCBootstrap - Bundled paths not found. Running system native discovery...
+2026-07-13 21:02:40.586 INFO  [JavaFX Application Thread] bootstrap.VLCBootstrap - VLC Native Engine loaded from: null
+2026-07-13 21:02:40.588 INFO  [JavaFX Application Thread] bootstrap.VLCBootstrap - VLC initialized successfully!
+2026-07-13 21:02:41.649 INFO  [JavaFX Application Thread] gui.main.MainApplication - Start up tracks []
+2026-07-13 21:02:41.650 INFO  [JavaFX Application Thread] gui.main.MainApplication - Moka Player UI engine successfully built and loaded in 1.948 seconds
+2026-07-13 21:02:43.163 INFO  [JavaFX Application Thread] gui.main.MainApplication - Intercepted shutdown signal. Closing Moka Player...
+2026-07-13 21:02:43.186 INFO  [JavaFX Application Thread] infrastructure.audio.VLCJAudioEngine - Initiating teardown sequences for native VLCJ audio layers...
+2026-07-13 21:02:43.190 INFO  [JavaFX Application Thread] gui.main.MainApplication - Total teardown context finalized in 0.027 seconds. Application terminated.
+2026-07-13 21:02:49.111 INFO  [JavaFX Application Thread] infrastructure.audio.AudioPlayer - Navigation Ready. Prev:[null] Current:[CUPHEAD RAP SONG ► Cover by Caleb Hyles "You Signed a Contract" (204)] Next:["FAR AWAY" Jax's Goodbye | The Amazing Digital Circus - Caleb Hyles (Original Song) (258)]
+2026-07-13 21:02:53.883 INFO  [JavaFX Application Thread] infrastructure.audio.AudioPlayer - Navigation Ready. Prev:[null] Current:[CUPHEAD RAP SONG ► Cover by Caleb Hyles "You Signed a Contract" (204)] Next:["FAR AWAY" Jax's Goodbye | The Amazing Digital Circus - Caleb Hyles (Original Song) (258)]
+2026-07-13 21:02:59.904 INFO  [JavaFX Application Thread] infrastructure.audio.AudioPlayer - Navigation Ready. Prev:["Free" (feat. @IronMouseParty) - KPOP DEMON HUNTERS - Caleb Hyles (Rumi x Jinu) (188)] Current:[FLYNN'S VILLAIN SONG - I See the Light | ANIMATIC | Tangled Cover by Caleb Hyles (226)] Next:[｢DOKI DOKI RELAPSE SONG｣- Fade Away (EXTENDED REMASTER) [FT. @JustNinaHope & @Swiblet] (331)]
+2026-07-13 21:03:04.101 INFO  [JavaFX Application Thread] infrastructure.audio.AudioPlayer - Navigation Ready. Prev:[null] Current:[CUPHEAD RAP SONG ► Cover by Caleb Hyles "You Signed a Contract" (204)] Next:["FAR AWAY" Jax's Goodbye | The Amazing Digital Circus - Caleb Hyles (Original Song) (258)]
+2026-07-13 21:03:07.561 INFO  [JavaFX Application Thread] gui.main.MainApplication - Intercepted shutdown signal. Closing Moka Player...
+2026-07-13 21:03:07.598 INFO  [JavaFX Application Thread] infrastructure.audio.VLCJAudioEngine - Initiating teardown sequences for native VLCJ audio layers...
+2026-07-13 21:03:07.601 INFO  [JavaFX Application Thread] gui.main.MainApplication - Total teardown context finalized in 0.039 seconds. Application terminated.
+2026-07-13 21:04:09.356 WARN  [JavaFX Application Thread] config.VLCConfig - Bundled VLC binaries not found at layout: /home/Ahmed/IdeaProjects/java-mediaplayer/target/natives/linux/X86_64. Falling back to standard system VLC paths.
+2026-07-13 21:04:09.358 INFO  [JavaFX Application Thread] bootstrap.VLCBootstrap - Bundled paths not found. Running system native discovery...
+2026-07-13 21:04:09.434 INFO  [JavaFX Application Thread] bootstrap.VLCBootstrap - VLC Native Engine loaded from: null
+2026-07-13 21:04:09.435 INFO  [JavaFX Application Thread] bootstrap.VLCBootstrap - VLC initialized successfully!
+2026-07-13 21:04:10.289 INFO  [JavaFX Application Thread] gui.main.MainApplication - Start up tracks []
+2026-07-13 21:04:10.290 INFO  [JavaFX Application Thread] gui.main.MainApplication - Moka Player UI engine successfully built and loaded in 1.419 seconds
+2026-07-13 21:04:14.098 INFO  [JavaFX Application Thread] infrastructure.audio.AudioPlayer - Navigation Ready. Prev:[null] Current:[CUPHEAD RAP SONG ► Cover by Caleb Hyles "You Signed a Contract" (204)] Next:["FAR AWAY" Jax's Goodbye | The Amazing Digital Circus - Caleb Hyles (Original Song) (258)]
+2026-07-13 21:04:47.478 INFO  [JavaFX Application Thread] gui.main.MainApplication - Intercepted shutdown signal. Closing Moka Player...
+2026-07-13 21:04:47.507 INFO  [JavaFX Application Thread] infrastructure.audio.VLCJAudioEngine - Initiating teardown sequences for native VLCJ audio layers...
+2026-07-13 21:04:47.510 INFO  [JavaFX Application Thread] gui.main.MainApplication - Total teardown context finalized in 0.032 seconds. Application terminated.
+2026-07-13 21:06:31.324 WARN  [JavaFX Application Thread] config.VLCConfig - Bundled VLC binaries not found at layout: /home/Ahmed/IdeaProjects/java-mediaplayer/target/natives/linux/X86_64. Falling back to standard system VLC paths.
+2026-07-13 21:06:31.327 INFO  [JavaFX Application Thread] bootstrap.VLCBootstrap - Bundled paths not found. Running system native discovery...
+2026-07-13 21:06:31.419 INFO  [JavaFX Application Thread] bootstrap.VLCBootstrap - VLC Native Engine loaded from: null
+2026-07-13 21:06:31.420 INFO  [JavaFX Application Thread] bootstrap.VLCBootstrap - VLC initialized successfully!
+2026-07-13 21:06:32.281 INFO  [JavaFX Application Thread] gui.main.MainApplication - Start up tracks []
+2026-07-13 21:06:32.282 INFO  [JavaFX Application Thread] gui.main.MainApplication - Moka Player UI engine successfully built and loaded in 1.437 seconds
+2026-07-13 21:06:49.262 INFO  [JavaFX Application Thread] infrastructure.audio.AudioPlayer - Navigation Ready. Prev:[null] Current:[CUPHEAD RAP SONG ► Cover by Caleb Hyles "You Signed a Contract" (204)] Next:["FAR AWAY" Jax's Goodbye | The Amazing Digital Circus - Caleb Hyles (Original Song) (258)]
+2026-07-13 21:11:02.451 WARN  [JavaFX Application Thread] config.VLCConfig - Bundled VLC binaries not found at layout: /home/Ahmed/IdeaProjects/java-mediaplayer/target/natives/linux/X86_64. Falling back to standard system VLC paths.
+2026-07-13 21:11:02.454 INFO  [JavaFX Application Thread] bootstrap.VLCBootstrap - Bundled paths not found. Running system native discovery...
+2026-07-13 21:11:02.551 INFO  [JavaFX Application Thread] bootstrap.VLCBootstrap - VLC Native Engine loaded from: null
+2026-07-13 21:11:02.552 INFO  [JavaFX Application Thread] bootstrap.VLCBootstrap - VLC initialized successfully!
+2026-07-13 21:11:03.482 INFO  [JavaFX Application Thread] gui.main.MainApplication - Start up tracks []
+2026-07-13 21:11:03.483 INFO  [JavaFX Application Thread] gui.main.MainApplication - Moka Player UI engine successfully built and loaded in 1.546 seconds
+2026-07-13 21:13:18.789 INFO  [JavaFX Application Thread] gui.main.MainApplication - Intercepted shutdown signal. Closing Moka Player...
+2026-07-13 21:13:18.809 INFO  [JavaFX Application Thread] infrastructure.audio.VLCJAudioEngine - Initiating teardown sequences for native VLCJ audio layers...
+2026-07-13 21:13:18.812 INFO  [JavaFX Application Thread] gui.main.MainApplication - Total teardown context finalized in 0.023 seconds. Application terminated.
+2026-07-13 21:13:22.498 WARN  [JavaFX Application Thread] config.VLCConfig - Bundled VLC binaries not found at layout: /home/Ahmed/IdeaProjects/java-mediaplayer/target/natives/linux/X86_64. Falling back to standard system VLC paths.
+2026-07-13 21:13:22.500 INFO  [JavaFX Application Thread] bootstrap.VLCBootstrap - Bundled paths not found. Running system native discovery...
+2026-07-13 21:13:22.586 INFO  [JavaFX Application Thread] bootstrap.VLCBootstrap - VLC Native Engine loaded from: null
+2026-07-13 21:13:22.587 INFO  [JavaFX Application Thread] bootstrap.VLCBootstrap - VLC initialized successfully!
+2026-07-13 21:13:23.508 INFO  [JavaFX Application Thread] gui.main.MainApplication - Start up tracks []
+2026-07-13 21:13:23.509 INFO  [JavaFX Application Thread] gui.main.MainApplication - Moka Player UI engine successfully built and loaded in 1.495 seconds

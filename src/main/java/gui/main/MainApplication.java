@@ -77,7 +77,7 @@ import static gui.main.MainLauncher.*;
  * </ol>
  */
 
-public class MainApplication extends Application {
+public final class MainApplication extends Application {
 
     private static final Logger logger = LoggerFactory.getLogger(MainApplication.class);
 
@@ -87,7 +87,7 @@ public class MainApplication extends Application {
 
     private final AppContext appContext = new AppContext();
 
-    private static int oldVolume;
+    private int oldVolume;
 
     public static Stage primaryStage;
 
@@ -188,7 +188,6 @@ public class MainApplication extends Application {
         }
 
     }
-
 
     private void setupKeyBindings(Parent root, MainViewController controller, Scene scene, Stage stage) {
         PlayerService playerService = appContext.playerService();

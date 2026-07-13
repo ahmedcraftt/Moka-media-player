@@ -2,7 +2,7 @@ package gui.controllers;
 
 import domain.model.metadata.Metadata;
 import domain.model.media.Track;
-import infrastructure.media.MetadataManager;
+import gui.main.AppContext;
 import javafx.animation.FadeTransition;
 import javafx.animation.ParallelTransition;
 import javafx.animation.TranslateTransition;
@@ -49,10 +49,10 @@ public class LyricsViewController {
     private final Text txtLyrics = new Text();
 
     private Track track;
-    private MetadataManager metadataManager;
+    private AppContext appContext;
     private String oldLyrics;
 
-    private final SearchEngine searchEngine = SearchEngine.GOOGLE;
+    private SearchEngine searchEngine;
 
     public void setTrack(Track track) {
         this.track = track;
@@ -64,8 +64,11 @@ public class LyricsViewController {
         loadTrackLyrics();
     }
 
-    public void setMetadataManager(MetadataManager metadataManager) {
-        this.metadataManager = metadataManager;
+    public void setAppContext(AppContext appContext) {
+        this.appContext = appContext;
+        tflLyricsView.setTextAlignment(appContext.config().getTextAlignment());
+        searchEngine = appContext.config().getSearchEngine();
+        handleSave();
     }
 
     private void loadTrackLyrics() {
@@ -79,23 +82,24 @@ public class LyricsViewController {
         oldLyrics = data.getLyrics();
     }
 
-    public void handleSave(ActionEvent event) {
-        if (track == null) {
-            return;
-        }
+    private void handleSave() {
+        btnSave.setOnAction(event -> {
+            if (track == null) {
+                return;
+            }
 
-        Metadata metadata = track.getMetadata();
+            Metadata metadata = track.getMetadata();
 
-        metadata.setLyrics(taLyricsEditor.getText().trim());
+            metadata.setLyrics(taLyricsEditor.getText().trim());
 
-        metadataManager.write(track);
+            appContext.metadataManager().write(track);
 
-        txtLyrics.setText(metadata.getLyrics());
+            txtLyrics.setText(metadata.getLyrics());
 
-        oldLyrics = metadata.getLyrics();
+            oldLyrics = metadata.getLyrics();
 
-        switchToViewMode();
-
+            switchToViewMode();
+        });
     }
 
     public void handelEdit(ActionEvent event) {
@@ -122,6 +126,7 @@ public class LyricsViewController {
             case GOOGLE -> url = "https://www.google.com/search?q=" + encodedQuery;
             case DUCK_DUCK_GO -> url = "https://duckduckgo.com/?q=" + encodedQuery;
             case BING -> url = "https://www.bing.com/search?q=" + encodedQuery;
+            case BRAVE -> url = "https://search.brave.com/search?q=" + encodedQuery;
         }
 
         String finalUrl = url;

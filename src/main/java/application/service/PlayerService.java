@@ -2,9 +2,10 @@ package application.service;
 
 import domain.audio.RepeatMode;
 import domain.model.media.Track;
-import infrastructure.audio.AudioPlayer;
 import domain.audio.PlaybackListener;
 import domain.audio.PlaybackState;
+import infrastructure.audio.AudioPlayer;
+
 import javafx.application.Platform;
 import javafx.beans.property.*;
 

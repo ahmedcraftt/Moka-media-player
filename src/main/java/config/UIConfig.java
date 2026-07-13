@@ -1,9 +1,16 @@
 package config;
 
+import gui.controllers.SortByModes;
+import gui.controllers.ViewMode;
+import javafx.scene.text.TextAlignment;
+
 public final class UIConfig {
     private static final int DEFAULT_WIDTH = 400;
     private static final int DEFAULT_HEIGHT = 400;
     private static final int DEFAULT_SPEED = 64;
+    private static final ViewMode DEFAULT_STARTING_VIEW_MODE = ViewMode.TRACKS;
+    private static final TextAlignment DEFAULT_TEXT_ALIGNMENT = TextAlignment.CENTER;
+    private static final SortByModes DEFAULT_STARTING_SORT_BY_MODE = SortByModes.TITLE;
 
     private boolean tracksBtnVisibility = true;
     private boolean songsBtnVisibility = true;
@@ -17,6 +24,10 @@ public final class UIConfig {
     private int artworkImageWidth = DEFAULT_WIDTH;
     private int artworkImageHeight = DEFAULT_HEIGHT;
     private int artworkRotationSpeed = DEFAULT_SPEED;
+
+    private ViewMode startingViewMode = DEFAULT_STARTING_VIEW_MODE;
+    private TextAlignment lyricsTextAlignment = DEFAULT_TEXT_ALIGNMENT;
+    private SortByModes startingSortByMode = DEFAULT_STARTING_SORT_BY_MODE;
 
     boolean isTracksBtnVisibility() {
         return tracksBtnVisibility;
@@ -104,5 +115,29 @@ public final class UIConfig {
 
     void setArtworkRotationSpeed(int artworkRotationSpeed) {
         this.artworkRotationSpeed = artworkRotationSpeed;
+    }
+
+    ViewMode getStartingViewMode() {
+        return startingViewMode;
+    }
+
+    void setStartingViewMode(ViewMode startingViewMode) {
+        this.startingViewMode = startingViewMode;
+    }
+
+    TextAlignment getLyricsTextAlignment() {
+        return lyricsTextAlignment;
+    }
+
+    void setLyricsTextAlignment(TextAlignment lyricsTextAlignment) {
+        this.lyricsTextAlignment = lyricsTextAlignment;
+    }
+
+    SortByModes getStartingSortByMode() {
+        return startingSortByMode;
+    }
+
+    void setStartingSortByMode(SortByModes startingSortByMode) {
+        this.startingSortByMode = startingSortByMode;
     }
 }

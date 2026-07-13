@@ -18,6 +18,7 @@ module org.example.moka_music_player {
 
     // Export packages that need to be accessed by other modules or the JVM
     exports gui.main;
+    exports gui.controllers;
     exports infrastructure.audio;
     exports config;
     exports domain.model.metadata;

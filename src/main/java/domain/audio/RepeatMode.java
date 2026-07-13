@@ -15,4 +15,12 @@ public enum RepeatMode {
         return text;
     }
 
+    public static RepeatMode fromString(String text) {
+        if (text == null) return PLAY_ONE;
+        for (RepeatMode mode : values()) {
+            if (mode.text.equals(text)) return mode;
+        }
+        return PLAY_ONE;
+    }
+
 }

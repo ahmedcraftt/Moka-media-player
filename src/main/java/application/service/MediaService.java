@@ -147,4 +147,8 @@ public class MediaService {
     public List<Playlist> getGenre() {
         return cachedGenres;
     }
+
+    public List<Track> search(String query) {
+        return mediaLibrary.search(query);
+    }
 }

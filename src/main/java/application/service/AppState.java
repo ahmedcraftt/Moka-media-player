@@ -1,5 +1,6 @@
 package application.service;
 
+import config.AppConfig;
 import domain.model.media.Displayable;
 
 import gui.controllers.SortByModes;
@@ -8,14 +9,17 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 public class AppState {
-    private static final SortByModes DEFAULT_STARTING_SORT_BY_MODE = SortByModes.TITLE;
 
     private final ObservableList<Displayable> currentView =
             FXCollections.observableArrayList();
 
     private ViewMode currentCategoryMode;
 
-    private SortByModes currentSortByMode = DEFAULT_STARTING_SORT_BY_MODE;
+    private SortByModes currentSortByMode;
+
+    public AppState(AppConfig appConfig) {
+        currentSortByMode = appConfig.getSortByMode();
+    }
 
     public ObservableList<Displayable> getCurrentView() {
         return currentView;
