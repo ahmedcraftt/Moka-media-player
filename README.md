@@ -15,7 +15,7 @@ so refactoring may temporarily break existing features.
 
 ---
 
-## ✨ Features
+## Features
 
 - Audio playback using VLCJ (libVLC backend)
 - Directory scanning for audio files
@@ -29,7 +29,7 @@ so refactoring may temporarily break existing features.
 
 ---
 
-## 🧱 Architecture Overview
+## Architecture Overview
 
 The project follows a layered architecture:
 
@@ -52,7 +52,7 @@ The project follows a layered architecture:
 
 ---
 
-## 🔄 How it works
+## How it works
 
 1. User selects a music directory
 2. MediaService triggers MediaScanner
@@ -64,14 +64,14 @@ The project follows a layered architecture:
 
 ---
 
-## 🎧 Supported formats
+## Supported formats
 
 mp3, flac, wav, m4a, ogg, aac, opus, wma, alac, aiff, amr, mid, ra  
 (Any format supported by VLC)
 
 ---
 
-## 🚀 Future Improvements
+## Future Improvements
 
 - Persistent playlists
 - Waveform visualization
@@ -80,7 +80,7 @@ mp3, flac, wav, m4a, ogg, aac, opus, wma, alac, aiff, amr, mid, ra
 - Improved queue management
 
 ---
-## 📥 How to Clone and Run
+## How to Clone and Run
 
 ### 1. Clone the repository
 ```bash
@@ -89,6 +89,6 @@ cd moka-player
 ```
 ---
 
-## 📜 License
+## License
 
-Educational and personal use only.
+Free use.
