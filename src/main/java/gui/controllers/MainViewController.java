@@ -3,10 +3,11 @@ package gui.controllers;
 import application.service.LibraryService;
 import application.service.MediaService;
 import application.service.PlayerService;
+import config.AppConfig;
 import domain.model.media.Playlist;
 import domain.model.media.Track;
 import gui.utils.DialogFactory;
-import gui.utils.UIContext;
+import gui.main.AppContext;
 import gui.utils.ViewLoader;
 import infrastructure.audio.AudioPlayer;
 import domain.audio.RepeatMode;
@@ -61,7 +62,7 @@ public class MainViewController {
 
     private final ViewMode DEFAULT_STARTING_VIEW_MODE = ViewMode.TRACKS;
 
-    private UIContext uiContext;
+    private AppContext appContext;
     private ViewLoader viewLoader;
 
     private MediaListViewController mediaListViewController;
@@ -70,11 +71,12 @@ public class MainViewController {
     private ViewMode currentViewMode = DEFAULT_STARTING_VIEW_MODE;
     private ViewMode oldViewMode = DEFAULT_STARTING_VIEW_MODE;
 
-    static int skipSeconds = 10;
+    private static int skipSeconds;
 
-    public void setUIContext(UIContext uiContext) {
-        this.uiContext = uiContext;
-        this.viewLoader = new ViewLoader(uiContext);
+    public void setAppContext(AppContext appContext) {
+        this.appContext = appContext;
+        this.viewLoader = new ViewLoader(appContext);
+        skipSeconds = appContext.config().getPreferredSkipSeconds();
         initializeLibrary();
         init();
     }
@@ -90,7 +92,7 @@ public class MainViewController {
     public void handleRefresh() {
         Platform.runLater(() -> {
             switchViewMode(currentViewMode);
-            uiContext.mediaService().refreshActiveLibrary();
+            appContext.mediaService().refreshActiveLibrary();
         });
     }
 
@@ -105,6 +107,7 @@ public class MainViewController {
     }
 
     private void init() {
+        setupButtonsVisibility();
         updatePlayButton();
         updateFavoriteButton();
         updateShuffleButton();
@@ -120,8 +123,20 @@ public class MainViewController {
         thread.start();
     }
 
+    private void setupButtonsVisibility() {
+        AppConfig config = appContext.config();
+        btnTracks.setVisible(config.isTracksBtnVisibility());
+        btnSongs.setVisible(config.isSongsBtnVisibility());
+        btnBooks.setVisible(config.isBooksBtnVisibility());
+        btnPodcasts.setVisible(config.isPodcastsBtnVisibility());
+        btnArtists.setVisible(config.isArtistsBtnVisibility());
+        btnGenres.setVisible(config.isGenresBtnVisibility());
+        btnAlbum.setVisible(config.isAlbumsBtnVisibility());
+        btnPlaylist.setVisible(config.isPlaylistsBtnVisibility());
+    }
+
     private void updatePlayButton() {
-        uiContext.playerService().playbackStateProperty().addListener((obs, oldState, newState) -> {
+        appContext.playerService().playbackStateProperty().addListener((obs, oldState, newState) -> {
             switch (newState) {
                 case PLAYING -> btnPlay.setText("⏸");
                 case PAUSED, STOPPED -> btnPlay.setText("▶");
@@ -130,7 +145,7 @@ public class MainViewController {
     }
 
     private void updateFavoriteButton() {
-        uiContext.playerService().currentTrackProperty().addListener((obs, oldTrack, newTrack) -> {
+        appContext.playerService().currentTrackProperty().addListener((obs, oldTrack, newTrack) -> {
             if (newTrack != null) {
                 setBtnFavoriteStyle(newTrack.isFavorite());
             } else {
@@ -140,7 +155,7 @@ public class MainViewController {
     }
 
     private void updateShuffleButton() {
-        uiContext.playerService().shuffleProperty().addListener((obs, oldShuffle, newShuffle) -> {
+        appContext.playerService().shuffleProperty().addListener((obs, oldShuffle, newShuffle) -> {
             if (newShuffle) {
                 btnShuffle.setText("shuffled");
                 btnShuffle.getStyleClass().add("activated-button");
@@ -152,9 +167,12 @@ public class MainViewController {
     }
 
     private void updateRepeatButton() {
-        uiContext.playerService().repeatProperty().addListener((obs, oldRepeat, newRepeat) -> {
-            btnRepeatAndStop.setText(newRepeat.getText());
-        });
+        appContext.playerService().repeatProperty()
+                .addListener((
+                        obs,
+                        oldRepeat,
+                        newRepeat
+                ) -> btnRepeatAndStop.setText(newRepeat.getText()));
     }
 
     private void setUpViewButtons() {
@@ -173,7 +191,7 @@ public class MainViewController {
     }
 
     private void switchViewMode(ViewMode viewMode) {
-        MediaService mediaService = uiContext.mediaService();
+        MediaService mediaService = appContext.mediaService();
         oldViewMode = currentViewMode;
         switch (viewMode) {
             case TRACKS -> switchMediaView(new ArrayList<>(mediaService.getTracks()), viewMode);
@@ -193,7 +211,7 @@ public class MainViewController {
     }
 
     private void setUpMenuOptions() {
-        AudioPlayer player = uiContext.player();
+        AudioPlayer player = appContext.player();
         btnRepeatAndStop.setText(player.getRepeatMode().getText());
         miPlayOne.setOnAction(e -> {
             player.setRepeatMode(RepeatMode.PLAY_ONE);
@@ -214,7 +232,7 @@ public class MainViewController {
     }
 
     private void setUpControlButtons() {
-        PlayerService playerService = uiContext.playerService();
+        PlayerService playerService = appContext.playerService();
         setBtnPlay();
         setBtnFavorite();
         btnNext.setOnAction(event -> playerService.playNext());
@@ -227,7 +245,7 @@ public class MainViewController {
     }
 
     private void setBtnFavorite() {
-        PlayerService playerService = uiContext.playerService();
+        PlayerService playerService = appContext.playerService();
         btnFavorite.setOnAction(event -> {
             Track current = playerService.getCurrentTrack();
             if (current != null) {
@@ -238,8 +256,8 @@ public class MainViewController {
     }
 
     private void setBtnPlay() {
-        PlayerService playerService = uiContext.playerService();
-        AudioPlayer player = uiContext.player();
+        PlayerService playerService = appContext.playerService();
+        AudioPlayer player = appContext.player();
         btnPlay.setOnAction(event -> {
             switch (player.getState()) {
                 case STOPPED -> playerService.playSelectedTrack();
@@ -250,8 +268,8 @@ public class MainViewController {
     }
 
     private Task<Void> getQueueLoadingTask() {
-        AudioPlayer player = uiContext.player();
-        MediaService mediaService = uiContext.mediaService();
+        AudioPlayer player = appContext.player();
+        MediaService mediaService = appContext.mediaService();
         Task<Void> task = new Task<>() {
             @Override
             protected Void call() {
@@ -268,7 +286,7 @@ public class MainViewController {
     }
 
     public void setupLabel() {
-        PlayerService playerService = uiContext.playerService();
+        PlayerService playerService = appContext.playerService();
         currentTrack.textProperty().bind(
                 Bindings.createStringBinding(() -> {
                     Track track = playerService.getCurrentTrack();
@@ -290,12 +308,12 @@ public class MainViewController {
     }
 
     private void setUpVolumeSlider() {
-        PlayerService playerService = uiContext.playerService();
+        PlayerService playerService = appContext.playerService();
         volumeSlider.valueProperty().bindBidirectional(playerService.volumeProperty());
     }
 
     private void setUpProgressSlider() {
-        AudioPlayer player = uiContext.player();
+        AudioPlayer player = appContext.player();
         Timeline progressTimeline = new Timeline(
                 new KeyFrame(Duration.millis(200), e -> {
                     if (!seeking && !progressSlider.isValueChanging()) {
@@ -321,7 +339,6 @@ public class MainViewController {
     private void switchMediaView(List<Track> tracks, ViewMode mode) {
         loadMediaView(tracks);
         currentViewMode = mode;
-        System.out.println(mediaListViewController == null);
         if (mediaListViewController != null) {
             mediaListViewController.setData(tracks);
             mediaListViewController.init();
@@ -337,7 +354,7 @@ public class MainViewController {
         try {
             FXMLLoader loader = loadView("/views/mediaList-view.fxml");
             mediaListViewController = loader.getController();
-            mediaListViewController.setUIContext(uiContext);
+            mediaListViewController.setUIContext(appContext);
             mediaListViewController.setViewLoader(viewLoader);
             mediaListViewController.setOnSaveSuccessCallback(this::handleRefresh);
         } catch (IOException e) {
@@ -349,7 +366,7 @@ public class MainViewController {
         try {
             FXMLLoader loader = loadView("/views/playlist-view.fxml");
             PlaylistViewController playlistController = loader.getController();
-            playlistController.setUIContext(uiContext);
+            playlistController.setUIContext(appContext);
             playlistController.setViewLoader(viewLoader);
 
             playlistController.setOnSaveSuccess(this::handleRefresh);
@@ -364,7 +381,7 @@ public class MainViewController {
         try {
             FXMLLoader loader = loadView("/views/category-view.fxml");
             CategoryViewController categoryViewController = loader.getController();
-            categoryViewController.setUiContext(uiContext);
+            categoryViewController.setUiContext(appContext);
             categoryViewController.setData(categoryList, mode);
 
         } catch (IOException e) {
@@ -376,7 +393,7 @@ public class MainViewController {
         try {
             FXMLLoader loader = loadView("/views/playing-track-view.fxml");
             PlayingTrackViewController playingTrackViewController = loader.getController();
-            playingTrackViewController.setUiContext(uiContext);
+            playingTrackViewController.setUiContext(appContext);
             currentViewMode = ViewMode.TRACK;
         } catch (IOException e) {
             logger.error("CRITICAL: Could not find or load playing-track-view.fxml", e);
@@ -387,8 +404,8 @@ public class MainViewController {
         try {
             FXMLLoader loader = loadView("/views/folders-view.fxml");
             FoldersViewController foldersViewController = loader.getController();
-            foldersViewController.setLibraryService(uiContext.libraryService());
-            foldersViewController.setMediaService(uiContext.mediaService());
+            foldersViewController.setLibraryService(appContext.libraryService());
+            foldersViewController.setMediaService(appContext.mediaService());
             currentViewMode = ViewMode.FOLDERS;
         } catch (IOException e) {
             logger.error("CRITICAL: Could not find or load folders-view.fxml", e);
@@ -399,8 +416,8 @@ public class MainViewController {
         try {
             FXMLLoader loader = loadView("/views/lyrics-view.fxml");
             LyricsViewController lyricsViewController = loader.getController();
-            lyricsViewController.setTrack(uiContext.playerService().getCurrentTrack());
-            lyricsViewController.setMetadataManager(uiContext.metadataManager());
+            lyricsViewController.setTrack(appContext.playerService().getCurrentTrack());
+            lyricsViewController.setMetadataManager(appContext.metadataManager());
             currentViewMode = ViewMode.LYRICS;
         } catch (IOException e) {
             logger.error("CRITICAL: Could not find or load lyrics-view.fxml", e);
@@ -411,7 +428,7 @@ public class MainViewController {
         try {
             FXMLLoader loader = loadView("/views/queued-tracks-view.fxml");
             QueuedTracksViewController queuedTracksViewController = loader.getController();
-            queuedTracksViewController.setUIContext(uiContext);
+            queuedTracksViewController.setUIContext(appContext);
             queuedTracksViewController.setViewLoader(viewLoader);
             queuedTracksViewController.setOnSaveSuccessCallback(this::handleRefresh);
         } catch (IOException e) {
@@ -433,7 +450,7 @@ public class MainViewController {
     }
 
     private void initializeLibrary() {
-        LibraryService libraryService = uiContext.libraryService();
+        LibraryService libraryService = appContext.libraryService();
         if (!libraryService.hasLibraries()) {
             Optional<String> pathResult = getResult();
             if (pathResult.isEmpty()) return;
@@ -457,7 +474,7 @@ public class MainViewController {
             libraryService.setActiveLibrary(libraryService.getLibraries().getFirst());
         }
 
-        uiContext.mediaService().loadActiveLibrary();
+        appContext.mediaService().loadActiveLibrary();
     }
 
     private static Optional<String> getResult() {

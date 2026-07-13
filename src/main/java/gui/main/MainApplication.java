@@ -1,23 +1,15 @@
 package gui.main;
 
-import application.service.AppState;
-import application.service.LibraryService;
 import application.service.MediaService;
 import application.service.PlayerService;
+import config.AppConfig;
+import config.storage.ConfigStorage;
 import domain.model.media.Track;
 import gui.controllers.RefreshEvent;
-import gui.utils.UIContext;
 import infrastructure.audio.AudioEngine;
 import infrastructure.audio.AudioPlayer;
 import domain.audio.PlaybackState;
-import infrastructure.audio.VLCJAudioEngine;
-import infrastructure.media.FiledataManager;
-import infrastructure.media.JaudiotaggerManager;
-import infrastructure.scanner.MediaScanner;
-import infrastructure.media.MetadataManager;
-import domain.model.library.MediaLibrary;
 import gui.controllers.MainViewController;
-import infrastructure.storage.ArtworkStorage;
 import infrastructure.storage.MetadataStorage;
 import infrastructure.storage.TrackStorage;
 
@@ -46,86 +38,72 @@ import static gui.main.MainLauncher.*;
 
 /**
  * Main JavaFX application entry point for Moka Player.
+ *
  * <p>
  * Responsibilities:
- * - Initializes all core application services and infrastructure.
- * - Creates and wires together the dependency graph manually
- * (without a dependency injection framework).
- * - Loads the main JavaFX UI and injects required services into the
- * MainViewController.
- * - Configures global keyboard shortcuts and application state.
- * - Performs startup performance logging.
- * - Handles graceful shutdown by persisting track data and releasing
- * native audio resources.
+ * <ul>
+ *     <li>Bootstraps the application using {@link AppContext}.</li>
+ *     <li>Initializes persistent storage and loads application configuration.</li>
+ *     <li>Constructs the JavaFX scene graph and injects the application context
+ *     into the {@code MainViewController}.</li>
+ *     <li>Restores player preferences such as volume, shuffle, and repeat mode.</li>
+ *     <li>Processes command-line audio files and directories supplied at startup.</li>
+ *     <li>Registers global keyboard and mouse playback shortcuts.</li>
+ *     <li>Logs startup and shutdown performance.</li>
+ *     <li>Persists configuration and track state during shutdown.</li>
+ * </ul>
+ *
  * <p>
  * Startup sequence:
- * 1. Initialize SQLite storage.
- * 2. Construct infrastructure and application services.
- * 3. Load the JavaFX scene.
- * 4. Inject dependencies into the controller.
- * 5. Show the main window.
- * 6. Fire an initial RefreshEvent to populate the UI.
+ * <ol>
+ *     <li>Create the shared {@link AppContext}.</li>
+ *     <li>Initialize track and metadata storage.</li>
+ *     <li>Restore player configuration.</li>
+ *     <li>Load the JavaFX UI.</li>
+ *     <li>Inject the application context into the main controller.</li>
+ *     <li>Display the primary stage.</li>
+ *     <li>Fire an initial {@link RefreshEvent}.</li>
+ *     <li>Scan and enqueue any audio files or directories passed on the command line.</li>
+ * </ol>
+ *
  * <p>
  * Shutdown sequence:
- * 1. Save track state.
- * 2. Release VLCJ/native audio resources.
- * 3. Log shutdown timings.
+ * <ol>
+ *     <li>Stop playback.</li>
+ *     <li>Persist application configuration.</li>
+ *     <li>Save all modified track metadata.</li>
+ *     <li>Release native audio resources.</li>
+ *     <li>Close all application windows.</li>
+ * </ol>
  */
 
 public class MainApplication extends Application {
 
     private static final Logger logger = LoggerFactory.getLogger(MainApplication.class);
 
-    private static final int STARTING_VOLUME = 50;
-
     private final List<Path> startupFiles = new ArrayList<>();
     private final List<Path> startupDirectories = new ArrayList<>();
     private final List<Track> startupTracks = new ArrayList<>();
 
-    private final AudioEngine audioEngine = new VLCJAudioEngine();
-    private final AudioPlayer audioPlayer = new AudioPlayer(audioEngine);
-    private final MetadataManager metadataManager = new JaudiotaggerManager();
-    private final FiledataManager filedataManager = new FiledataManager();
-    private final ArtworkStorage artworkStorage = new ArtworkStorage();
-    private final MetadataStorage metadataStorage = new MetadataStorage();
-    private final TrackStorage trackStorage = new TrackStorage(metadataStorage);
-    private final MediaScanner mediaScanner = new MediaScanner(
-            metadataManager,
-            filedataManager,
-            trackStorage,
-            metadataStorage,
-            artworkStorage
-    );
-    private final MediaLibrary mediaLibrary = new MediaLibrary();
-    private final LibraryService libraryService = new LibraryService();
-    private final MediaService mediaService = new MediaService(
-            mediaScanner,
-            mediaLibrary,
-            libraryService
-    );
-    private final PlayerService playerService = new PlayerService(audioPlayer);
-    private final AppState appState = new AppState();
+    private final AppContext appContext = new AppContext();
 
-    private final UIContext uiContext = new UIContext(
-            mediaService,
-            audioPlayer,
-            libraryService,
-            playerService,
-            metadataManager,
-            mediaLibrary,
-            appState,
-            artworkStorage,
-            metadataStorage,
-            trackStorage,
-            mediaScanner
-    );
-
-    private int oldVolume = STARTING_VOLUME;
+    private static int oldVolume;
 
     public static Stage primaryStage;
 
     @Override
     public void start(Stage stage) throws IOException {
+        AppConfig config = appContext.config();
+        TrackStorage trackStorage = appContext.trackStorage();
+        MetadataStorage metadataStorage = appContext.metadataStorage();
+        AudioPlayer audioPlayer = appContext.player();
+
+        audioPlayer.setRepeatMode(config.getPrefferredRepeatMode());
+        audioPlayer.setShuffle(config.isShuffle());
+        audioPlayer.setVolume(config.getPreferredVolumeLevel());
+
+        oldVolume = audioPlayer.getVolume();
+
         primaryStage = stage;
 
         logger.debug(getParameters().getRaw().toString());
@@ -146,10 +124,8 @@ public class MainApplication extends Application {
         logger.debug("Main view FXML scene resolution took {} ms", (System.nanoTime() - t) / 1_000_000.0);
         t = System.nanoTime();
 
-        controller.setUIContext(uiContext);
+        controller.setAppContext(appContext);
         logger.debug("MainViewController Dependency injection took {} ms", (System.nanoTime() - t) / 1_000_000.0);
-
-        audioPlayer.setVolume(STARTING_VOLUME);
 
         Image icon = new Image(
                 Objects.requireNonNull(
@@ -187,36 +163,37 @@ public class MainApplication extends Application {
         if (startupFiles.isEmpty()) return;
         CompletableFuture
                 .runAsync(() ->
-                        startupTracks.addAll(mediaScanner.scan(startupFiles)))
-                .thenRun(() -> Platform.runLater(() -> {
-                    for (Track track : startupTracks) {
-                        playSelectedTrack(track);
-                    }
-                }));
+                        startupTracks.addAll(appContext.mediaScanner().scan(startupFiles)))
+                .thenRun(() -> Platform.runLater(() ->
+                        enqueueTracks(startupTracks)));
     }
 
     private void setupStartupDirectories() {
         if (startupDirectories.isEmpty()) return;
         CompletableFuture.runAsync(() -> {
                     for (Path startupDirectory : startupDirectories) {
-                        startupTracks.addAll(mediaScanner.scan(startupDirectory));
+                        startupTracks.addAll(appContext.mediaScanner().scan(startupDirectory));
                     }
                 })
-                .thenRun(() -> Platform.runLater(() -> {
-                    for (Track track : startupTracks) {
-                        playSelectedTrack(track);
-                    }
-                }));
+                .thenRun(() -> Platform.runLater(() ->
+                        enqueueTracks(startupTracks)));
     }
 
-    private void playSelectedTrack(Track track) {
-        playerService.setSelectTrack(track);
-        playerService.playSelectedTrack();
-        logger.debug("Playing starting track at{} :\n {}", track.getFilePath(), track);
+    private void enqueueTracks(List<Track> tracks) {
+        PlayerService playerService = appContext.playerService();
+        for (Track track : tracks) {
+            playerService.setSelectTrack(track);
+            playerService.playSelectedTrack();
+            logger.debug("Playing starting track at{} :\n {}", track.getFilePath(), track);
+        }
+
     }
 
 
     private void setupKeyBindings(Parent root, MainViewController controller, Scene scene, Stage stage) {
+        PlayerService playerService = appContext.playerService();
+        AudioPlayer audioPlayer = appContext.player();
+        AppConfig config = appContext.config();
         scene.setOnKeyPressed(event -> {
             switch (event.getCode()) {
                 case P -> playerService.playSelectedTrack();
@@ -229,10 +206,12 @@ public class MainApplication extends Application {
                 }
                 case D -> playerService.playNext();
                 case A -> playerService.playPrev();
-                case E -> playerService.skipForward(10);
-                case Q -> playerService.skipBackward(10);
-                case W -> audioPlayer.setVolume(Math.min(100, audioPlayer.getVolume() + 10));
-                case S -> audioPlayer.setVolume(Math.max(0, audioPlayer.getVolume() - 10));
+                case E -> playerService.skipForward(config.getPreferredSkipSeconds());
+                case Q -> playerService.skipBackward(config.getPreferredSkipSeconds());
+                case W -> audioPlayer.setVolume(Math.min
+                        (100, audioPlayer.getVolume() + config.getPreferredVolumeModifier()));
+                case S -> audioPlayer.setVolume(Math.max
+                        (0, audioPlayer.getVolume() - config.getPreferredVolumeModifier()));
                 case M -> {
                     if (audioPlayer.getVolume() != 0) {
                         oldVolume = audioPlayer.getVolume();
@@ -280,10 +259,17 @@ public class MainApplication extends Application {
 
     @Override
     public void stop() throws Exception {
+        TrackStorage trackStorage = appContext.trackStorage();
+        MediaService mediaService = appContext.mediaService();
+        AudioEngine audioEngine = appContext.audioEngine();
         long start = System.nanoTime();
         long t = start;
 
         logger.info("Intercepted shutdown signal. Closing Moka Player...");
+
+        appContext.player().stop();
+
+        ConfigStorage.save(appContext.config());
 
         if (mediaService != null && trackStorage != null) {
             trackStorage.saveAll(mediaService.getTracks());
@@ -318,7 +304,8 @@ public class MainApplication extends Application {
         if (!args.isEmpty()) {
             for (String arg : args) {
                 Path path = Path.of(arg);
-                if (Files.exists(path) && mediaScanner.isAudioFile(path)) {
+                if (Files.exists(path) && appContext
+                        .mediaScanner().isAudioFile(path)) {
                     startupFiles.add(path);
                 } else if (Files.isDirectory(path)) {
                     startupDirectories.add(path);

@@ -7,7 +7,7 @@ import domain.model.media.Playlist;
 import domain.model.media.Track;
 import gui.controllers.listcells.DisplayableCell;
 
-import gui.utils.UIContext;
+import gui.main.AppContext;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -36,21 +36,21 @@ public class CategoryViewController {
     private final ObservableList<Playlist> categories = FXCollections.observableArrayList();
     private final ObservableList<Displayable> filteredCategories = FXCollections.observableArrayList();
 
-    private UIContext uiContext;
+    private AppContext appContext;
 
     private SortByModes currentSortMode = SortByModes.ALPHABETICAL;
     private List<Playlist> rawData;
 
-    public void setUiContext(UIContext uiContext) {
-        this.uiContext = uiContext;
-        AppState appState = uiContext.appState();
+    public void setUiContext(AppContext appContext) {
+        this.appContext = appContext;
+        AppState appState = appContext.appState();
         if (appState.getCurrentCategoryMode() == ViewMode.PLAYLIST) {
             appState.clearCurrentView();
         }
     }
 
     public void setData(List<Playlist> categoryPlaylists, ViewMode mode) {
-        AppState appState = uiContext.appState();
+        AppState appState = appContext.appState();
 
         this.rawData = categoryPlaylists;
         if (categoryPlaylists != null) {
@@ -100,7 +100,7 @@ public class CategoryViewController {
     }
 
     private void syncListViewItems() {
-        AppState appState = uiContext.appState();
+        AppState appState = appContext.appState();
         if (contentList == null || appState == null) return;
 
         if (appState.getCurrentView() == null || appState.getCurrentView().isEmpty()) {
@@ -112,7 +112,7 @@ public class CategoryViewController {
 
     private void setUpListView() {
         if (contentList != null) {
-            contentList.setCellFactory(lv -> new DisplayableCell(uiContext.playerService()));
+            contentList.setCellFactory(lv -> new DisplayableCell(appContext.playerService()));
             contentList.getSelectionModel().selectedItemProperty().addListener(
                     (obs, oldVal, newVal) -> {
                         if (newVal != null) {
@@ -132,7 +132,7 @@ public class CategoryViewController {
     }
 
     private void playTrack(Track t) {
-        PlayerService playerService = uiContext.playerService();
+        PlayerService playerService = appContext.playerService();
         if (playerService != null) {
             playerService.setSelectTrack(t);
             playerService.playSelectedTrack();
@@ -140,8 +140,8 @@ public class CategoryViewController {
     }
 
     private void openCategoryPlaylist(Playlist p) {
-        PlayerService playerService = uiContext.playerService();
-        AppState appState = uiContext.appState();
+        PlayerService playerService = appContext.playerService();
+        AppState appState = appContext.appState();
         if (p != null && p.getTracks() != null) {
             ObservableList<Displayable> tracks = FXCollections.observableArrayList(p.getTracks());
             if (playerService != null) {
@@ -209,7 +209,7 @@ public class CategoryViewController {
     }
 
     public void handleBackNavigation() {
-        AppState appState = uiContext.appState();
+        AppState appState = appContext.appState();
         if (txtSearch != null) {
             txtSearch.clear();
         }

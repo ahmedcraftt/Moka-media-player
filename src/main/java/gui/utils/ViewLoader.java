@@ -4,14 +4,13 @@ import domain.model.media.Playlist;
 import domain.model.media.Track;
 import gui.controllers.MediaListViewController;
 import gui.controllers.PlaylistDataViewController;
-import gui.controllers.PlaylistViewController;
 import gui.controllers.TrackDataViewController;
+import gui.main.AppContext;
 import gui.main.MainApplication;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
-import javafx.scene.layout.AnchorPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import org.slf4j.Logger;
@@ -24,17 +23,17 @@ public final class ViewLoader {
 
     private static final Logger logger = LoggerFactory.getLogger(ViewLoader.class);
 
-    private final UIContext uiContext;
+    private final AppContext appContext;
 
-    public ViewLoader(UIContext uiContext) {
-        this.uiContext = uiContext;
+    public ViewLoader(AppContext appContext) {
+        this.appContext = appContext;
     }
 
     public void loadDataView(Track track, Runnable onSaveSuccessCallback) throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/track-data-view.fxml"));
         Parent root = loader.load();
         TrackDataViewController controller = loader.getController();
-        controller.setUIContext(uiContext);
+        controller.setUIContext(appContext);
         controller.setTrack(track);
         controller.setOnSaveSuccessCallback(onSaveSuccessCallback);
 
@@ -57,7 +56,7 @@ public final class ViewLoader {
         Parent root = loader.load();
         PlaylistDataViewController controller = loader.getController();
         controller.setPlaylist(playlist);
-        controller.setTracks(uiContext.mediaService().getTracks());
+        controller.setTracks(appContext.mediaService().getTracks());
         controller.setOnSaveSuccess(onSaveSuccess);
 
         Stage stage = new Stage();

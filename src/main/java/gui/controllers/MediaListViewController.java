@@ -4,7 +4,7 @@ import application.service.AppState;
 import application.service.PlayerService;
 import domain.model.media.Track;
 import gui.controllers.listcells.MediaTrackCell;
-import gui.utils.UIContext;
+import gui.main.AppContext;
 
 import gui.utils.ViewLoader;
 import javafx.fxml.FXML;
@@ -32,7 +32,7 @@ public class MediaListViewController {
     private static Runnable onSaveSuccessCallback;
 
     private ViewLoader viewLoader;
-    private UIContext uiContext;
+    private AppContext appContext;
 
     private SortByModes currentSortMode;
 
@@ -41,9 +41,9 @@ public class MediaListViewController {
     }
 
 
-    public void setUIContext(UIContext uiContext) {
-        this.uiContext = uiContext;
-        currentSortMode = uiContext.appState().getCurrentSortByMode();
+    public void setUIContext(AppContext appContext) {
+        this.appContext = appContext;
+        currentSortMode = appContext.appState().getCurrentSortByMode();
         setupListView();
         setupPlay();
     }
@@ -53,7 +53,7 @@ public class MediaListViewController {
     }
 
     public void init() {
-        sort(uiContext.appState().getCurrentSortByMode());
+        sort(appContext.appState().getCurrentSortByMode());
     }
 
     public void setData(List<Track> tracks) {
@@ -69,7 +69,7 @@ public class MediaListViewController {
     }
 
     private void sort(SortByModes mode) {
-        AppState appState = uiContext.appState();
+        AppState appState = appContext.appState();
         this.currentSortMode = mode;
         if (btnSort != null) {
             btnSort.setText("sort by " + mode.toString().toLowerCase());
@@ -142,14 +142,13 @@ public class MediaListViewController {
         workingList.sort(hierarchicalComparator);
 
         contentList.getItems().setAll(workingList);
-        System.out.println("working-list:" + workingList.size());
 
-        uiContext.playerService().setCurrentList(workingList);
+        appContext.playerService().setCurrentList(workingList);
 
     }
 
     private void setupListView() {
-        PlayerService playerService = uiContext.playerService();
+        PlayerService playerService = appContext.playerService();
         contentList.setCellFactory(lv -> new MediaTrackCell(playerService, viewLoader, onSaveSuccessCallback));
         contentList.setOnMouseClicked(e -> {
             Track selected = contentList.getSelectionModel().getSelectedItem();
@@ -175,7 +174,7 @@ public class MediaListViewController {
     }
 
     private void setupPlay() {
-        PlayerService playerService = uiContext.playerService();
+        PlayerService playerService = appContext.playerService();
         btnListPlay.setOnAction(e -> {
             List<Track> visibleItems = contentList.getItems();
             if (!visibleItems.isEmpty() && playerService != null) {

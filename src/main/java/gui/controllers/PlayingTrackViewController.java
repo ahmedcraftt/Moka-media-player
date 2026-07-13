@@ -1,9 +1,10 @@
 package gui.controllers;
 
 import application.service.PlayerService;
+import config.AppConfig;
 import domain.model.media.Track;
 import gui.utils.DialogFactory;
-import gui.utils.UIContext;
+import gui.main.AppContext;
 
 import javafx.animation.Animation;
 import javafx.animation.Interpolator;
@@ -48,13 +49,23 @@ public class PlayingTrackViewController {
     private RotateTransition rotateTransition;
     private ScaleTransition scaleTransition;
 
-    private UIContext uiContext;
+    private AppContext appContext;
 
+    private int rotationSpeed;
 
-    public void setUiContext(UIContext uiContext) {
-        this.uiContext = uiContext;
+    public void setUiContext(AppContext appContext) {
+        this.appContext = appContext;
+        init();
+    }
 
-        PlayerService playerService = uiContext.playerService();
+    private void init() {
+        AppConfig config = appContext.config();
+        imgTrack.setFitWidth(config.getArtworkImageWidth());
+        imgTrack.setFitHeight(config.getArtworkImageHeight());
+
+        rotationSpeed = config.getArtworkImageRotationSpeed();
+
+        PlayerService playerService = appContext.playerService();
 
         playerService.currentTrackProperty().addListener((obs, oldT, newT) -> updateUI(newT));
         updateUI(playerService.getCurrentTrack());
@@ -99,7 +110,7 @@ public class PlayingTrackViewController {
 
     @FXML
     private void handleChangeArtwork() {
-        PlayerService playerService = uiContext.playerService();
+        PlayerService playerService = appContext.playerService();
         Track currentTrack = playerService.getCurrentTrack();
         if (currentTrack == null) return;
 
@@ -115,11 +126,11 @@ public class PlayingTrackViewController {
             try {
                 byte[] rawBytes = Files.readAllBytes(selectedFile.toPath());
 
-                String brandNewDiskPath = uiContext.artStorage().saveArtwork(rawBytes, selectedFile.getName());
+                String brandNewDiskPath = appContext.artStorage().saveArtwork(rawBytes, selectedFile.getName());
 
                 if (brandNewDiskPath != null) {
                     currentTrack.getMetadata().setArtworkPath(brandNewDiskPath);
-                    uiContext.trackStorage().update(currentTrack);
+                    appContext.trackStorage().update(currentTrack);
 
                     logger.info("Successfully updated artwork for track '{}' to local path: {}",
                             currentTrack.getTitle(), brandNewDiskPath);
@@ -139,7 +150,7 @@ public class PlayingTrackViewController {
     }
 
     private void updateUI(Track track) {
-        PlayerService playerService = uiContext.playerService();
+        PlayerService playerService = appContext.playerService();
         if (!Platform.isFxApplicationThread()) {
             Platform.runLater(() -> updateUI(track));
             return;
@@ -212,7 +223,7 @@ public class PlayingTrackViewController {
     }
 
     private void setupRotation() {
-        rotateTransition = new RotateTransition(Duration.seconds(64), spImageContainer);
+        rotateTransition = new RotateTransition(Duration.seconds(rotationSpeed), spImageContainer);
         rotateTransition.setByAngle(360);
         rotateTransition.setCycleCount(Animation.INDEFINITE);
         rotateTransition.setInterpolator(Interpolator.LINEAR);

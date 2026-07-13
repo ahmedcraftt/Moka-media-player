@@ -1,5 +1,6 @@
 package infrastructure.audio;
 
+import bootstrap.VLCBootstrap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.co.caprica.vlcj.factory.MediaPlayerFactory;
@@ -26,6 +27,7 @@ public class VLCJAudioEngine implements AudioEngine {
     });
 
     public VLCJAudioEngine() {
+        VLCBootstrap.init();
         factory = new MediaPlayerFactory();
         mediaPlayer = factory.mediaPlayers().newMediaPlayer();
 
@@ -160,7 +162,11 @@ public class VLCJAudioEngine implements AudioEngine {
 
     @Override
     public int getDuration() {
-        return Math.toIntExact((mediaPlayer.media().info().duration()) / 1000);
+        long length = mediaPlayer.status().length();
+        if (length <= 0) {
+            length = mediaPlayer.media().info().duration();
+        }
+        return length > 0 ? Math.toIntExact(length / 1000) : 0;
     }
 
 }

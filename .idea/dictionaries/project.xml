@@ -6,8 +6,10 @@
       <w>alac</w>
       <w>eskendereya</w>
       <w>jdbc</w>
+      <w>libvlc</w>
       <w>mokaalpha</w>
       <w>tayeb</w>
+      <w>vlcjaudioengine</w>
     </words>
   </dictionary>
 </component>

@@ -3,20 +3,13 @@ package gui.controllers;
 import domain.model.media.Playlist;
 import domain.model.media.Track;
 import gui.controllers.listcells.PlayListCreationCell;
-import gui.utils.TimeFormater;
 import javafx.collections.transformation.FilteredList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
-import java.io.File;
 import java.util.List;
-import java.util.Objects;
 
 public class PlaylistCreationViewController {
 

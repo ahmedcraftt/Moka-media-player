@@ -5,7 +5,7 @@ import domain.model.media.Playlist;
 import domain.model.media.Track;
 import gui.controllers.listcells.QueueTrackCell;
 import gui.utils.DialogFactory;
-import gui.utils.UIContext;
+import gui.main.AppContext;
 import gui.utils.ViewLoader;
 
 import infrastructure.storage.PlaylistStorage;
@@ -38,10 +38,10 @@ public class QueuedTracksViewController {
 
     private Runnable onSaveSuccessCallback;
     private ViewLoader viewLoader;
-    private UIContext uiContext;
+    private AppContext appContext;
 
-    public void setUIContext(UIContext uiContext) {
-        this.uiContext = uiContext;
+    public void setUIContext(AppContext appContext) {
+        this.appContext = appContext;
         init();
     }
 
@@ -64,38 +64,38 @@ public class QueuedTracksViewController {
         miSave.setOnAction(this::handleSave);
         miClear.setOnAction(event -> {
             lvQueue.getItems().clear();
-            uiContext.player().clearQueue();
+            appContext.player().clearQueue();
         });
         miAdd.setVisible(false);
     }
 
     private void setupLabel() {
-        if (uiContext.player().isShuffle())
+        if (appContext.player().isShuffle())
             lblShuffle.setText("Shuffled");
         else lblShuffle.setText("Not shuffled");
         int tracks;
-        if (uiContext != null)
-            tracks = uiContext.player().getNumberOfTracks();
+        if (appContext != null)
+            tracks = appContext.player().getNumberOfTracks();
         else tracks = 0;
         lblNumOf.setText(tracks + " Tracks");
     }
 
     private void handleShuffling() {
-        PlayerService playerService = uiContext.playerService();
+        PlayerService playerService = appContext.playerService();
         playerService.shuffleProperty().addListener((observable, oldValue, newShuffle) -> {
             if (newShuffle) {
                 lblShuffle.setText("Shuffled");
             } else lblShuffle.setText("Not Shuffled");
 
             lvQueue.getItems().clear();
-            lvQueue.getItems().addAll(uiContext.player().getQueuedTracks());
+            lvQueue.getItems().addAll(appContext.player().getQueuedTracks());
         });
     }
 
     private void setupListView() {
-        PlayerService playerService = uiContext.playerService();
+        PlayerService playerService = appContext.playerService();
         lvQueue.setCellFactory(lv -> new QueueTrackCell(playerService, viewLoader, onSaveSuccessCallback));
-        lvQueue.getItems().addAll(uiContext.player().getQueuedTracks());
+        lvQueue.getItems().addAll(appContext.player().getQueuedTracks());
         lvQueue.setOnMouseClicked(e -> {
             Track selected = lvQueue.getSelectionModel().getSelectedItem();
             playerService.setCurrentList(lvQueue.getItems());

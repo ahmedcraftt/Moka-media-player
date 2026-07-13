@@ -33,7 +33,7 @@ public class PlayerService {
             new SimpleBooleanProperty(false);
 
     private final DoubleProperty volume =
-            new SimpleDoubleProperty(0.5);// Default to 50%
+            new SimpleDoubleProperty();
 
     private final BooleanProperty shuffle =
             new SimpleBooleanProperty(false);

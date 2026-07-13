@@ -4,7 +4,7 @@ import domain.model.metadata.Filedata;
 import domain.model.metadata.Metadata;
 import domain.model.media.MediaType;
 import domain.model.media.Track;
-import gui.utils.UIContext;
+import gui.main.AppContext;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -84,7 +84,7 @@ public class TrackDataViewController {
 
     private Runnable onSaveSuccessCallback;
 
-    private UIContext uiContext;
+    private AppContext appContext;
 
     public void setOnSaveSuccessCallback(Runnable onSaveSuccessCallback) {
         this.onSaveSuccessCallback = onSaveSuccessCallback;
@@ -95,8 +95,8 @@ public class TrackDataViewController {
         loadTrackData(track);
     }
 
-    public void setUIContext(UIContext uiContext) {
-        this.uiContext = uiContext;
+    public void setUIContext(AppContext appContext) {
+        this.appContext = appContext;
     }
 
     private void loadTrackData(Track track) {
@@ -123,7 +123,6 @@ public class TrackDataViewController {
         tfSamplerate.setText(String.valueOf(metadata.getSamplerate()));
         tfLang.setText(safe(metadata.getLanguage()));
         tfTitle.setText(safe(metadata.getTitle()));
-        System.out.println(metadata.getGenre());
         tfGenre.setText(safe(metadata.getGenre()));
         taDescription.setText(safe(metadata.getDescription()));
         tfArtist.setText(safe(metadata.getArtist()));
@@ -157,7 +156,7 @@ public class TrackDataViewController {
 
     @FXML
     public void handleSave(ActionEvent event) {
-        Track track = uiContext.playerService().getCurrentTrack();
+        Track track = appContext.playerService().getCurrentTrack();
 
         if (track == null) {
             return;
@@ -182,7 +181,6 @@ public class TrackDataViewController {
 
         metadata.setTitle(tfTitle.getText().trim());
         metadata.setGenre(tfGenre.getText().trim());
-        System.out.println(metadata.getGenre());
         metadata.setLanguage(tfLang.getText().trim());
         metadata.setDescription(taDescription.getText().trim());
         metadata.setArtist(tfArtist.getText().trim());
@@ -197,9 +195,9 @@ public class TrackDataViewController {
             }
         }
 
-        uiContext.metadataManager().write(track);
+        appContext.metadataManager().write(track);
 
-        uiContext.trackStorage().update(track);
+        appContext.trackStorage().update(track);
 
         Stage stage = (Stage) btnSave.getScene().getWindow();
         stage.getScene().getRoot().fireEvent(new RefreshEvent());

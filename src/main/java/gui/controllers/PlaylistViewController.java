@@ -8,7 +8,7 @@ import domain.model.media.Playlist;
 import domain.model.media.Track;
 import gui.controllers.listcells.OpenableDisplayableCell;
 import gui.utils.DialogFactory;
-import gui.utils.UIContext;
+import gui.main.AppContext;
 import gui.utils.ViewLoader;
 import infrastructure.mapper.PlaylistMapper;
 import infrastructure.storage.PlaylistStorage;
@@ -57,17 +57,17 @@ public class PlaylistViewController {
 
     private Playlist currentPlaylist;
 
-    private UIContext uiContext;
+    private AppContext appContext;
     private ViewLoader viewLoader;
 
     private static Runnable onSaveSuccess;
 
     private SortByModes currentSortMode = SortByModes.TITLE;
 
-    public void setUIContext(UIContext uiContext) {
-        this.uiContext = uiContext;
+    public void setUIContext(AppContext appContext) {
+        this.appContext = appContext;
         loadPlaylists();
-        AppState appState = uiContext.appState();
+        AppState appState = appContext.appState();
         if (viewModes.contains(appState.getCurrentCategoryMode())) {
             appState.clearCurrentView();
         }
@@ -119,7 +119,7 @@ public class PlaylistViewController {
     }
 
     private void applyFilterAndSortPlaylists() {
-        AppState appState = uiContext.appState();
+        AppState appState = appContext.appState();
         String query = (tfSearchBar != null && tfSearchBar.getText() != null)
                 ? tfSearchBar.getText().toLowerCase().trim()
                 : "";
@@ -148,7 +148,7 @@ public class PlaylistViewController {
     }
 
     private void sortCurrentTracks() {
-        AppState appState = uiContext.appState();
+        AppState appState = appContext.appState();
         List<Track> tracks = listView.getItems().stream()
                 .filter(Track.class::isInstance)
                 .map(Track.class::cast)
@@ -177,7 +177,7 @@ public class PlaylistViewController {
             appState.setCurrentView(updatedTrackView);
         }
 
-        uiContext.playerService().setCurrentList(tracks);
+        appContext.playerService().setCurrentList(tracks);
     }
 
     @FXML
@@ -212,7 +212,7 @@ public class PlaylistViewController {
 
     private void setUpListView() {
         listView.setCellFactory(lv ->
-                new OpenableDisplayableCell(uiContext.playerService(), viewLoader, onSaveSuccess));
+                new OpenableDisplayableCell(appContext.playerService(), viewLoader, onSaveSuccess));
         listView.setOnMouseClicked(event -> {
             Displayable item = listView.getSelectionModel().getSelectedItem();
             if (item != null) {
@@ -225,7 +225,7 @@ public class PlaylistViewController {
     }
 
     private void setUpListViewItems() {
-        AppState appState = uiContext.appState();
+        AppState appState = appContext.appState();
         if (appState.getCurrentView().isEmpty()) {
             listView.setItems(filteredDisplayables);
         } else {
@@ -246,7 +246,7 @@ public class PlaylistViewController {
     }
 
     private void playTrack(Track t) {
-        PlayerService playerService = uiContext.playerService();
+        PlayerService playerService = appContext.playerService();
         playerService.setSelectTrack(t);
         playerService.playSelectedTrack();
     }
@@ -257,7 +257,7 @@ public class PlaylistViewController {
     }
 
     private void openList(List<Track> list) {
-        PlayerService playerService = uiContext.playerService();
+        PlayerService playerService = appContext.playerService();
         ObservableList<Displayable> tracks = FXCollections.observableArrayList();
         tracks.setAll(list != null ? list : List.of());
         if (playerService != null) {
@@ -267,7 +267,7 @@ public class PlaylistViewController {
 
             listView.getSelectionModel().clearSelection();
             listView.setItems(tracks);
-            uiContext.appState().setCurrentView(tracks);
+            appContext.appState().setCurrentView(tracks);
             if (!tracks.isEmpty()) {
                 sortCurrentTracks();
             }
@@ -280,7 +280,7 @@ public class PlaylistViewController {
             List<PlaylistDTO> dtos = PlaylistStorage.load();
 
             for (PlaylistDTO dto : dtos) {
-                playlists.add(PlaylistMapper.fromDTO(dto, uiContext.mediaLibrary()));
+                playlists.add(PlaylistMapper.fromDTO(dto, appContext.mediaLibrary()));
             }
 
             applyFilterAndSortPlaylists();
@@ -308,12 +308,12 @@ public class PlaylistViewController {
                 tfSearchBar.clear();
             }
             applyFilterAndSortPlaylists();
-            uiContext.appState().setCurrentView(FXCollections.emptyObservableList());
+            appContext.appState().setCurrentView(FXCollections.emptyObservableList());
         });
     }
 
     private void setupButton(FilterMode mode) {
-        List<Track> tracks = uiContext.mediaService().getTracks();
+        List<Track> tracks = appContext.mediaService().getTracks();
         if (tracks == null) return;
         List<Track> filtered = List.of();
         switch (mode) {
@@ -328,7 +328,7 @@ public class PlaylistViewController {
 
     private void createPlaylist() {
         try {
-            List<Track> tracks = uiContext.mediaService().getTracks();
+            List<Track> tracks = appContext.mediaService().getTracks();
 
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/playlist-creation-view.fxml"));
             Parent root = loader.load();

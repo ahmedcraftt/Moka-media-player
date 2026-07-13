@@ -1,20 +1,31 @@
 package bootstrap;
 
-import config.VlcConfig;
+import config.VLCConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.co.caprica.vlcj.factory.MediaPlayerFactory;
 import uk.co.caprica.vlcj.factory.discovery.NativeDiscovery;
 
-public final class VlcBootstrap {
+import java.util.concurrent.atomic.AtomicBoolean;
 
-    private static final Logger logger = LoggerFactory.getLogger(VlcBootstrap.class);
+public final class VLCBootstrap {
+
+    private static final Logger logger = LoggerFactory.getLogger(VLCBootstrap.class);
+
+    private static final AtomicBoolean initialized = new AtomicBoolean(false);
 
     public static void init() {
-        try {
-            VlcConfig.init();
+        if (!initialized.compareAndSet(false, true)) {
+            return;
+        }
 
-            new NativeDiscovery().discover();
+        try {
+            VLCConfig.init();
+
+            if (System.getProperty("jna.library.path") == null) {
+                logger.info("Bundled paths not found. Running system native discovery...");
+                new NativeDiscovery().discover();
+            }
 
             try {
                 MediaPlayerFactory factory = new MediaPlayerFactory();
