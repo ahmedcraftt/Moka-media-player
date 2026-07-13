@@ -79,6 +79,7 @@ public class MainApplication extends Application {
     private static final int STARTING_VOLUME = 50;
 
     private final List<Path> startupFiles = new ArrayList<>();
+    private final List<Path> startupDirectories = new ArrayList<>();
     private final List<Track> startupTracks = new ArrayList<>();
 
     private final AudioEngine audioEngine = new VLCJAudioEngine();
@@ -121,8 +122,6 @@ public class MainApplication extends Application {
 
     private int oldVolume = STARTING_VOLUME;
 
-    private Path startupDirectory;
-
     public static Stage primaryStage;
 
     @Override
@@ -159,7 +158,7 @@ public class MainApplication extends Application {
         );
 
         Scene scene = new Scene(root, 1080, 750);
-        setupKeyBindings(root, scene, stage);
+        setupKeyBindings(root, controller, scene, stage);
 
         stage.setTitle("Moka Player ☕");
         stage.getIcons().add(icon);
@@ -175,9 +174,9 @@ public class MainApplication extends Application {
 
         setupStartupFiles();
 
-        setupStartupDirectory();
+        setupStartupDirectories();
 
-        logger.info("Start up files {}", startupFiles);
+        logger.info("Start up tracks {}", startupTracks);
 
         long elapsed = System.nanoTime() - START_TIME;
         logger.info("Moka Player UI engine successfully built and loaded in {} seconds",
@@ -185,22 +184,24 @@ public class MainApplication extends Application {
     }
 
     private void setupStartupFiles() {
-        if (startupFiles != null && !startupFiles.isEmpty()) {
-            CompletableFuture
-                    .runAsync(() ->
-                            startupTracks.addAll(mediaScanner.scan(startupFiles)))
-                    .thenRun(() -> Platform.runLater(() -> {
-                        for (Track track : startupTracks) {
-                            playSelectedTrack(track);
-                        }
-                    }));
-        }
+        if (startupFiles.isEmpty()) return;
+        CompletableFuture
+                .runAsync(() ->
+                        startupTracks.addAll(mediaScanner.scan(startupFiles)))
+                .thenRun(() -> Platform.runLater(() -> {
+                    for (Track track : startupTracks) {
+                        playSelectedTrack(track);
+                    }
+                }));
     }
 
-    private void setupStartupDirectory() {
-        if (startupDirectory == null) return;
-        CompletableFuture.runAsync(() ->
-                        startupTracks.addAll(mediaScanner.scan(startupDirectory)))
+    private void setupStartupDirectories() {
+        if (startupDirectories.isEmpty()) return;
+        CompletableFuture.runAsync(() -> {
+                    for (Path startupDirectory : startupDirectories) {
+                        startupTracks.addAll(mediaScanner.scan(startupDirectory));
+                    }
+                })
                 .thenRun(() -> Platform.runLater(() -> {
                     for (Track track : startupTracks) {
                         playSelectedTrack(track);
@@ -215,7 +216,7 @@ public class MainApplication extends Application {
     }
 
 
-    private void setupKeyBindings(Parent root, Scene scene, Stage stage) {
+    private void setupKeyBindings(Parent root, MainViewController controller, Scene scene, Stage stage) {
         scene.setOnKeyPressed(event -> {
             switch (event.getCode()) {
                 case P -> playerService.playSelectedTrack();
@@ -257,6 +258,7 @@ public class MainApplication extends Application {
                         playerService.getCurrentTrack().setFavorite(!isFav);
                     }
                 }
+                case B -> controller.handelSwitchingBack();
                 case F11 -> stage.setFullScreen(!stage.isFullScreen());
                 case F5 -> root.fireEvent(new RefreshEvent());
             }
@@ -314,13 +316,12 @@ public class MainApplication extends Application {
     public void init() {
         List<String> args = getParameters().getRaw();
         if (!args.isEmpty()) {
-            if (Files.isDirectory(Path.of(args.get(0)))) {
-                startupDirectory = Path.of(args.get(0));
-            }
             for (String arg : args) {
                 Path path = Path.of(arg);
                 if (Files.exists(path) && mediaScanner.isAudioFile(path)) {
                     startupFiles.add(path);
+                } else if (Files.isDirectory(path)) {
+                    startupDirectories.add(path);
                 }
             }
         }

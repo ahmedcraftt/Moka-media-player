@@ -68,6 +68,7 @@ public class MainViewController {
 
     private boolean seeking = false;
     private ViewMode currentViewMode = DEFAULT_STARTING_VIEW_MODE;
+    private ViewMode oldViewMode = DEFAULT_STARTING_VIEW_MODE;
 
     static int skipSeconds = 10;
 
@@ -91,6 +92,10 @@ public class MainViewController {
             switchViewMode(currentViewMode);
             uiContext.mediaService().refreshActiveLibrary();
         });
+    }
+
+    public void handelSwitchingBack() {
+        Platform.runLater(() -> switchViewMode(oldViewMode));
     }
 
     @FXML
@@ -147,7 +152,9 @@ public class MainViewController {
     }
 
     private void updateRepeatButton() {
-        btnRepeatAndStop.setText(uiContext.player().getRepeatMode().getText());
+        uiContext.playerService().repeatProperty().addListener((obs, oldRepeat, newRepeat) -> {
+            btnRepeatAndStop.setText(newRepeat.getText());
+        });
     }
 
     private void setUpViewButtons() {
@@ -167,6 +174,7 @@ public class MainViewController {
 
     private void switchViewMode(ViewMode viewMode) {
         MediaService mediaService = uiContext.mediaService();
+        oldViewMode = currentViewMode;
         switch (viewMode) {
             case TRACKS -> switchMediaView(new ArrayList<>(mediaService.getTracks()), viewMode);
             case SONGS -> switchMediaView(new ArrayList<>(mediaService.getSongs()), viewMode);
@@ -186,6 +194,7 @@ public class MainViewController {
 
     private void setUpMenuOptions() {
         AudioPlayer player = uiContext.player();
+        btnRepeatAndStop.setText(player.getRepeatMode().getText());
         miPlayOne.setOnAction(e -> {
             player.setRepeatMode(RepeatMode.PLAY_ONE);
             updateRepeatButton(RepeatMode.PLAY_ONE);

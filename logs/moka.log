@@ -114,3 +114,93 @@ org.jaudiotagger.audio.exceptions.CannotReadException: No Reader associated with
 2026-07-11 13:51:33.801 INFO  [JavaFX Application Thread] gui.main.MainApplication - Intercepted shutdown signal. Closing Moka Player...
 2026-07-11 13:51:33.861 INFO  [JavaFX Application Thread] infrastructure.audio.VLCJAudioEngine - Initiating teardown sequences for native VLCJ audio layers...
 2026-07-11 13:51:33.881 INFO  [JavaFX Application Thread] gui.main.MainApplication - Total teardown context finalized in 0.080 seconds. Application terminated.
+2026-07-12 10:12:11.743 INFO  [JavaFX Application Thread] gui.main.MainApplication - Start up files [/home/Ahmed/test2.opus, /home/Ahmed/Test.opus]
+2026-07-12 10:12:11.749 INFO  [JavaFX Application Thread] gui.main.MainApplication - Moka Player UI engine successfully built and loaded in 1.534 seconds
+2026-07-12 10:12:11.999 INFO  [JavaFX Application Thread] infrastructure.audio.AudioPlayer - Navigation Ready. Prev:[null] Current:[CUPHEAD RAP SONG ► Cover by Caleb Hyles "You Signed a Contract" (204)] Next:[｢THE AMAZING DIGITAL CIRCUS SONG｣ - Who I Was (201)]
+2026-07-12 10:12:12.233 INFO  [JavaFX Application Thread] infrastructure.audio.AudioPlayer - Navigation Ready. Prev:[null] Current:[TINKERBELL VILLAIN SONG - Fall Little Wendy Bird Fall | Song by Lydia the Bard and Tony | Animatic (236)] Next:[CUPHEAD RAP SONG ► Cover by Caleb Hyles "You Signed a Contract" (204)]
+2026-07-12 10:12:23.131 INFO  [JavaFX Application Thread] gui.main.MainApplication - Intercepted shutdown signal. Closing Moka Player...
+2026-07-12 10:12:23.171 INFO  [JavaFX Application Thread] infrastructure.audio.VLCJAudioEngine - Initiating teardown sequences for native VLCJ audio layers...
+2026-07-12 10:12:23.189 INFO  [JavaFX Application Thread] gui.main.MainApplication - Total teardown context finalized in 0.058 seconds. Application terminated.
+2026-07-12 10:13:22.441 INFO  [JavaFX Application Thread] gui.main.MainApplication - Start up files [/home/Ahmed/test2.opus, /home/Ahmed/Test.opus]
+2026-07-12 10:13:22.443 INFO  [JavaFX Application Thread] gui.main.MainApplication - Moka Player UI engine successfully built and loaded in 1.431 seconds
+2026-07-12 10:13:22.678 INFO  [JavaFX Application Thread] infrastructure.audio.AudioPlayer - Navigation Ready. Prev:[null] Current:[CUPHEAD RAP SONG ► Cover by Caleb Hyles "You Signed a Contract" (204)] Next:[｢THE AMAZING DIGITAL CIRCUS SONG｣ - Who I Was (201)]
+2026-07-12 10:13:22.803 INFO  [JavaFX Application Thread] infrastructure.audio.AudioPlayer - Navigation Ready. Prev:[null] Current:[TINKERBELL VILLAIN SONG - Fall Little Wendy Bird Fall | Song by Lydia the Bard and Tony | Animatic (236)] Next:[CUPHEAD RAP SONG ► Cover by Caleb Hyles "You Signed a Contract" (204)]
+2026-07-12 10:13:38.585 INFO  [JavaFX Application Thread] gui.main.MainApplication - Intercepted shutdown signal. Closing Moka Player...
+2026-07-12 10:13:38.620 INFO  [JavaFX Application Thread] infrastructure.audio.VLCJAudioEngine - Initiating teardown sequences for native VLCJ audio layers...
+2026-07-12 10:13:38.642 INFO  [JavaFX Application Thread] gui.main.MainApplication - Total teardown context finalized in 0.057 seconds. Application terminated.
+2026-07-12 10:22:01.677 INFO  [JavaFX Application Thread] gui.main.MainApplication - Start up files [/home/Ahmed/test2.opus, /home/Ahmed/Test.opus]
+2026-07-12 10:22:01.681 INFO  [JavaFX Application Thread] gui.main.MainApplication - Moka Player UI engine successfully built and loaded in 1.440 seconds
+2026-07-12 10:22:01.931 INFO  [JavaFX Application Thread] infrastructure.audio.AudioPlayer - Navigation Ready. Prev:[null] Current:[CUPHEAD RAP SONG ► Cover by Caleb Hyles "You Signed a Contract" (204)] Next:[｢THE AMAZING DIGITAL CIRCUS SONG｣ - Who I Was (201)]
+2026-07-12 10:22:02.086 INFO  [JavaFX Application Thread] infrastructure.audio.AudioPlayer - Navigation Ready. Prev:[null] Current:[TINKERBELL VILLAIN SONG - Fall Little Wendy Bird Fall | Song by Lydia the Bard and Tony | Animatic (236)] Next:[CUPHEAD RAP SONG ► Cover by Caleb Hyles "You Signed a Contract" (204)]
+2026-07-12 10:22:11.843 INFO  [JavaFX Application Thread] gui.main.MainApplication - Intercepted shutdown signal. Closing Moka Player...
+2026-07-12 10:22:11.877 INFO  [JavaFX Application Thread] infrastructure.audio.VLCJAudioEngine - Initiating teardown sequences for native VLCJ audio layers...
+2026-07-12 10:22:11.893 INFO  [JavaFX Application Thread] gui.main.MainApplication - Total teardown context finalized in 0.050 seconds. Application terminated.
+2026-07-12 10:22:57.486 INFO  [JavaFX Application Thread] gui.main.MainApplication - Start up files [/home/Ahmed/test2.opus, /home/Ahmed/Test.opus]
+2026-07-12 10:22:57.489 INFO  [JavaFX Application Thread] gui.main.MainApplication - Moka Player UI engine successfully built and loaded in 1.420 seconds
+2026-07-12 10:22:57.725 INFO  [JavaFX Application Thread] infrastructure.audio.AudioPlayer - Navigation Ready. Prev:[null] Current:[CUPHEAD RAP SONG ► Cover by Caleb Hyles "You Signed a Contract" (204)] Next:[｢THE AMAZING DIGITAL CIRCUS SONG｣ - Who I Was (201)]
+2026-07-12 10:22:57.851 INFO  [JavaFX Application Thread] infrastructure.audio.AudioPlayer - Navigation Ready. Prev:[null] Current:[TINKERBELL VILLAIN SONG - Fall Little Wendy Bird Fall | Song by Lydia the Bard and Tony | Animatic (236)] Next:[CUPHEAD RAP SONG ► Cover by Caleb Hyles "You Signed a Contract" (204)]
+2026-07-12 10:23:06.224 INFO  [JavaFX Application Thread] infrastructure.audio.AudioPlayer - Navigation Ready. Prev:[null] Current:[Neito Han「Shimokitazawa」ハンネイト - 下北沢 (218)] Next:[Neito Han「good luck, stranger」ハンネイト - 頑張って、ストレンジャ (130)]
+2026-07-12 10:23:43.066 INFO  [JavaFX Application Thread] gui.main.MainApplication - Intercepted shutdown signal. Closing Moka Player...
+2026-07-12 10:23:43.105 INFO  [JavaFX Application Thread] infrastructure.audio.VLCJAudioEngine - Initiating teardown sequences for native VLCJ audio layers...
+2026-07-12 10:23:43.121 INFO  [JavaFX Application Thread] gui.main.MainApplication - Total teardown context finalized in 0.056 seconds. Application terminated.
+2026-07-12 10:26:59.946 INFO  [JavaFX Application Thread] gui.main.MainApplication - Start up files [/home/Ahmed/test2.opus, /home/Ahmed/Test.opus]
+2026-07-12 10:26:59.952 INFO  [JavaFX Application Thread] gui.main.MainApplication - Moka Player UI engine successfully built and loaded in 1.798 seconds
+2026-07-12 10:27:00.361 INFO  [JavaFX Application Thread] infrastructure.audio.AudioPlayer - Navigation Ready. Prev:[null] Current:[CUPHEAD RAP SONG ► Cover by Caleb Hyles "You Signed a Contract" (204)] Next:[｢THE AMAZING DIGITAL CIRCUS SONG｣ - Who I Was (201)]
+2026-07-12 10:27:00.515 INFO  [JavaFX Application Thread] infrastructure.audio.AudioPlayer - Navigation Ready. Prev:[null] Current:[TINKERBELL VILLAIN SONG - Fall Little Wendy Bird Fall | Song by Lydia the Bard and Tony | Animatic (236)] Next:[CUPHEAD RAP SONG ► Cover by Caleb Hyles "You Signed a Contract" (204)]
+2026-07-12 10:27:01.472 INFO  [JavaFX Application Thread] gui.main.MainApplication - Start up files [/home/Ahmed/test2.opus, /home/Ahmed/Test.opus]
+2026-07-12 10:27:01.476 INFO  [JavaFX Application Thread] gui.main.MainApplication - Moka Player UI engine successfully built and loaded in 2.086 seconds
+2026-07-12 10:27:01.713 INFO  [JavaFX Application Thread] infrastructure.audio.AudioPlayer - Navigation Ready. Prev:[null] Current:[CUPHEAD RAP SONG ► Cover by Caleb Hyles "You Signed a Contract" (204)] Next:[｢THE AMAZING DIGITAL CIRCUS SONG｣ - Who I Was (201)]
+2026-07-12 10:27:01.835 INFO  [JavaFX Application Thread] infrastructure.audio.AudioPlayer - Navigation Ready. Prev:[null] Current:[TINKERBELL VILLAIN SONG - Fall Little Wendy Bird Fall | Song by Lydia the Bard and Tony | Animatic (236)] Next:[CUPHEAD RAP SONG ► Cover by Caleb Hyles "You Signed a Contract" (204)]
+2026-07-12 10:27:02.864 INFO  [JavaFX Application Thread] gui.main.MainApplication - Intercepted shutdown signal. Closing Moka Player...
+2026-07-12 10:27:02.898 INFO  [JavaFX Application Thread] infrastructure.audio.VLCJAudioEngine - Initiating teardown sequences for native VLCJ audio layers...
+2026-07-12 10:27:02.923 INFO  [JavaFX Application Thread] gui.main.MainApplication - Total teardown context finalized in 0.059 seconds. Application terminated.
+2026-07-12 10:27:03.641 INFO  [JavaFX Application Thread] gui.main.MainApplication - Intercepted shutdown signal. Closing Moka Player...
+2026-07-12 10:27:03.674 INFO  [JavaFX Application Thread] infrastructure.audio.VLCJAudioEngine - Initiating teardown sequences for native VLCJ audio layers...
+2026-07-12 10:27:03.691 INFO  [JavaFX Application Thread] gui.main.MainApplication - Total teardown context finalized in 0.050 seconds. Application terminated.
+2026-07-12 10:27:07.025 INFO  [JavaFX Application Thread] gui.main.MainApplication - Start up files [/home/Ahmed/test2.opus, /home/Ahmed/Test.opus]
+2026-07-12 10:27:07.035 INFO  [JavaFX Application Thread] gui.main.MainApplication - Moka Player UI engine successfully built and loaded in 1.799 seconds
+2026-07-12 10:27:07.434 INFO  [JavaFX Application Thread] infrastructure.audio.AudioPlayer - Navigation Ready. Prev:[null] Current:[CUPHEAD RAP SONG ► Cover by Caleb Hyles "You Signed a Contract" (204)] Next:[｢THE AMAZING DIGITAL CIRCUS SONG｣ - Who I Was (201)]
+2026-07-12 10:27:07.592 INFO  [JavaFX Application Thread] infrastructure.audio.AudioPlayer - Navigation Ready. Prev:[null] Current:[TINKERBELL VILLAIN SONG - Fall Little Wendy Bird Fall | Song by Lydia the Bard and Tony | Animatic (236)] Next:[CUPHEAD RAP SONG ► Cover by Caleb Hyles "You Signed a Contract" (204)]
+2026-07-12 10:27:08.607 INFO  [JavaFX Application Thread] gui.main.MainApplication - Start up files [/home/Ahmed/test2.opus, /home/Ahmed/Test.opus]
+2026-07-12 10:27:08.610 INFO  [JavaFX Application Thread] gui.main.MainApplication - Moka Player UI engine successfully built and loaded in 1.996 seconds
+2026-07-12 10:27:08.871 INFO  [JavaFX Application Thread] infrastructure.audio.AudioPlayer - Navigation Ready. Prev:[null] Current:[CUPHEAD RAP SONG ► Cover by Caleb Hyles "You Signed a Contract" (204)] Next:[｢THE AMAZING DIGITAL CIRCUS SONG｣ - Who I Was (201)]
+2026-07-12 10:27:09.013 INFO  [JavaFX Application Thread] infrastructure.audio.AudioPlayer - Navigation Ready. Prev:[null] Current:[TINKERBELL VILLAIN SONG - Fall Little Wendy Bird Fall | Song by Lydia the Bard and Tony | Animatic (236)] Next:[CUPHEAD RAP SONG ► Cover by Caleb Hyles "You Signed a Contract" (204)]
+2026-07-12 10:27:10.006 INFO  [JavaFX Application Thread] gui.main.MainApplication - Intercepted shutdown signal. Closing Moka Player...
+2026-07-12 10:27:10.039 INFO  [JavaFX Application Thread] infrastructure.audio.VLCJAudioEngine - Initiating teardown sequences for native VLCJ audio layers...
+2026-07-12 10:27:10.054 INFO  [JavaFX Application Thread] gui.main.MainApplication - Total teardown context finalized in 0.048 seconds. Application terminated.
+2026-07-12 10:27:11.317 INFO  [JavaFX Application Thread] gui.main.MainApplication - Intercepted shutdown signal. Closing Moka Player...
+2026-07-12 10:27:11.343 INFO  [JavaFX Application Thread] infrastructure.audio.VLCJAudioEngine - Initiating teardown sequences for native VLCJ audio layers...
+2026-07-12 10:27:11.362 INFO  [JavaFX Application Thread] gui.main.MainApplication - Total teardown context finalized in 0.045 seconds. Application terminated.
+2026-07-12 10:27:14.622 INFO  [JavaFX Application Thread] gui.main.MainApplication - Start up files [/home/Ahmed/test2.opus, /home/Ahmed/Test.opus]
+2026-07-12 10:27:14.624 INFO  [JavaFX Application Thread] gui.main.MainApplication - Moka Player UI engine successfully built and loaded in 1.468 seconds
+2026-07-12 10:27:14.880 INFO  [JavaFX Application Thread] infrastructure.audio.AudioPlayer - Navigation Ready. Prev:[null] Current:[CUPHEAD RAP SONG ► Cover by Caleb Hyles "You Signed a Contract" (204)] Next:[｢THE AMAZING DIGITAL CIRCUS SONG｣ - Who I Was (201)]
+2026-07-12 10:27:15.001 INFO  [JavaFX Application Thread] infrastructure.audio.AudioPlayer - Navigation Ready. Prev:[null] Current:[TINKERBELL VILLAIN SONG - Fall Little Wendy Bird Fall | Song by Lydia the Bard and Tony | Animatic (236)] Next:[CUPHEAD RAP SONG ► Cover by Caleb Hyles "You Signed a Contract" (204)]
+2026-07-12 10:27:32.711 INFO  [JavaFX Application Thread] infrastructure.audio.AudioPlayer - Navigation Ready. Prev:[null] Current:[｢DOKI DOKI WITHIN SONG｣- Perfect [FT. @KnightOfBreath] (180)] Next:[｢DOKI DOKI RELAPSE SONG｣- Fade Away (EXTENDED REMASTER) [FT. @JustNinaHope & @Swiblet] (331)]
+2026-07-12 10:29:24.935 INFO  [JavaFX Application Thread] gui.main.MainApplication - Intercepted shutdown signal. Closing Moka Player...
+2026-07-12 10:29:24.969 INFO  [JavaFX Application Thread] infrastructure.audio.VLCJAudioEngine - Initiating teardown sequences for native VLCJ audio layers...
+2026-07-12 10:29:24.987 INFO  [JavaFX Application Thread] gui.main.MainApplication - Total teardown context finalized in 0.051 seconds. Application terminated.
+2026-07-12 10:32:04.071 INFO  [JavaFX Application Thread] gui.main.MainApplication - Start up files [/home/Ahmed/Test.opus]
+2026-07-12 10:32:04.073 INFO  [JavaFX Application Thread] gui.main.MainApplication - Moka Player UI engine successfully built and loaded in 1.448 seconds
+2026-07-12 10:32:04.348 INFO  [JavaFX Application Thread] infrastructure.audio.AudioPlayer - Navigation Ready. Prev:[null] Current:[TINKERBELL VILLAIN SONG - Fall Little Wendy Bird Fall | Song by Lydia the Bard and Tony | Animatic (236)] Next:[｢THE AMAZING DIGITAL CIRCUS SONG｣ - Who I Was (201)]
+2026-07-12 10:32:04.622 INFO  [JavaFX Application Thread] infrastructure.audio.AudioPlayer - Navigation Ready. Prev:[null] Current:[TINKERBELL VILLAIN SONG - Fall Little Wendy Bird Fall | Song by Lydia the Bard and Tony | Animatic (236)] Next:[｢THE AMAZING DIGITAL CIRCUS SONG｣ - Who I Was (201)]
+2026-07-12 10:32:04.742 INFO  [JavaFX Application Thread] infrastructure.audio.AudioPlayer - Navigation Ready. Prev:[null] Current:[The Main Character by Will Wood (Lyric Video) (265)] Next:[TINKERBELL VILLAIN SONG - Fall Little Wendy Bird Fall | Song by Lydia the Bard and Tony | Animatic (236)]
+2026-07-12 10:32:04.748 INFO  [JavaFX Application Thread] infrastructure.audio.AudioPlayer - Navigation Ready. Prev:[null] Current:[I Lost My Mind (feat. Lizzie Freeman & Michael Kovach) (245)] Next:[The Main Character by Will Wood (Lyric Video) (265)]
+2026-07-12 10:32:17.611 INFO  [JavaFX Application Thread] gui.main.MainApplication - Intercepted shutdown signal. Closing Moka Player...
+2026-07-12 10:32:17.651 INFO  [JavaFX Application Thread] infrastructure.audio.VLCJAudioEngine - Initiating teardown sequences for native VLCJ audio layers...
+2026-07-12 10:32:17.668 INFO  [JavaFX Application Thread] gui.main.MainApplication - Total teardown context finalized in 0.057 seconds. Application terminated.
+2026-07-12 10:34:23.323 INFO  [JavaFX Application Thread] gui.main.MainApplication - Start up tracks []
+2026-07-12 10:34:23.327 INFO  [JavaFX Application Thread] gui.main.MainApplication - Moka Player UI engine successfully built and loaded in 1.381 seconds
+2026-07-12 10:34:23.585 INFO  [JavaFX Application Thread] infrastructure.audio.AudioPlayer - Navigation Ready. Prev:[null] Current:[TINKERBELL VILLAIN SONG - Fall Little Wendy Bird Fall | Song by Lydia the Bard and Tony | Animatic (236)] Next:[｢THE AMAZING DIGITAL CIRCUS SONG｣ - Who I Was (201)]
+2026-07-12 10:34:23.743 INFO  [JavaFX Application Thread] infrastructure.audio.AudioPlayer - Navigation Ready. Prev:[null] Current:[The Main Character by Will Wood (Lyric Video) (265)] Next:[TINKERBELL VILLAIN SONG - Fall Little Wendy Bird Fall | Song by Lydia the Bard and Tony | Animatic (236)]
+2026-07-12 10:34:23.751 INFO  [JavaFX Application Thread] infrastructure.audio.AudioPlayer - Navigation Ready. Prev:[null] Current:[I Lost My Mind (feat. Lizzie Freeman & Michael Kovach) (245)] Next:[The Main Character by Will Wood (Lyric Video) (265)]
+2026-07-12 10:34:23.757 INFO  [JavaFX Application Thread] infrastructure.audio.AudioPlayer - Navigation Ready. Prev:[The Main Character by Will Wood (Lyric Video) (265)] Current:[TINKERBELL VILLAIN SONG - Fall Little Wendy Bird Fall | Song by Lydia the Bard and Tony | Animatic (236)] Next:[｢THE AMAZING DIGITAL CIRCUS SONG｣ - Who I Was (201)]
+2026-07-12 10:34:23.764 INFO  [JavaFX Application Thread] infrastructure.audio.AudioPlayer - Navigation Ready. Prev:[I Lost My Mind (feat. Lizzie Freeman & Michael Kovach) (245)] Current:[The Main Character by Will Wood (Lyric Video) (265)] Next:[TINKERBELL VILLAIN SONG - Fall Little Wendy Bird Fall | Song by Lydia the Bard and Tony | Animatic (236)]
+2026-07-12 10:34:23.770 INFO  [JavaFX Application Thread] infrastructure.audio.AudioPlayer - Navigation Ready. Prev:[null] Current:[I Lost My Mind (feat. Lizzie Freeman & Michael Kovach) (245)] Next:[The Main Character by Will Wood (Lyric Video) (265)]
+2026-07-12 10:34:28.186 INFO  [JavaFX Application Thread] gui.main.MainApplication - Intercepted shutdown signal. Closing Moka Player...
+2026-07-12 10:34:28.221 INFO  [JavaFX Application Thread] infrastructure.audio.VLCJAudioEngine - Initiating teardown sequences for native VLCJ audio layers...
+2026-07-12 10:34:28.236 INFO  [JavaFX Application Thread] gui.main.MainApplication - Total teardown context finalized in 0.050 seconds. Application terminated.
+2026-07-12 10:34:45.421 INFO  [JavaFX Application Thread] gui.main.MainApplication - Start up tracks []
+2026-07-12 10:34:45.424 INFO  [JavaFX Application Thread] gui.main.MainApplication - Moka Player UI engine successfully built and loaded in 1.424 seconds
+2026-07-12 10:34:54.790 INFO  [JavaFX Application Thread] gui.main.MainApplication - Intercepted shutdown signal. Closing Moka Player...
+2026-07-12 10:34:54.806 INFO  [JavaFX Application Thread] infrastructure.audio.VLCJAudioEngine - Initiating teardown sequences for native VLCJ audio layers...
+2026-07-12 10:34:54.811 INFO  [JavaFX Application Thread] gui.main.MainApplication - Total teardown context finalized in 0.021 seconds. Application terminated.

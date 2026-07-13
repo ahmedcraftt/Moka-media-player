@@ -215,12 +215,18 @@ public class AudioPlayer {
         listeners.forEach(l -> l.onShuffleChanged(shuffle));
     }
 
+    private void notifyRepeatChanged(RepeatMode repeat) {
+        listeners.forEach(l -> l.onRepeatChanged(repeat));
+    }
+
     public RepeatMode getRepeatMode() {
         return repeatMode;
     }
+
     public void setRepeatMode(RepeatMode mode) {
         this.repeatMode = mode;
         queue.setLoopQueue(mode == RepeatMode.LOOP_CURRENT_QUEUE);
+        notifyRepeatChanged(mode);
     }
 
     public PlaybackState getState() {

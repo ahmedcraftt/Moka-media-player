@@ -8,6 +8,7 @@ import gui.utils.DialogFactory;
 import gui.utils.UIContext;
 import gui.utils.ViewLoader;
 
+import infrastructure.storage.PlaylistStorage;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -16,6 +17,7 @@ import javafx.scene.layout.StackPane;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.util.Optional;
 
 
@@ -112,7 +114,12 @@ public class QueuedTracksViewController {
                 "Enter the playlist title"
         );
         Optional<String> title = saveDialog.showAndWait();
-        Playlist playlist = new Playlist(title.get());
-        playlist.addTracks(lvQueue.getItems());
+        Playlist newPlaylist = new Playlist(title.get());
+        newPlaylist.addTracks(lvQueue.getItems());
+        try {
+            PlaylistStorage.save(newPlaylist);
+        } catch (IOException e) {
+            logger.error(e.getMessage());
+        }
     }
 }

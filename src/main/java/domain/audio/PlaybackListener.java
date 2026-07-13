@@ -11,4 +11,6 @@ public interface PlaybackListener {
     void onVolumeChanged(int newVolume);
 
     void onShuffleChanged(boolean shuffle);
+
+    void onRepeatChanged(RepeatMode repeat);
 }

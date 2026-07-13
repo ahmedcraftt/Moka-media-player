@@ -1,5 +1,6 @@
 package application.service;
 
+import domain.audio.RepeatMode;
 import domain.model.media.Track;
 import infrastructure.audio.AudioPlayer;
 import domain.audio.PlaybackListener;
@@ -25,6 +26,9 @@ public class PlayerService {
     private final ObjectProperty<PlaybackState> playbackState =
             new SimpleObjectProperty<>(PlaybackState.STOPPED);
 
+    private final ObjectProperty<RepeatMode> repeat =
+            new SimpleObjectProperty<>(RepeatMode.STOP_WHEN_QUEUE_END);
+
     private final BooleanProperty playing =
             new SimpleBooleanProperty(false);
 
@@ -40,6 +44,8 @@ public class PlayerService {
         this.volume.set(player.getVolume() / 100.0);
 
         this.shuffle.set(player.isShuffle());
+
+        this.repeat.set(player.getRepeatMode());
 
         this.volume.addListener((obs, oldVal, newVal) -> {
             int targetVol = (int) Math.round(newVal.doubleValue() * 100);
@@ -76,6 +82,11 @@ public class PlayerService {
             @Override
             public void onShuffleChanged(boolean newShuffle) {
                 Platform.runLater(() -> shuffle.set(newShuffle));
+            }
+
+            @Override
+            public void onRepeatChanged(RepeatMode newRepeat) {
+                Platform.runLater(() -> repeat.set(newRepeat));
             }
         });
     }
@@ -156,6 +167,10 @@ public class PlayerService {
 
     public ObjectProperty<Track> selectedTrackProperty() {
         return selectedTrack;
+    }
+
+    public ObjectProperty<RepeatMode> repeatProperty() {
+        return repeat;
     }
 
     public BooleanProperty playingProperty() {
