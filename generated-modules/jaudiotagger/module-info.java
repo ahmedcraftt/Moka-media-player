@@ -1,0 +1,53 @@
+module jaudiotagger {
+    requires transitive java.desktop;
+    requires org.slf4j;
+
+    exports org.jaudiotagger;
+    exports org.jaudiotagger.audio;
+    exports org.jaudiotagger.audio.aiff;
+    exports org.jaudiotagger.audio.aiff.chunk;
+    exports org.jaudiotagger.audio.asf;
+    exports org.jaudiotagger.audio.asf.data;
+    exports org.jaudiotagger.audio.asf.io;
+    exports org.jaudiotagger.audio.asf.util;
+    exports org.jaudiotagger.audio.dsf;
+    exports org.jaudiotagger.audio.exceptions;
+    exports org.jaudiotagger.audio.flac;
+    exports org.jaudiotagger.audio.flac.metadatablock;
+    exports org.jaudiotagger.audio.generic;
+    exports org.jaudiotagger.audio.iff;
+    exports org.jaudiotagger.audio.io;
+    exports org.jaudiotagger.audio.mp3;
+    exports org.jaudiotagger.audio.mp4;
+    exports org.jaudiotagger.audio.ogg;
+    exports org.jaudiotagger.audio.ogg.util;
+    exports org.jaudiotagger.audio.opus;
+    exports org.jaudiotagger.audio.opus.util;
+    exports org.jaudiotagger.audio.real;
+    exports org.jaudiotagger.audio.wav;
+    exports org.jaudiotagger.audio.wav.chunk;
+    exports org.jaudiotagger.logging;
+    exports org.jaudiotagger.tag;
+    exports org.jaudiotagger.tag.aiff;
+    exports org.jaudiotagger.tag.asf;
+    exports org.jaudiotagger.tag.datatype;
+    exports org.jaudiotagger.tag.flac;
+    exports org.jaudiotagger.tag.id3;
+    exports org.jaudiotagger.tag.id3.framebody;
+    exports org.jaudiotagger.tag.id3.reference;
+    exports org.jaudiotagger.tag.id3.valuepair;
+    exports org.jaudiotagger.tag.images;
+    exports org.jaudiotagger.tag.lyrics3;
+    exports org.jaudiotagger.tag.mp4;
+    exports org.jaudiotagger.tag.mp4.field;
+    exports org.jaudiotagger.tag.options;
+    exports org.jaudiotagger.tag.reference;
+    exports org.jaudiotagger.tag.vorbiscomment;
+    exports org.jaudiotagger.tag.wav;
+    exports org.jaudiotagger.test;
+    exports org.jaudiotagger.utils;
+    exports org.jaudiotagger.utils.tree;
+    exports org.jcodec.containers.mp4;
+    exports org.jcodec.containers.mp4.boxes;
+
+}

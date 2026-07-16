@@ -1,0 +1,1058 @@
+
+[DEBUG]   Imported: org.apache.maven.repository < plexus.core
+[DEBUG]   Imported: org.apache.maven.rtinfo < plexus.core
+[DEBUG]   Imported: org.apache.maven.settings < plexus.core
+[DEBUG]   Imported: org.apache.maven.toolchain < plexus.core
+[DEBUG]   Imported: org.apache.maven.usability < plexus.core
+[DEBUG]   Imported: org.apache.maven.wagon.* < plexus.core
+[DEBUG]   Imported: org.apache.maven.wagon.authentication < plexus.core
+[DEBUG]   Imported: org.apache.maven.wagon.authorization < plexus.core
+[DEBUG]   Imported: org.apache.maven.wagon.events < plexus.core
+[DEBUG]   Imported: org.apache.maven.wagon.observers < plexus.core
+[DEBUG]   Imported: org.apache.maven.wagon.proxy < plexus.core
+[DEBUG]   Imported: org.apache.maven.wagon.repository < plexus.core
+[DEBUG]   Imported: org.apache.maven.wagon.resource < plexus.core
+[DEBUG]   Imported: org.codehaus.classworlds < plexus.core
+[DEBUG]   Imported: org.codehaus.plexus.* < plexus.core
+[DEBUG]   Imported: org.codehaus.plexus.classworlds < plexus.core
+[DEBUG]   Imported: org.codehaus.plexus.component < plexus.core
+[DEBUG]   Imported: org.codehaus.plexus.configuration < plexus.core
+[DEBUG]   Imported: org.codehaus.plexus.container < plexus.core
+[DEBUG]   Imported: org.codehaus.plexus.context < plexus.core
+[DEBUG]   Imported: org.codehaus.plexus.lifecycle < plexus.core
+[DEBUG]   Imported: org.codehaus.plexus.logging < plexus.core
+[DEBUG]   Imported: org.codehaus.plexus.personality < plexus.core
+[DEBUG]   Imported: org.codehaus.plexus.util.xml.Xpp3Dom < plexus.core
+[DEBUG]   Imported: org.codehaus.plexus.util.xml.pull.XmlPullParser < plexus.core
+[DEBUG]   Imported: org.codehaus.plexus.util.xml.pull.XmlPullParserException < plexus.core
+[DEBUG]   Imported: org.codehaus.plexus.util.xml.pull.XmlSerializer < plexus.core
+[DEBUG]   Imported: org.eclipse.aether.* < plexus.core
+[DEBUG]   Imported: org.eclipse.aether.artifact < plexus.core
+[DEBUG]   Imported: org.eclipse.aether.collection < plexus.core
+[DEBUG]   Imported: org.eclipse.aether.deployment < plexus.core
+[DEBUG]   Imported: org.eclipse.aether.graph < plexus.core
+[DEBUG]   Imported: org.eclipse.aether.impl < plexus.core
+[DEBUG]   Imported: org.eclipse.aether.installation < plexus.core
+[DEBUG]   Imported: org.eclipse.aether.internal.impl < plexus.core
+[DEBUG]   Imported: org.eclipse.aether.metadata < plexus.core
+[DEBUG]   Imported: org.eclipse.aether.repository < plexus.core
+[DEBUG]   Imported: org.eclipse.aether.resolution < plexus.core
+[DEBUG]   Imported: org.eclipse.aether.spi < plexus.core
+[DEBUG]   Imported: org.eclipse.aether.transfer < plexus.core
+[DEBUG]   Imported: org.eclipse.aether.util < plexus.core
+[DEBUG]   Imported: org.eclipse.aether.version < plexus.core
+[DEBUG]   Imported: org.fusesource.jansi.* < plexus.core
+[DEBUG]   Imported: org.slf4j.* < plexus.core
+[DEBUG]   Imported: org.slf4j.event.* < plexus.core
+[DEBUG]   Imported: org.slf4j.helpers.* < plexus.core
+[DEBUG]   Imported: org.slf4j.spi.* < plexus.core
+[DEBUG] Populating class realm maven.api
+[DEBUG] Created adapter factory; available factories [file-lock, rwlock-local, semaphore-local, noop]; available name mappers [discriminating, file-gav, file-hgav, file-static, gav, static]
+[INFO] Error stacktraces are turned on.
+[DEBUG] Message scheme: color
+[DEBUG] Message styles: debug info warning error success failure strong mojo project
+[DEBUG] Reading global settings from /usr/share/maven/conf/settings.xml
+[DEBUG] Reading user settings from /home/Ahmed/.m2/settings.xml
+[DEBUG] Reading global toolchains from /usr/share/maven/conf/toolchains.xml
+[DEBUG] Reading user toolchains from /home/Ahmed/.m2/toolchains.xml
+[DEBUG] Using local repository at /home/Ahmed/.m2/repository
+[DEBUG] Using manager EnhancedLocalRepositoryManager with priority 10.0 for /home/Ahmed/.m2/repository
+[INFO] Scanning for projects...
+[DEBUG] Extension realms for project org.example:moka_music_player:jar:1.0-SNAPSHOT: (none)
+[DEBUG] Looking up lifecycle mappings for packaging jar from ClassRealm[plexus.core, parent: null]
+[DEBUG] Resolving plugin prefix javafx from [org.apache.maven.plugins, org.codehaus.mojo]
+[DEBUG] Creating adapter using nameMapper 'gav' and factory 'rwlock-local'
+[DEBUG] Resolved plugin prefix javafx to org.openjfx:javafx-maven-plugin from POM org.example:moka_music_player:jar:1.0-SNAPSHOT
+[DEBUG] === REACTOR BUILD PLAN ================================================
+[DEBUG] Project: org.example:moka_music_player:jar:1.0-SNAPSHOT
+[DEBUG] Tasks:   [javafx:jlink]
+[DEBUG] Style:   Regular
+[DEBUG] =======================================================================
+[INFO]
+[INFO] -------------------< org.example:moka_music_player >--------------------
+[INFO] Building MokaAlpha 1.0-SNAPSHOT
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[DEBUG] Resolving plugin prefix javafx from [org.apache.maven.plugins, org.codehaus.mojo]
+[DEBUG] Resolved plugin prefix javafx to org.openjfx:javafx-maven-plugin from POM org.example:moka_music_player:jar:1.0-SNAPSHOT
+[DEBUG] Lifecycle clean -> [pre-clean, clean, post-clean]
+[DEBUG] Lifecycle default -> [validate, initialize, generate-sources, process-sources, generate-resources, process-resources, compile, process-classes, generate-test-sources, process-test-sources, generate-test-resources, process-test-resources, test-compile, process-test-classes, test, prepare-package, package, pre-integration-test, integration-test, post-integration-test, verify, install, deploy]
+[DEBUG] Lifecycle site -> [pre-site, site, post-site, site-deploy]
+[DEBUG] Lifecycle clean -> [pre-clean, clean, post-clean]
+[DEBUG] Lifecycle default -> [validate, initialize, generate-sources, process-sources, generate-resources, process-resources, compile, process-classes, generate-test-sources, process-test-sources, generate-test-resources, process-test-resources, test-compile, process-test-classes, test, prepare-package, package, pre-integration-test, integration-test, post-integration-test, verify, install, deploy]
+[DEBUG] Lifecycle site -> [pre-site, site, post-site, site-deploy]
+[DEBUG] === PROJECT BUILD PLAN ================================================
+[DEBUG] Project:       org.example:moka_music_player:1.0-SNAPSHOT
+[DEBUG] Dependencies (collect): []
+[DEBUG] Dependencies (resolve): [runtime]
+[DEBUG] Repositories (dependencies): [jitpack.io (https://jitpack.io, default, releases+snapshots), central (https://repo.maven.apache.org/maven2, default, releases)]
+[DEBUG] Repositories (plugins)     : [central (https://repo.maven.apache.org/maven2, default, releases)]
+[DEBUG] --- init fork of org.example:moka_music_player:1.0-SNAPSHOT for org.openjfx:javafx-maven-plugin:0.0.8:jlink (default-cli) ---
+[DEBUG] Dependencies (collect): []
+[DEBUG] Dependencies (resolve): [compile]
+[DEBUG] -----------------------------------------------------------------------
+[DEBUG] Goal:          org.apache.maven.plugins:maven-resources-plugin:3.3.1:resources (default-resources)
+[DEBUG] Style:         Regular
+[DEBUG] Configuration: <?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+  <addDefaultExcludes default-value="true"/>
+  <buildFilters default-value="${project.build.filters}"/>
+  <encoding default-value="${project.build.sourceEncoding}"/>
+  <escapeWindowsPaths default-value="true"/>
+  <fileNameFiltering default-value="false"/>
+  <includeEmptyDirs default-value="false"/>
+  <outputDirectory default-value="${project.build.outputDirectory}"/>
+  <overwrite default-value="false"/>
+  <project default-value="${project}"/>
+  <resources default-value="${project.resources}"/>
+  <session default-value="${session}"/>
+  <skip default-value="false">${maven.resources.skip}</skip>
+  <supportMultiLineFiltering default-value="false"/>
+  <useBuildFilters default-value="true"/>
+  <useDefaultDelimiters default-value="true"/>
+</configuration>
+[DEBUG] -----------------------------------------------------------------------
+[DEBUG] Goal:          org.apache.maven.plugins:maven-compiler-plugin:3.13.0:compile (default-compile)
+[DEBUG] Style:         Regular
+[DEBUG] Configuration: <?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+  <annotationProcessorPathsUseDepMgmt default-value="false"/>
+  <basedir default-value="${basedir}"/>
+  <buildDirectory default-value="${project.build.directory}"/>
+  <compilePath default-value="${project.compileClasspathElements}"/>
+  <compileSourceRoots default-value="${project.compileSourceRoots}"/>
+  <compilerId default-value="javac">${maven.compiler.compilerId}</compilerId>
+  <compilerReuseStrategy default-value="${reuseCreated}">${maven.compiler.compilerReuseStrategy}</compilerReuseStrategy>
+  <compilerVersion>${maven.compiler.compilerVersion}</compilerVersion>
+  <createMissingPackageInfoClass default-value="true">${maven.compiler.createMissingPackageInfoClass}</createMissingPackageInfoClass>
+  <debug default-value="true">${maven.compiler.debug}</debug>
+  <debugFileName default-value="javac"/>
+  <debuglevel>${maven.compiler.debuglevel}</debuglevel>
+  <enablePreview default-value="false">${maven.compiler.enablePreview}</enablePreview>
+  <encoding default-value="${project.build.sourceEncoding}">${encoding}</encoding>
+  <executable>${maven.compiler.executable}</executable>
+  <failOnError default-value="true">${maven.compiler.failOnError}</failOnError>
+  <failOnWarning default-value="false">${maven.compiler.failOnWarning}</failOnWarning>
+  <fileExtensions default-value="class,jar"/>
+  <forceJavacCompilerUse default-value="false">${maven.compiler.forceJavacCompilerUse}</forceJavacCompilerUse>
+  <forceLegacyJavacApi default-value="false">${maven.compiler.forceLegacyJavacApi}</forceLegacyJavacApi>
+  <fork default-value="false">${maven.compiler.fork}</fork>
+  <generatedSourcesDirectory default-value="${project.build.directory}/generated-sources/annotations"/>
+  <implicit>${maven.compiler.implicit}</implicit>
+  <maxmem>${maven.compiler.maxmem}</maxmem>
+  <meminitial>${maven.compiler.meminitial}</meminitial>
+  <mojoExecution default-value="${mojoExecution}"/>
+  <optimize default-value="false">${maven.compiler.optimize}</optimize>
+  <outputDirectory default-value="${project.build.outputDirectory}">${maven.compiler.outputDirectory}</outputDirectory>
+  <outputTimestamp default-value="${project.build.outputTimestamp}"/>
+  <parameters default-value="false">${maven.compiler.parameters}</parameters>
+  <proc>${maven.compiler.proc}</proc>
+  <project default-value="${project}"/>
+  <projectArtifact default-value="${project.artifact}"/>
+  <release>${maven.compiler.release}</release>
+  <session default-value="${session}"/>
+  <showCompilationChanges default-value="false">${maven.compiler.showCompilationChanges}</showCompilationChanges>
+  <showDeprecation default-value="false">${maven.compiler.showDeprecation}</showDeprecation>
+  <showWarnings default-value="true">${maven.compiler.showWarnings}</showWarnings>
+  <skipMain>${maven.main.skip}</skipMain>
+  <skipMultiThreadWarning default-value="false">${maven.compiler.skipMultiThreadWarning}</skipMultiThreadWarning>
+  <source default-value="1.8">25</source>
+  <staleMillis default-value="0">${lastModGranularityMs}</staleMillis>
+  <target default-value="1.8">25</target>
+  <useIncrementalCompilation default-value="true">${maven.compiler.useIncrementalCompilation}</useIncrementalCompilation>
+  <verbose default-value="false">${maven.compiler.verbose}</verbose>
+</configuration>
+[DEBUG] --- exit fork of org.example:moka_music_player:1.0-SNAPSHOT for org.openjfx:javafx-maven-plugin:0.0.8:jlink (default-cli) ---
+[DEBUG] -----------------------------------------------------------------------
+[DEBUG] Goal:          org.openjfx:javafx-maven-plugin:0.0.8:jlink (default-cli)
+[DEBUG] Style:         Regular
+[DEBUG] Configuration: <?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+  <async default-value="false">${javafx.async}</async>
+  <asyncDestroyOnShutdown default-value="true">${javafx.asyncDestroyOnShutdown}</asyncDestroyOnShutdown>
+  <basedir default-value="${basedir}"/>
+  <bindServices default-value="false">${javafx.bindServices}</bindServices>
+  <builddir default-value="${project.build.directory}"/>
+  <commandlineArgs>${javafx.args}</commandlineArgs>
+  <compilePath default-value="${project.compileClasspathElements}"/>
+  <compress default-value="0">${javafx.compress}</compress>
+  <ignoreSigningInformation default-value="false">${javafx.ignoreSigningInformation}</ignoreSigningInformation>
+  <includePathExceptionsInClasspath default-value="false">${javafx.includePathExceptionsInClasspath}</includePathExceptionsInClasspath>
+  <jlinkExecutable default-value="jlink">${javafx.jlinkExecutable}</jlinkExecutable>
+  <jlinkImageName default-value="image">app</jlinkImageName>
+  <jlinkVerbose default-value="false">${javafx.jlinkVerbose}</jlinkVerbose>
+  <jlinkZipName>app</jlinkZipName>
+  <jmodsPath>${javafx.jmodsPath}</jmodsPath>
+  <launcher>app</launcher>
+  <mainClass>org.example.moka_music_player/gui.main.MainLauncher</mainClass>
+  <noHeaderFiles default-value="false">true</noHeaderFiles>
+  <noManPages default-value="false">true</noManPages>
+  <outputFile>${javafx.outputFile}</outputFile>
+  <project default-value="${project}"/>
+  <runtimePathOption>${javafx.runtimePathOption}</runtimePathOption>
+  <session default-value="${session}"/>
+  <skip default-value="false">${javafx.skip}</skip>
+  <stripDebug default-value="false">true</stripDebug>
+  <stripJavaDebugAttributes default-value="false">${javafx.stripJavaDebugAttributes}</stripJavaDebugAttributes>
+  <workingDirectory>${javafx.workingDirectory}</workingDirectory>
+</configuration>
+[DEBUG] =======================================================================
+[INFO]
+[INFO] >>> javafx:0.0.8:jlink (default-cli) > process-classes @ moka_music_player >>>
+[DEBUG] Dependency collection stats {ConflictMarker.analyzeTime=421787, ConflictMarker.markTime=98866, ConflictMarker.nodeCount=66, ConflictIdSorter.graphTime=236952, ConflictIdSorter.topsortTime=268518, ConflictIdSorter.conflictIdCount=41, ConflictIdSorter.conflictIdCycleCount=4, ConflictResolver.totalTime=3921877, ConflictResolver.conflictItemCount=56, DfDependencyCollector.collectTime=84962153, DfDependencyCollector.transformTime=5989853}
+[DEBUG] org.example:moka_music_player:jar:1.0-SNAPSHOT
+[DEBUG]    org.xerial:sqlite-jdbc:jar:3.50.3.0:compile
+[DEBUG]    com.google.code.gson:gson:jar:2.11.0:compile
+[DEBUG]       com.google.errorprone:error_prone_annotations:jar:2.27.0:compile
+[DEBUG]    net.java.dev.jna:jna-jpms:jar:5.14.0:compile
+[DEBUG]    net.java.dev.jna:jna-platform-jpms:jar:5.14.0:compile
+[DEBUG]    com.github.RouHim:jaudiotagger:jar:2.0.19-modular:compile
+[DEBUG]       com.squareup.okio:okio:jar:3.17.0:compile
+[DEBUG]          com.squareup.okio:okio-jvm:jar:3.17.0:compile
+[DEBUG]             org.jetbrains.kotlin:kotlin-stdlib:jar:2.1.21:compile
+[DEBUG]                org.jetbrains:annotations:jar:13.0:compile
+[DEBUG]       org.json:json:jar:20250517:compile
+[DEBUG]    uk.co.caprica:vlcj:jar:4.8.3:compile
+[DEBUG]       uk.co.caprica:vlcj-natives:jar:4.8.3:compile
+[DEBUG]    uk.co.caprica:vlcj-javafx:jar:1.2.1:compile
+[DEBUG]    org.slf4j:slf4j-api:jar:2.0.17:compile
+[DEBUG]    ch.qos.logback:logback-classic:jar:1.5.18:compile
+[DEBUG]       ch.qos.logback:logback-core:jar:1.5.18:compile
+[DEBUG]    org.openjfx:javafx-controls:jar:25.0.1:compile
+[DEBUG]       org.openjfx:javafx-controls:jar:linux:25.0.1:compile
+[DEBUG]       org.openjfx:javafx-graphics:jar:25.0.1:compile
+[DEBUG]          org.openjfx:javafx-graphics:jar:linux:25.0.1:compile
+[DEBUG]          org.openjfx:javafx-base:jar:25.0.1:compile
+[DEBUG]             org.openjfx:javafx-base:jar:linux:25.0.1:compile
+[DEBUG]    org.openjfx:javafx-fxml:jar:25.0.1:compile
+[DEBUG]       org.openjfx:javafx-fxml:jar:linux:25.0.1:compile
+[DEBUG]    org.controlsfx:controlsfx:jar:11.2.1:compile
+[DEBUG]    com.dlsc.formsfx:formsfx-core:jar:11.6.0:compile
+[DEBUG]    org.kordamp.ikonli:ikonli-javafx:jar:12.3.1:compile
+[DEBUG]       org.kordamp.ikonli:ikonli-core:jar:12.3.1:compile
+[DEBUG]    org.kordamp.bootstrapfx:bootstrapfx-core:jar:0.4.0:compile
+[DEBUG]    eu.hansolo:tilesfx:jar:21.0.3:compile
+[DEBUG]       eu.hansolo.fx:countries:jar:21.0.3:compile
+[DEBUG]          eu.hansolo.fx:heatmap:jar:21.0.3:compile
+[DEBUG]             eu.hansolo:toolboxfx:jar:21.0.3:compile
+[DEBUG]                eu.hansolo:toolbox:jar:21.0.5:compile
+[DEBUG]    org.junit.jupiter:junit-jupiter-api:jar:5.10.2:test
+[DEBUG]       org.opentest4j:opentest4j:jar:1.3.0:test
+[DEBUG]       org.junit.platform:junit-platform-commons:jar:1.10.2:test
+[DEBUG]       org.apiguardian:apiguardian-api:jar:1.1.2:test
+[DEBUG]    org.junit.jupiter:junit-jupiter-engine:jar:5.10.2:test
+[DEBUG]       org.junit.platform:junit-platform-engine:jar:1.10.2:test
+[INFO]
+[INFO] --- resources:3.3.1:resources (default-resources) @ moka_music_player ---
+[DEBUG] Dependency collection stats {ConflictMarker.analyzeTime=43988, ConflictMarker.markTime=41995, ConflictMarker.nodeCount=13, ConflictIdSorter.graphTime=12672, ConflictIdSorter.topsortTime=10756, ConflictIdSorter.conflictIdCount=9, ConflictIdSorter.conflictIdCycleCount=0, ConflictResolver.totalTime=264992, ConflictResolver.conflictItemCount=13, DfDependencyCollector.collectTime=35202156, DfDependencyCollector.transformTime=388282}
+[DEBUG] org.apache.maven.plugins:maven-resources-plugin:jar:3.3.1
+[DEBUG]    org.codehaus.plexus:plexus-interpolation:jar:1.26:runtime
+[DEBUG]    org.codehaus.plexus:plexus-utils:jar:3.5.1:compile
+[DEBUG]    org.apache.maven.shared:maven-filtering:jar:3.3.1:compile
+[DEBUG]       javax.inject:javax.inject:jar:1:compile
+[DEBUG]       org.slf4j:slf4j-api:jar:1.7.36:compile
+[DEBUG]       org.sonatype.plexus:plexus-build-api:jar:0.0.7:compile
+[DEBUG]    commons-io:commons-io:jar:2.11.0:compile
+[DEBUG]    org.apache.commons:commons-lang3:jar:3.12.0:compile
+[DEBUG] Created new class realm plugin>org.apache.maven.plugins:maven-resources-plugin:3.3.1
+[DEBUG] Importing foreign packages into class realm plugin>org.apache.maven.plugins:maven-resources-plugin:3.3.1
+[DEBUG]   Imported:  < maven.api
+[DEBUG] Populating class realm plugin>org.apache.maven.plugins:maven-resources-plugin:3.3.1
+[DEBUG]   Included: org.apache.maven.plugins:maven-resources-plugin:jar:3.3.1
+[DEBUG]   Included: org.codehaus.plexus:plexus-interpolation:jar:1.26
+[DEBUG]   Included: org.codehaus.plexus:plexus-utils:jar:3.5.1
+[DEBUG]   Included: org.apache.maven.shared:maven-filtering:jar:3.3.1
+[DEBUG]   Included: org.sonatype.plexus:plexus-build-api:jar:0.0.7
+[DEBUG]   Included: commons-io:commons-io:jar:2.11.0
+[DEBUG]   Included: org.apache.commons:commons-lang3:jar:3.12.0
+[DEBUG] Loading mojo org.apache.maven.plugins:maven-resources-plugin:3.3.1:resources from plugin realm ClassRealm[plugin>org.apache.maven.plugins:maven-resources-plugin:3.3.1, parent: jdk.internal.loader.ClassLoaders$AppClassLoader@5bc2b487]
+[DEBUG] Configuring mojo execution 'org.apache.maven.plugins:maven-resources-plugin:3.3.1:resources:default-resources' with basic configurator -->
+[DEBUG]   (f) addDefaultExcludes = true
+[DEBUG]   (f) buildFilters = []
+[DEBUG]   (f) encoding = UTF-8
+[DEBUG]   (f) escapeWindowsPaths = true
+[DEBUG]   (f) fileNameFiltering = false
+[DEBUG]   (s) includeEmptyDirs = false
+[DEBUG]   (s) outputDirectory = /home/Ahmed/IdeaProjects/java-mediaplayer/target/classes
+[DEBUG]   (s) overwrite = false
+[DEBUG]   (f) project = MavenProject: org.example:moka_music_player:1.0-SNAPSHOT @ /home/Ahmed/IdeaProjects/java-mediaplayer/pom.xml
+[DEBUG]   (s) resources = [Resource {targetPath: null, filtering: false, FileSet {directory: /home/Ahmed/IdeaProjects/java-mediaplayer/src/main/resources, PatternSet [includes: {}, excludes: {}]}}]
+[DEBUG]   (f) session = org.apache.maven.execution.MavenSession@17a703f5
+[DEBUG]   (f) skip = false
+[DEBUG]   (f) supportMultiLineFiltering = false
+[DEBUG]   (f) useBuildFilters = true
+[DEBUG]   (s) useDefaultDelimiters = true
+[DEBUG] -- end configuration --
+[DEBUG] properties used:
+[DEBUG] classworlds.conf: /usr/share/maven/bin/m2.conf
+[DEBUG] env.CVS_RSH: ssh
+[DEBUG] env.DBUS_SESSION_BUS_ADDRESS: unix:path=/run/user/1000/bus
+[DEBUG] env.DEBUGINFOD_IMA_CERT_PATH: /etc/keys/ima:
+[DEBUG] env.DEBUGINFOD_URLS: ima:enforcing https://debuginfod.fedoraproject.org/ ima:ignore
+[DEBUG] env.DESKTOP_SESSION: plasma
+[DEBUG] env.DISPLAY: :0
+[DEBUG] env.EDITOR: /usr/bin/nano
+[DEBUG] env.FIG_TERM: 1
+[DEBUG] env.GDK_CORE_DEVICE_EVENTS: 1
+[DEBUG] env.GPG_TTY: /dev/pts/2
+[DEBUG] env.GTK2_RC_FILES: /etc/gtk-2.0/gtkrc:/home/Ahmed/.gtkrc-2.0:/home/Ahmed/.config/gtkrc-2.0
+[DEBUG] env.GTK_RC_FILES: /etc/gtk/gtkrc:/home/Ahmed/.gtkrc:/home/Ahmed/.config/gtkrc
+[DEBUG] env.HISTCONTROL: ignoredups
+[DEBUG] env.HISTSIZE: 1000
+[DEBUG] env.HOME: /home/Ahmed
+[DEBUG] env.HOSTNAME: fedora
+[DEBUG] env.ICEAUTHORITY: /run/user/1000/iceauth_UsJWAm
+[DEBUG] env.IMSETTINGS_INTEGRATE_DESKTOP: yes
+[DEBUG] env.IMSETTINGS_MODULE: none
+[DEBUG] env.INTELLIJ_TERMINAL_COMMAND_BLOCKS_REWORKED: 1
+[DEBUG] env.INVOCATION_ID: 6756560be5c34ed99968e140914c5f22
+[DEBUG] env.JAVA_HOME: /usr/lib/jvm/jre-25-openjdk
+[DEBUG] env.JOURNAL_STREAM: 10:38931
+[DEBUG] env.KDEDIRS: /usr
+[DEBUG] env.KDE_APPLICATIONS_AS_SCOPE: 1
+[DEBUG] env.KDE_FULL_SESSION: true
+[DEBUG] env.KDE_SESSION_UID: 1000
+[DEBUG] env.KDE_SESSION_VERSION: 6
+[DEBUG] env.LANG: en_US.UTF-8
+[DEBUG] env.LESSOPEN: ||/usr/bin/lesspipe.sh %s
+[DEBUG] env.LOGNAME: Ahmed
+[DEBUG] env.LS_COLORS: rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=01;37;41:su=37;41:sg=30;43:ca=00:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.7z=01;31:*.ace=01;31:*.alz=01;31:*.apk=01;31:*.arc=01;31:*.arj=01;31:*.bz=01;31:*.bz2=01;31:*.cab=01;31:*.cpio=01;31:*.crate=01;31:*.deb=01;31:*.drpm=01;31:*.dwm=01;31:*.dz=01;31:*.ear=01;31:*.egg=01;31:*.esd=01;31:*.gz=01;31:*.jar=01;31:*.lha=01;31:*.lrz=01;31:*.lz=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.lzo=01;31:*.pyz=01;31:*.rar=01;31:*.rpm=01;31:*.rz=01;31:*.sar=01;31:*.swm=01;31:*.t7z=01;31:*.tar=01;31:*.taz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tgz=01;31:*.tlz=01;31:*.txz=01;31:*.tz=01;31:*.tzo=01;31:*.tzst=01;31:*.udeb=01;31:*.war=01;31:*.whl=01;31:*.wim=01;31:*.xz=01;31:*.z=01;31:*.zip=01;31:*.zoo=01;31:*.zst=01;31:*.avif=01;35:*.jpg=01;35:*.jpeg=01;35:*.jxl=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.webp=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=01;36:*.au=01;36:*.flac=01;36:*.m4a=01;36:*.mid=01;36:*.midi=01;36:*.mka=01;36:*.mp3=01;36:*.mpc=01;36:*.ogg=01;36:*.ra=01;36:*.wav=01;36:*.oga=01;36:*.opus=01;36:*.spx=01;36:*.xspf=01;36:*~=00;90:*#=00;90:*.bak=00;90:*.crdownload=00;90:*.dpkg-dist=00;90:*.dpkg-new=00;90:*.dpkg-old=00;90:*.dpkg-tmp=00;90:*.old=00;90:*.orig=00;90:*.part=00;90:*.rej=00;90:*.rpmnew=00;90:*.rpmorig=00;90:*.rpmsave=00;90:*.swp=00;90:*.tmp=00;90:*.ucf-dist=00;90:*.ucf-new=00;90:*.ucf-old=00;90:
+[DEBUG] env.MAIL: /var/spool/mail/Ahmed
+[DEBUG] env.MANAGERPID: 3099
+[DEBUG] env.MANAGERPIDFDID: 32979
+[DEBUG] env.MAVEN_CMD_LINE_ARGS:  -X javafx:jlink
+[DEBUG] env.MAVEN_PROJECTBASEDIR: /home/Ahmed/IdeaProjects/java-mediaplayer
+[DEBUG] env.MEMORY_PRESSURE_WATCH: /sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/session.slice/plasma-plasmashell.service/memory.pressure
+[DEBUG] env.MEMORY_PRESSURE_WRITE: c29tZSAyMDAwMDAgMjAwMDAwMAA=
+[DEBUG] env.MOZ_GMP_PATH: /usr/lib64/mozilla/plugins/gmp-gmpopenh264/system-installed
+[DEBUG] env.NVM_BIN: /home/Ahmed/.nvm/versions/node/v24.14.1/bin
+[DEBUG] env.NVM_CD_FLAGS:
+[DEBUG] env.NVM_DIR: /home/Ahmed/.nvm
+[DEBUG] env.NVM_INC: /home/Ahmed/.nvm/versions/node/v24.14.1/include/node
+[DEBUG] env.OLDPWD: /home/Ahmed/IdeaProjects/java-mediaplayer
+[DEBUG] env.PAM_KWALLET5_LOGIN: /run/user/1000/kwallet5.socket
+[DEBUG] env.PATH: /home/Ahmed/.nvm/versions/node/v24.14.1/bin:/home/Ahmed/.local/bin:/home/Ahmed/bin:/usr/local/bin:/usr/bin:/usr/local/sbin:/usr/sbin
+[DEBUG] env.PROCESS_LAUNCHED_BY_CW: 1
+[DEBUG] env.PROCESS_LAUNCHED_BY_Q: 1
+[DEBUG] env.PWD: /home/Ahmed/IdeaProjects/java-mediaplayer
+[DEBUG] env.QT_WAYLAND_RECONNECT: 1
+[DEBUG] env.SDL_VIDEO_MINIMIZE_ON_FOCUS_LOSS: 0
+[DEBUG] env.SESSION_MANAGER: local/unix:@/tmp/.ICE-unix/3926,unix/unix:/tmp/.ICE-unix/3926
+[DEBUG] env.SHELL: /bin/bash
+[DEBUG] env.SHLVL: 1
+[DEBUG] env.SSH_ASKPASS: /usr/bin/ksshaskpass
+[DEBUG] env.SSH_AUTH_SOCK: /run/user/1000/ssh-agent.socket
+[DEBUG] env.STEAM_FRAME_FORCE_CLOSE: 1
+[DEBUG] env.SYSTEMD_EXEC_PID: 3960
+[DEBUG] env.TERM: xterm-256color
+[DEBUG] env.TERMINAL_EMULATOR: JetBrains-JediTerm
+[DEBUG] env.TERM_SESSION_ID: 88421e1b-a7a2-4c7e-8142-96b2f915d970
+[DEBUG] env.USER: Ahmed
+[DEBUG] env.WAYLAND_DISPLAY: wayland-0
+[DEBUG] env.XAUTHORITY: /run/user/1000/xauth_GlNeEY
+[DEBUG] env.XDG_ACTIVATION_TOKEN: kwin-6
+[DEBUG] env.XDG_CONFIG_DIRS: /home/Ahmed/.config/kdedefaults:/etc/xdg:/usr/share/kde-settings/kde-profile/default/xdg
+[DEBUG] env.XDG_CURRENT_DESKTOP: KDE
+[DEBUG] env.XDG_DATA_DIRS: /home/Ahmed/.local/share/flatpak/exports/share:/var/lib/flatpak/exports/share:/usr/local/share:/usr/share
+[DEBUG] env.XDG_MENU_PREFIX: plasma-
+[DEBUG] env.XDG_RUNTIME_DIR: /run/user/1000
+[DEBUG] env.XDG_SEAT: seat0
+[DEBUG] env.XDG_SEAT_PATH: /org/freedesktop/DisplayManager/Seat0
+[DEBUG] env.XDG_SESSION_CLASS: user
+[DEBUG] env.XDG_SESSION_DESKTOP: KDE
+[DEBUG] env.XDG_SESSION_ID: 2
+[DEBUG] env.XDG_SESSION_PATH: /org/freedesktop/DisplayManager/Session1
+[DEBUG] env.XDG_SESSION_TYPE: wayland
+[DEBUG] env.XDG_VTNR: 2
+[DEBUG] env.XKB_DEFAULT_LAYOUT: us
+[DEBUG] env.XKB_DEFAULT_MODEL: pc105
+[DEBUG] env.XMODIFIERS: @im=none
+[DEBUG] env._JAVA_AWT_WM_NONREPARENTING: 1
+[DEBUG] file.encoding: UTF-8
+[DEBUG] file.separator: /
+[DEBUG] java.class.path: /usr/share/maven/boot/plexus-classworlds-2.9.0.jar
+[DEBUG] java.class.version: 69.0
+[DEBUG] java.home: /usr/lib/jvm/java-25-openjdk
+[DEBUG] java.io.tmpdir: /tmp
+[DEBUG] java.library.path: /usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+[DEBUG] java.runtime.name: OpenJDK Runtime Environment
+[DEBUG] java.runtime.version: 25.0.3+9
+[DEBUG] java.specification.name: Java Platform API Specification
+[DEBUG] java.specification.vendor: Oracle Corporation
+[DEBUG] java.specification.version: 25
+[DEBUG] java.vendor: Red Hat, Inc.
+[DEBUG] java.vendor.url: https://www.redhat.com/
+[DEBUG] java.vendor.url.bug: https://bugzilla.redhat.com/enter_bug.cgi?product=Fedora&component=java-25-openjdk&version=42
+[DEBUG] java.vendor.version: (Red_Hat-25.0.3.0.9-1)
+[DEBUG] java.version: 25.0.3
+[DEBUG] java.version.date: 2026-04-21
+[DEBUG] java.vm.compressedOopsMode: Zero based
+[DEBUG] java.vm.info: mixed mode, sharing
+[DEBUG] java.vm.name: OpenJDK 64-Bit Server VM
+[DEBUG] java.vm.specification.name: Java Virtual Machine Specification
+[DEBUG] java.vm.specification.vendor: Oracle Corporation
+[DEBUG] java.vm.specification.version: 25
+[DEBUG] java.vm.vendor: Red Hat, Inc.
+[DEBUG] java.vm.version: 25.0.3+9
+[DEBUG] javafx.version: 25.0.1
+[DEBUG] jdk.debug: release
+[DEBUG] junit.version: 5.10.2
+[DEBUG] library.jansi.path: /usr/share/maven/lib/jansi-native
+[DEBUG] line.separator:
+
+[DEBUG] maven.build.timestamp: 2026-07-14T13:17:52Z
+[DEBUG] maven.build.version: Apache Maven 3.9.11 (Red Hat 3.9.11-11)
+[DEBUG] maven.conf: /usr/share/maven/conf
+[DEBUG] maven.home: /usr/share/maven
+[DEBUG] maven.multiModuleProjectDirectory: /home/Ahmed/IdeaProjects/java-mediaplayer
+[DEBUG] maven.version: 3.9.11
+[DEBUG] native.encoding: UTF-8
+[DEBUG] os.arch: amd64
+[DEBUG] os.name: Linux
+[DEBUG] os.version: 7.1.3-200.fc44.x86_64
+[DEBUG] path.separator: :
+[DEBUG] project.baseUri: file:/home/Ahmed/IdeaProjects/java-mediaplayer/
+[DEBUG] project.build.sourceEncoding: UTF-8
+[DEBUG] stderr.encoding: UTF-8
+[DEBUG] stdin.encoding: UTF-8
+[DEBUG] stdout.encoding: UTF-8
+[DEBUG] sun.arch.data.model: 64
+[DEBUG] sun.boot.library.path: /usr/lib/jvm/java-25-openjdk/lib
+[DEBUG] sun.cpu.endian: little
+[DEBUG] sun.io.unicode.encoding: UnicodeLittle
+[DEBUG] sun.java.command: org.codehaus.plexus.classworlds.launcher.Launcher -X javafx:jlink
+[DEBUG] sun.java.launcher: SUN_STANDARD
+[DEBUG] sun.jnu.encoding: UTF-8
+[DEBUG] sun.management.compiler: HotSpot 64-Bit Tiered Compilers
+[DEBUG] user.country: US
+[DEBUG] user.dir: /home/Ahmed/IdeaProjects/java-mediaplayer
+[DEBUG] user.home: /home/Ahmed
+[DEBUG] user.language: en
+[DEBUG] user.name: Ahmed
+[DEBUG] Using 'UTF-8' encoding to copy filtered resources.
+[DEBUG] Using 'UTF-8' encoding to copy filtered properties files.
+[DEBUG] resource with targetPath null
+directory /home/Ahmed/IdeaProjects/java-mediaplayer/src/main/resources
+excludes []
+includes []
+[DEBUG] ignoreDelta true
+[INFO] Copying 26 resources from src/main/resources to target/classes
+[DEBUG] Copying file META-INF/MANIFEST.MF
+[DEBUG] file MANIFEST.MF has a filtered file extension
+[DEBUG] Using 'UTF-8' encoding to copy filtered resource 'MANIFEST.MF'.
+[DEBUG] copy /home/Ahmed/IdeaProjects/java-mediaplayer/src/main/resources/META-INF/MANIFEST.MF to /home/Ahmed/IdeaProjects/java-mediaplayer/target/classes/META-INF/MANIFEST.MF
+[DEBUG] Copying file styles/menu.css
+[DEBUG] file menu.css has a filtered file extension
+[DEBUG] Using 'UTF-8' encoding to copy filtered resource 'menu.css'.
+[DEBUG] copy /home/Ahmed/IdeaProjects/java-mediaplayer/src/main/resources/styles/menu.css to /home/Ahmed/IdeaProjects/java-mediaplayer/target/classes/styles/menu.css
+[DEBUG] Copying file styles/controls.css
+[DEBUG] file controls.css has a filtered file extension
+[DEBUG] Using 'UTF-8' encoding to copy filtered resource 'controls.css'.
+[DEBUG] copy /home/Ahmed/IdeaProjects/java-mediaplayer/src/main/resources/styles/controls.css to /home/Ahmed/IdeaProjects/java-mediaplayer/target/classes/styles/controls.css
+[DEBUG] Copying file styles/theme.css
+[DEBUG] file theme.css has a filtered file extension
+[DEBUG] Using 'UTF-8' encoding to copy filtered resource 'theme.css'.
+[DEBUG] copy /home/Ahmed/IdeaProjects/java-mediaplayer/src/main/resources/styles/theme.css to /home/Ahmed/IdeaProjects/java-mediaplayer/target/classes/styles/theme.css
+[DEBUG] Copying file styles/player.css
+[DEBUG] file player.css has a filtered file extension
+[DEBUG] Using 'UTF-8' encoding to copy filtered resource 'player.css'.
+[DEBUG] copy /home/Ahmed/IdeaProjects/java-mediaplayer/src/main/resources/styles/player.css to /home/Ahmed/IdeaProjects/java-mediaplayer/target/classes/styles/player.css
+[DEBUG] Copying file styles/forms.css
+[DEBUG] file forms.css has a filtered file extension
+[DEBUG] Using 'UTF-8' encoding to copy filtered resource 'forms.css'.
+[DEBUG] copy /home/Ahmed/IdeaProjects/java-mediaplayer/src/main/resources/styles/forms.css to /home/Ahmed/IdeaProjects/java-mediaplayer/target/classes/styles/forms.css
+[DEBUG] Copying file styles/listview.css
+[DEBUG] file listview.css has a filtered file extension
+[DEBUG] Using 'UTF-8' encoding to copy filtered resource 'listview.css'.
+[DEBUG] copy /home/Ahmed/IdeaProjects/java-mediaplayer/src/main/resources/styles/listview.css to /home/Ahmed/IdeaProjects/java-mediaplayer/target/classes/styles/listview.css
+[DEBUG] Copying file styles/main.css
+[DEBUG] file main.css has a filtered file extension
+[DEBUG] Using 'UTF-8' encoding to copy filtered resource 'main.css'.
+[DEBUG] copy /home/Ahmed/IdeaProjects/java-mediaplayer/src/main/resources/styles/main.css to /home/Ahmed/IdeaProjects/java-mediaplayer/target/classes/styles/main.css
+[DEBUG] Copying file styles/texts.css
+[DEBUG] file texts.css has a filtered file extension
+[DEBUG] Using 'UTF-8' encoding to copy filtered resource 'texts.css'.
+[DEBUG] copy /home/Ahmed/IdeaProjects/java-mediaplayer/src/main/resources/styles/texts.css to /home/Ahmed/IdeaProjects/java-mediaplayer/target/classes/styles/texts.css
+[DEBUG] Copying file styles/scroll-pane.css
+[DEBUG] file scroll-pane.css has a filtered file extension
+[DEBUG] Using 'UTF-8' encoding to copy filtered resource 'scroll-pane.css'.
+[DEBUG] copy /home/Ahmed/IdeaProjects/java-mediaplayer/src/main/resources/styles/scroll-pane.css to /home/Ahmed/IdeaProjects/java-mediaplayer/target/classes/styles/scroll-pane.css
+[DEBUG] Copying file styles/alerts.css
+[DEBUG] file alerts.css has a filtered file extension
+[DEBUG] Using 'UTF-8' encoding to copy filtered resource 'alerts.css'.
+[DEBUG] copy /home/Ahmed/IdeaProjects/java-mediaplayer/src/main/resources/styles/alerts.css to /home/Ahmed/IdeaProjects/java-mediaplayer/target/classes/styles/alerts.css
+[DEBUG] Copying file views/category-view.fxml
+[DEBUG] file category-view.fxml has a filtered file extension
+[DEBUG] Using 'UTF-8' encoding to copy filtered resource 'category-view.fxml'.
+[DEBUG] copy /home/Ahmed/IdeaProjects/java-mediaplayer/src/main/resources/views/category-view.fxml to /home/Ahmed/IdeaProjects/java-mediaplayer/target/classes/views/category-view.fxml
+[DEBUG] Copying file views/folders-view.fxml
+[DEBUG] file folders-view.fxml has a filtered file extension
+[DEBUG] Using 'UTF-8' encoding to copy filtered resource 'folders-view.fxml'.
+[DEBUG] copy /home/Ahmed/IdeaProjects/java-mediaplayer/src/main/resources/views/folders-view.fxml to /home/Ahmed/IdeaProjects/java-mediaplayer/target/classes/views/folders-view.fxml
+[DEBUG] Copying file views/main-view.fxml
+[DEBUG] file main-view.fxml has a filtered file extension
+[DEBUG] Using 'UTF-8' encoding to copy filtered resource 'main-view.fxml'.
+[DEBUG] copy /home/Ahmed/IdeaProjects/java-mediaplayer/src/main/resources/views/main-view.fxml to /home/Ahmed/IdeaProjects/java-mediaplayer/target/classes/views/main-view.fxml
+[DEBUG] Copying file views/mediaList-view.fxml
+[DEBUG] file mediaList-view.fxml has a filtered file extension
+[DEBUG] Using 'UTF-8' encoding to copy filtered resource 'mediaList-view.fxml'.
+[DEBUG] copy /home/Ahmed/IdeaProjects/java-mediaplayer/src/main/resources/views/mediaList-view.fxml to /home/Ahmed/IdeaProjects/java-mediaplayer/target/classes/views/mediaList-view.fxml
+[DEBUG] Copying file views/playing-track-view.fxml
+[DEBUG] file playing-track-view.fxml has a filtered file extension
+[DEBUG] Using 'UTF-8' encoding to copy filtered resource 'playing-track-view.fxml'.
+[DEBUG] copy /home/Ahmed/IdeaProjects/java-mediaplayer/src/main/resources/views/playing-track-view.fxml to /home/Ahmed/IdeaProjects/java-mediaplayer/target/classes/views/playing-track-view.fxml
+[DEBUG] Copying file views/track-data-view.fxml
+[DEBUG] file track-data-view.fxml has a filtered file extension
+[DEBUG] Using 'UTF-8' encoding to copy filtered resource 'track-data-view.fxml'.
+[DEBUG] copy /home/Ahmed/IdeaProjects/java-mediaplayer/src/main/resources/views/track-data-view.fxml to /home/Ahmed/IdeaProjects/java-mediaplayer/target/classes/views/track-data-view.fxml
+[DEBUG] Copying file views/playlist-view.fxml
+[DEBUG] file playlist-view.fxml has a filtered file extension
+[DEBUG] Using 'UTF-8' encoding to copy filtered resource 'playlist-view.fxml'.
+[DEBUG] copy /home/Ahmed/IdeaProjects/java-mediaplayer/src/main/resources/views/playlist-view.fxml to /home/Ahmed/IdeaProjects/java-mediaplayer/target/classes/views/playlist-view.fxml
+[DEBUG] Copying file views/lyrics-view.fxml
+[DEBUG] file lyrics-view.fxml has a filtered file extension
+[DEBUG] Using 'UTF-8' encoding to copy filtered resource 'lyrics-view.fxml'.
+[DEBUG] copy /home/Ahmed/IdeaProjects/java-mediaplayer/src/main/resources/views/lyrics-view.fxml to /home/Ahmed/IdeaProjects/java-mediaplayer/target/classes/views/lyrics-view.fxml
+[DEBUG] Copying file views/playlist-creation-view.fxml
+[DEBUG] file playlist-creation-view.fxml has a filtered file extension
+[DEBUG] Using 'UTF-8' encoding to copy filtered resource 'playlist-creation-view.fxml'.
+[DEBUG] copy /home/Ahmed/IdeaProjects/java-mediaplayer/src/main/resources/views/playlist-creation-view.fxml to /home/Ahmed/IdeaProjects/java-mediaplayer/target/classes/views/playlist-creation-view.fxml
+[DEBUG] Copying file views/playlist-data-view.fxml
+[DEBUG] file playlist-data-view.fxml has a filtered file extension
+[DEBUG] Using 'UTF-8' encoding to copy filtered resource 'playlist-data-view.fxml'.
+[DEBUG] copy /home/Ahmed/IdeaProjects/java-mediaplayer/src/main/resources/views/playlist-data-view.fxml to /home/Ahmed/IdeaProjects/java-mediaplayer/target/classes/views/playlist-data-view.fxml
+[DEBUG] Copying file views/queued-tracks-view.fxml
+[DEBUG] file queued-tracks-view.fxml has a filtered file extension
+[DEBUG] Using 'UTF-8' encoding to copy filtered resource 'queued-tracks-view.fxml'.
+[DEBUG] copy /home/Ahmed/IdeaProjects/java-mediaplayer/src/main/resources/views/queued-tracks-view.fxml to /home/Ahmed/IdeaProjects/java-mediaplayer/target/classes/views/queued-tracks-view.fxml
+[DEBUG] Copying file assets/icons/app-icon.svg
+[DEBUG] file app-icon.svg has a filtered file extension
+[DEBUG] Using 'UTF-8' encoding to copy filtered resource 'app-icon.svg'.
+[DEBUG] copy /home/Ahmed/IdeaProjects/java-mediaplayer/src/main/resources/assets/icons/app-icon.svg to /home/Ahmed/IdeaProjects/java-mediaplayer/target/classes/assets/icons/app-icon.svg
+[DEBUG] Copying file assets/icons/app-icon.png
+[DEBUG] file app-icon.png has a non filtered file extension
+[DEBUG] Using 'UTF-8' encoding to copy filtered resource 'app-icon.png'.
+[DEBUG] copy /home/Ahmed/IdeaProjects/java-mediaplayer/src/main/resources/assets/icons/app-icon.png to /home/Ahmed/IdeaProjects/java-mediaplayer/target/classes/assets/icons/app-icon.png
+[DEBUG] Copying file assets/images/unknown.jpg
+[DEBUG] file unknown.jpg has a non filtered file extension
+[DEBUG] Using 'UTF-8' encoding to copy filtered resource 'unknown.jpg'.
+[DEBUG] copy /home/Ahmed/IdeaProjects/java-mediaplayer/src/main/resources/assets/images/unknown.jpg to /home/Ahmed/IdeaProjects/java-mediaplayer/target/classes/assets/images/unknown.jpg
+[DEBUG] Copying file logback.xml
+[DEBUG] file logback.xml has a filtered file extension
+[DEBUG] Using 'UTF-8' encoding to copy filtered resource 'logback.xml'.
+[DEBUG] copy /home/Ahmed/IdeaProjects/java-mediaplayer/src/main/resources/logback.xml to /home/Ahmed/IdeaProjects/java-mediaplayer/target/classes/logback.xml
+[DEBUG] no user filter components
+[INFO]
+[INFO] --- compiler:3.13.0:compile (default-compile) @ moka_music_player ---
+[DEBUG] Using mirror maven-default-http-blocker (http://0.0.0.0/) for apache.snapshots (http://repository.apache.org/snapshots).
+[DEBUG] Dependency collection stats {ConflictMarker.analyzeTime=54289, ConflictMarker.markTime=56404, ConflictMarker.nodeCount=22, ConflictIdSorter.graphTime=17797, ConflictIdSorter.topsortTime=14339, ConflictIdSorter.conflictIdCount=14, ConflictIdSorter.conflictIdCycleCount=0, ConflictResolver.totalTime=282535, ConflictResolver.conflictItemCount=22, DfDependencyCollector.collectTime=36376198, DfDependencyCollector.transformTime=439172}
+[DEBUG] org.apache.maven.plugins:maven-compiler-plugin:jar:3.13.0
+[DEBUG]    org.apache.maven.shared:maven-shared-utils:jar:3.4.2:compile
+[DEBUG]       org.slf4j:slf4j-api:jar:1.7.36:compile
+[DEBUG]       commons-io:commons-io:jar:2.11.0:compile
+[DEBUG]    org.apache.maven.shared:maven-shared-incremental:jar:1.1:compile
+[DEBUG]    org.codehaus.plexus:plexus-java:jar:1.2.0:compile
+[DEBUG]       org.ow2.asm:asm:jar:9.6:compile
+[DEBUG]       com.thoughtworks.qdox:qdox:jar:2.0.3:compile
+[DEBUG]    org.codehaus.plexus:plexus-compiler-api:jar:2.15.0:compile
+[DEBUG]    org.codehaus.plexus:plexus-compiler-manager:jar:2.15.0:compile
+[DEBUG]       javax.inject:javax.inject:jar:1:compile
+[DEBUG]       org.codehaus.plexus:plexus-xml:jar:3.0.0:compile (version managed from default)
+[DEBUG]    org.codehaus.plexus:plexus-compiler-javac:jar:2.15.0:runtime
+[DEBUG]    org.codehaus.plexus:plexus-utils:jar:4.0.0:compile
+[DEBUG] Created new class realm plugin>org.apache.maven.plugins:maven-compiler-plugin:3.13.0
+[DEBUG] Importing foreign packages into class realm plugin>org.apache.maven.plugins:maven-compiler-plugin:3.13.0
+[DEBUG]   Imported:  < maven.api
+[DEBUG] Populating class realm plugin>org.apache.maven.plugins:maven-compiler-plugin:3.13.0
+[DEBUG]   Included: org.apache.maven.plugins:maven-compiler-plugin:jar:3.13.0
+[DEBUG]   Included: org.apache.maven.shared:maven-shared-utils:jar:3.4.2
+[DEBUG]   Included: commons-io:commons-io:jar:2.11.0
+[DEBUG]   Included: org.apache.maven.shared:maven-shared-incremental:jar:1.1
+[DEBUG]   Included: org.codehaus.plexus:plexus-java:jar:1.2.0
+[DEBUG]   Included: org.ow2.asm:asm:jar:9.6
+[DEBUG]   Included: com.thoughtworks.qdox:qdox:jar:2.0.3
+[DEBUG]   Included: org.codehaus.plexus:plexus-compiler-api:jar:2.15.0
+[DEBUG]   Included: org.codehaus.plexus:plexus-compiler-manager:jar:2.15.0
+[DEBUG]   Included: org.codehaus.plexus:plexus-xml:jar:3.0.0
+[DEBUG]   Included: org.codehaus.plexus:plexus-compiler-javac:jar:2.15.0
+[DEBUG]   Included: org.codehaus.plexus:plexus-utils:jar:4.0.0
+[DEBUG] Loading mojo org.apache.maven.plugins:maven-compiler-plugin:3.13.0:compile from plugin realm ClassRealm[plugin>org.apache.maven.plugins:maven-compiler-plugin:3.13.0, parent: jdk.internal.loader.ClassLoaders$AppClassLoader@5bc2b487]
+[DEBUG] Configuring mojo execution 'org.apache.maven.plugins:maven-compiler-plugin:3.13.0:compile:default-compile' with basic configurator -->
+[DEBUG]   (f) annotationProcessorPathsUseDepMgmt = false
+[DEBUG]   (f) basedir = /home/Ahmed/IdeaProjects/java-mediaplayer
+[DEBUG]   (f) buildDirectory = /home/Ahmed/IdeaProjects/java-mediaplayer/target
+[DEBUG]   (f) compilePath = [/home/Ahmed/IdeaProjects/java-mediaplayer/target/classes, /home/Ahmed/.m2/repository/org/xerial/sqlite-jdbc/3.50.3.0/sqlite-jdbc-3.50.3.0.jar, /home/Ahmed/.m2/repository/com/google/code/gson/gson/2.11.0/gson-2.11.0.jar, /home/Ahmed/.m2/repository/com/google/errorprone/error_prone_annotations/2.27.0/error_prone_annotations-2.27.0.jar, /home/Ahmed/.m2/repository/net/java/dev/jna/jna-jpms/5.14.0/jna-jpms-5.14.0.jar, /home/Ahmed/.m2/repository/net/java/dev/jna/jna-platform-jpms/5.14.0/jna-platform-jpms-5.14.0.jar, /home/Ahmed/.m2/repository/com/github/RouHim/jaudiotagger/2.0.19-modular/jaudiotagger-2.0.19-modular.jar, /home/Ahmed/.m2/repository/com/squareup/okio/okio/3.17.0/okio-3.17.0.jar, /home/Ahmed/.m2/repository/com/squareup/okio/okio-jvm/3.17.0/okio-jvm-3.17.0.jar, /home/Ahmed/.m2/repository/org/jetbrains/kotlin/kotlin-stdlib/2.1.21/kotlin-stdlib-2.1.21.jar, /home/Ahmed/.m2/repository/org/jetbrains/annotations/13.0/annotations-13.0.jar, /home/Ahmed/.m2/repository/org/json/json/20250517/json-20250517.jar, /home/Ahmed/.m2/repository/uk/co/caprica/vlcj/4.8.3/vlcj-4.8.3.jar, /home/Ahmed/.m2/repository/uk/co/caprica/vlcj-natives/4.8.3/vlcj-natives-4.8.3.jar, /home/Ahmed/.m2/repository/uk/co/caprica/vlcj-javafx/1.2.1/vlcj-javafx-1.2.1.jar, /home/Ahmed/.m2/repository/org/slf4j/slf4j-api/2.0.17/slf4j-api-2.0.17.jar, /home/Ahmed/.m2/repository/ch/qos/logback/logback-classic/1.5.18/logback-classic-1.5.18.jar, /home/Ahmed/.m2/repository/ch/qos/logback/logback-core/1.5.18/logback-core-1.5.18.jar, /home/Ahmed/.m2/repository/org/openjfx/javafx-controls/25.0.1/javafx-controls-25.0.1.jar, /home/Ahmed/.m2/repository/org/openjfx/javafx-controls/25.0.1/javafx-controls-25.0.1-linux.jar, /home/Ahmed/.m2/repository/org/openjfx/javafx-graphics/25.0.1/javafx-graphics-25.0.1.jar, /home/Ahmed/.m2/repository/org/openjfx/javafx-graphics/25.0.1/javafx-graphics-25.0.1-linux.jar, /home/Ahmed/.m2/repository/org/openjfx/javafx-base/25.0.1/javafx-base-25.0.1.jar, /home/Ahmed/.m2/repository/org/openjfx/javafx-base/25.0.1/javafx-base-25.0.1-linux.jar, /home/Ahmed/.m2/repository/org/openjfx/javafx-fxml/25.0.1/javafx-fxml-25.0.1.jar, /home/Ahmed/.m2/repository/org/openjfx/javafx-fxml/25.0.1/javafx-fxml-25.0.1-linux.jar, /home/Ahmed/.m2/repository/org/controlsfx/controlsfx/11.2.1/controlsfx-11.2.1.jar, /home/Ahmed/.m2/repository/com/dlsc/formsfx/formsfx-core/11.6.0/formsfx-core-11.6.0.jar, /home/Ahmed/.m2/repository/org/kordamp/ikonli/ikonli-javafx/12.3.1/ikonli-javafx-12.3.1.jar, /home/Ahmed/.m2/repository/org/kordamp/ikonli/ikonli-core/12.3.1/ikonli-core-12.3.1.jar, /home/Ahmed/.m2/repository/org/kordamp/bootstrapfx/bootstrapfx-core/0.4.0/bootstrapfx-core-0.4.0.jar, /home/Ahmed/.m2/repository/eu/hansolo/tilesfx/21.0.3/tilesfx-21.0.3.jar, /home/Ahmed/.m2/repository/eu/hansolo/fx/countries/21.0.3/countries-21.0.3.jar, /home/Ahmed/.m2/repository/eu/hansolo/fx/heatmap/21.0.3/heatmap-21.0.3.jar, /home/Ahmed/.m2/repository/eu/hansolo/toolboxfx/21.0.3/toolboxfx-21.0.3.jar, /home/Ahmed/.m2/repository/eu/hansolo/toolbox/21.0.5/toolbox-21.0.5.jar]
+[DEBUG]   (f) compileSourceRoots = [/home/Ahmed/IdeaProjects/java-mediaplayer/src/main/java]
+[DEBUG]   (f) compilerId = javac
+[DEBUG]   (f) createMissingPackageInfoClass = true
+[DEBUG]   (f) debug = true
+[DEBUG]   (f) debugFileName = javac
+[DEBUG]   (f) enablePreview = false
+[DEBUG]   (f) encoding = UTF-8
+[DEBUG]   (f) failOnError = true
+[DEBUG]   (f) failOnWarning = false
+[DEBUG]   (f) fileExtensions = [jar, class]
+[DEBUG]   (f) forceJavacCompilerUse = false
+[DEBUG]   (f) forceLegacyJavacApi = false
+[DEBUG]   (f) fork = false
+[DEBUG]   (f) generatedSourcesDirectory = /home/Ahmed/IdeaProjects/java-mediaplayer/target/generated-sources/annotations
+[DEBUG]   (f) mojoExecution = org.apache.maven.plugins:maven-compiler-plugin:3.13.0:compile {execution: default-compile}
+[DEBUG]   (f) optimize = false
+[DEBUG]   (f) outputDirectory = /home/Ahmed/IdeaProjects/java-mediaplayer/target/classes
+[DEBUG]   (f) parameters = false
+[DEBUG]   (f) project = MavenProject: org.example:moka_music_player:1.0-SNAPSHOT @ /home/Ahmed/IdeaProjects/java-mediaplayer/pom.xml
+[DEBUG]   (f) projectArtifact = org.example:moka_music_player:jar:1.0-SNAPSHOT
+[DEBUG]   (f) session = org.apache.maven.execution.MavenSession@17a703f5
+[DEBUG]   (f) showCompilationChanges = false
+[DEBUG]   (f) showDeprecation = false
+[DEBUG]   (f) showWarnings = true
+[DEBUG]   (f) skipMultiThreadWarning = false
+[DEBUG]   (f) source = 25
+[DEBUG]   (f) staleMillis = 0
+[DEBUG]   (s) target = 25
+[DEBUG]   (f) useIncrementalCompilation = true
+[DEBUG]   (f) verbose = false
+[DEBUG] -- end configuration --
+[DEBUG] Using compiler 'javac'.
+[DEBUG] Adding /home/Ahmed/IdeaProjects/java-mediaplayer/target/generated-sources/annotations to compile source roots:
+  /home/Ahmed/IdeaProjects/java-mediaplayer/src/main/java
+[DEBUG] New compile source roots:
+  /home/Ahmed/IdeaProjects/java-mediaplayer/src/main/java
+  /home/Ahmed/IdeaProjects/java-mediaplayer/target/generated-sources/annotations
+[DEBUG] CompilerReuseStrategy: reuseCreated
+[DEBUG] useIncrementalCompilation enabled
+[INFO] Nothing to compile - all classes are up to date.
+[INFO]
+[INFO] <<< javafx:0.0.8:jlink (default-cli) < process-classes @ moka_music_player <<<
+[INFO]
+[DEBUG] Dependency collection stats {ConflictMarker.analyzeTime=137906, ConflictMarker.markTime=93933, ConflictMarker.nodeCount=66, ConflictIdSorter.graphTime=51382, ConflictIdSorter.topsortTime=68075, ConflictIdSorter.conflictIdCount=41, ConflictIdSorter.conflictIdCycleCount=4, ConflictResolver.totalTime=896243, ConflictResolver.conflictItemCount=56, DfDependencyCollector.collectTime=2937829, DfDependencyCollector.transformTime=1286869}
+[DEBUG] org.example:moka_music_player:jar:1.0-SNAPSHOT
+[DEBUG]    org.xerial:sqlite-jdbc:jar:3.50.3.0:compile
+[DEBUG]    com.google.code.gson:gson:jar:2.11.0:compile
+[DEBUG]       com.google.errorprone:error_prone_annotations:jar:2.27.0:compile
+[DEBUG]    net.java.dev.jna:jna-jpms:jar:5.14.0:compile
+[DEBUG]    net.java.dev.jna:jna-platform-jpms:jar:5.14.0:compile
+[DEBUG]    com.github.RouHim:jaudiotagger:jar:2.0.19-modular:compile
+[DEBUG]       com.squareup.okio:okio:jar:3.17.0:compile
+[DEBUG]          com.squareup.okio:okio-jvm:jar:3.17.0:compile
+[DEBUG]             org.jetbrains.kotlin:kotlin-stdlib:jar:2.1.21:compile
+[DEBUG]                org.jetbrains:annotations:jar:13.0:compile
+[DEBUG]       org.json:json:jar:20250517:compile
+[DEBUG]    uk.co.caprica:vlcj:jar:4.8.3:compile
+[DEBUG]       uk.co.caprica:vlcj-natives:jar:4.8.3:compile
+[DEBUG]    uk.co.caprica:vlcj-javafx:jar:1.2.1:compile
+[DEBUG]    org.slf4j:slf4j-api:jar:2.0.17:compile
+[DEBUG]    ch.qos.logback:logback-classic:jar:1.5.18:compile
+[DEBUG]       ch.qos.logback:logback-core:jar:1.5.18:compile
+[DEBUG]    org.openjfx:javafx-controls:jar:25.0.1:compile
+[DEBUG]       org.openjfx:javafx-controls:jar:linux:25.0.1:compile
+[DEBUG]       org.openjfx:javafx-graphics:jar:25.0.1:compile
+[DEBUG]          org.openjfx:javafx-graphics:jar:linux:25.0.1:compile
+[DEBUG]          org.openjfx:javafx-base:jar:25.0.1:compile
+[DEBUG]             org.openjfx:javafx-base:jar:linux:25.0.1:compile
+[DEBUG]    org.openjfx:javafx-fxml:jar:25.0.1:compile
+[DEBUG]       org.openjfx:javafx-fxml:jar:linux:25.0.1:compile
+[DEBUG]    org.controlsfx:controlsfx:jar:11.2.1:compile
+[DEBUG]    com.dlsc.formsfx:formsfx-core:jar:11.6.0:compile
+[DEBUG]    org.kordamp.ikonli:ikonli-javafx:jar:12.3.1:compile
+[DEBUG]       org.kordamp.ikonli:ikonli-core:jar:12.3.1:compile
+[DEBUG]    org.kordamp.bootstrapfx:bootstrapfx-core:jar:0.4.0:compile
+[DEBUG]    eu.hansolo:tilesfx:jar:21.0.3:compile
+[DEBUG]       eu.hansolo.fx:countries:jar:21.0.3:compile
+[DEBUG]          eu.hansolo.fx:heatmap:jar:21.0.3:compile
+[DEBUG]             eu.hansolo:toolboxfx:jar:21.0.3:compile
+[DEBUG]                eu.hansolo:toolbox:jar:21.0.5:compile
+[DEBUG]    org.junit.jupiter:junit-jupiter-api:jar:5.10.2:test
+[DEBUG]       org.opentest4j:opentest4j:jar:1.3.0:test
+[DEBUG]       org.junit.platform:junit-platform-commons:jar:1.10.2:test
+[DEBUG]       org.apiguardian:apiguardian-api:jar:1.1.2:test
+[DEBUG]    org.junit.jupiter:junit-jupiter-engine:jar:5.10.2:test
+[DEBUG]       org.junit.platform:junit-platform-engine:jar:1.10.2:test
+[INFO]
+[INFO] --- javafx:0.0.8:jlink (default-cli) @ moka_music_player ---
+[DEBUG] Using mirror maven-default-http-blocker (http://0.0.0.0/) for repository.jboss.org (http://repository.jboss.org/maven2).
+[DEBUG] Using mirror maven-default-http-blocker (http://0.0.0.0/) for snapshots.jboss.org (http://snapshots.jboss.org/maven2).
+[DEBUG] Using mirror maven-default-http-blocker (http://0.0.0.0/) for oss.sonatype.org/jboss-snapshots (http://oss.sonatype.org/content/repositories/jboss-snapshots).
+[DEBUG] Using mirror maven-default-http-blocker (http://0.0.0.0/) for ow2-snapshot (http://repository.ow2.org/nexus/content/repositories/snapshots).
+[DEBUG] Using mirror maven-default-http-blocker (http://0.0.0.0/) for codehaus.snapshots (http://snapshots.repository.codehaus.org).
+[DEBUG] Using mirror maven-default-http-blocker (http://0.0.0.0/) for codehaus-snapshots (http://nexus.codehaus.org/snapshots/).
+[DEBUG] Dependency collection stats {ConflictMarker.analyzeTime=184847, ConflictMarker.markTime=118453, ConflictMarker.nodeCount=96, ConflictIdSorter.graphTime=73181, ConflictIdSorter.topsortTime=33485, ConflictIdSorter.conflictIdCount=48, ConflictIdSorter.conflictIdCycleCount=0, ConflictResolver.totalTime=1293055, ConflictResolver.conflictItemCount=94, DfDependencyCollector.collectTime=137776946, DfDependencyCollector.transformTime=1728731}
+[DEBUG] org.openjfx:javafx-maven-plugin:jar:0.0.8
+[DEBUG]    org.apache.maven:maven-plugin-api:jar:3.6.0:compile
+[DEBUG]       org.apache.maven:maven-model:jar:3.6.0:compile
+[DEBUG]       org.apache.maven:maven-artifact:jar:3.6.0:compile
+[DEBUG]       org.eclipse.sisu:org.eclipse.sisu.plexus:jar:0.3.3:compile
+[DEBUG]          javax.enterprise:cdi-api:jar:1.0:compile
+[DEBUG]             javax.annotation:jsr250-api:jar:1.0:compile
+[DEBUG]       org.codehaus.plexus:plexus-utils:jar:3.1.0:compile
+[DEBUG]       org.codehaus.plexus:plexus-classworlds:jar:2.5.2:compile
+[DEBUG]    org.codehaus.plexus:plexus-java:jar:0.9.11:compile
+[DEBUG]       org.ow2.asm:asm:jar:7.0-beta:compile
+[DEBUG]       com.thoughtworks.qdox:qdox:jar:2.0-M9:compile
+[DEBUG]    org.codehaus.plexus:plexus-archiver:jar:3.6.0:compile
+[DEBUG]       org.codehaus.plexus:plexus-io:jar:3.0.1:compile
+[DEBUG]          commons-io:commons-io:jar:2.6:compile
+[DEBUG]       org.apache.commons:commons-compress:jar:1.16.1:compile
+[DEBUG]          org.objenesis:objenesis:jar:2.6:compile
+[DEBUG]       org.iq80.snappy:snappy:jar:0.4:compile
+[DEBUG]       org.tukaani:xz:jar:1.8:runtime
+[DEBUG]    org.apache.commons:commons-exec:jar:1.3:compile
+[DEBUG]    org.apache.maven:maven-core:jar:3.6.0:compile
+[DEBUG]       org.apache.maven:maven-settings:jar:3.6.0:compile
+[DEBUG]       org.apache.maven:maven-settings-builder:jar:3.6.0:compile
+[DEBUG]          org.codehaus.plexus:plexus-interpolation:jar:1.25:compile
+[DEBUG]          org.sonatype.plexus:plexus-sec-dispatcher:jar:1.4:compile
+[DEBUG]             org.sonatype.plexus:plexus-cipher:jar:1.4:compile
+[DEBUG]       org.apache.maven:maven-builder-support:jar:3.6.0:compile
+[DEBUG]       org.apache.maven:maven-repository-metadata:jar:3.6.0:compile
+[DEBUG]       org.apache.maven:maven-model-builder:jar:3.6.0:compile
+[DEBUG]       org.apache.maven:maven-resolver-provider:jar:3.6.0:compile
+[DEBUG]          org.slf4j:slf4j-api:jar:1.7.25:compile
+[DEBUG]       org.apache.maven.resolver:maven-resolver-impl:jar:1.3.1:compile
+[DEBUG]       org.apache.maven.resolver:maven-resolver-api:jar:1.3.1:compile
+[DEBUG]       org.apache.maven.resolver:maven-resolver-spi:jar:1.3.1:compile
+[DEBUG]       org.apache.maven.resolver:maven-resolver-util:jar:1.3.1:compile
+[DEBUG]       org.apache.maven.shared:maven-shared-utils:jar:3.2.1:compile
+[DEBUG]       org.eclipse.sisu:org.eclipse.sisu.inject:jar:0.3.3:compile
+[DEBUG]       com.google.inject:guice:jar:no_aop:4.2.1:compile
+[DEBUG]          aopalliance:aopalliance:jar:1.0:compile
+[DEBUG]          com.google.guava:guava:jar:25.1-android:compile
+[DEBUG]             com.google.code.findbugs:jsr305:jar:3.0.2:compile
+[DEBUG]             org.checkerframework:checker-compat-qual:jar:2.0.0:compile
+[DEBUG]             com.google.errorprone:error_prone_annotations:jar:2.1.3:compile
+[DEBUG]             com.google.j2objc:j2objc-annotations:jar:1.1:compile
+[DEBUG]             org.codehaus.mojo:animal-sniffer-annotations:jar:1.14:compile
+[DEBUG]       javax.inject:javax.inject:jar:1:compile
+[DEBUG]       org.codehaus.plexus:plexus-component-annotations:jar:1.7.1:compile
+[DEBUG]       org.apache.commons:commons-lang3:jar:3.8.1:compile
+[DEBUG] Created new class realm plugin>org.openjfx:javafx-maven-plugin:0.0.8
+[DEBUG] Importing foreign packages into class realm plugin>org.openjfx:javafx-maven-plugin:0.0.8
+[DEBUG]   Imported:  < maven.api
+[DEBUG] Populating class realm plugin>org.openjfx:javafx-maven-plugin:0.0.8
+[DEBUG]   Included: org.openjfx:javafx-maven-plugin:jar:0.0.8
+[DEBUG]   Included: javax.enterprise:cdi-api:jar:1.0
+[DEBUG]   Included: javax.annotation:jsr250-api:jar:1.0
+[DEBUG]   Included: org.codehaus.plexus:plexus-utils:jar:3.1.0
+[DEBUG]   Included: org.codehaus.plexus:plexus-java:jar:0.9.11
+[DEBUG]   Included: org.ow2.asm:asm:jar:7.0-beta
+[DEBUG]   Included: com.thoughtworks.qdox:qdox:jar:2.0-M9
+[DEBUG]   Included: org.codehaus.plexus:plexus-archiver:jar:3.6.0
+[DEBUG]   Included: org.codehaus.plexus:plexus-io:jar:3.0.1
+[DEBUG]   Included: commons-io:commons-io:jar:2.6
+[DEBUG]   Included: org.apache.commons:commons-compress:jar:1.16.1
+[DEBUG]   Included: org.objenesis:objenesis:jar:2.6
+[DEBUG]   Included: org.iq80.snappy:snappy:jar:0.4
+[DEBUG]   Included: org.tukaani:xz:jar:1.8
+[DEBUG]   Included: org.apache.commons:commons-exec:jar:1.3
+[DEBUG]   Included: org.codehaus.plexus:plexus-interpolation:jar:1.25
+[DEBUG]   Included: org.sonatype.plexus:plexus-sec-dispatcher:jar:1.4
+[DEBUG]   Included: org.sonatype.plexus:plexus-cipher:jar:1.4
+[DEBUG]   Included: org.apache.maven:maven-builder-support:jar:3.6.0
+[DEBUG]   Included: org.apache.maven.shared:maven-shared-utils:jar:3.2.1
+[DEBUG]   Included: org.eclipse.sisu:org.eclipse.sisu.inject:jar:0.3.3
+[DEBUG]   Included: com.google.inject:guice:jar:no_aop:4.2.1
+[DEBUG]   Included: aopalliance:aopalliance:jar:1.0
+[DEBUG]   Included: com.google.guava:guava:jar:25.1-android
+[DEBUG]   Included: com.google.code.findbugs:jsr305:jar:3.0.2
+[DEBUG]   Included: org.checkerframework:checker-compat-qual:jar:2.0.0
+[DEBUG]   Included: com.google.errorprone:error_prone_annotations:jar:2.1.3
+[DEBUG]   Included: com.google.j2objc:j2objc-annotations:jar:1.1
+[DEBUG]   Included: org.codehaus.mojo:animal-sniffer-annotations:jar:1.14
+[DEBUG]   Included: org.codehaus.plexus:plexus-component-annotations:jar:1.7.1
+[DEBUG]   Included: org.apache.commons:commons-lang3:jar:3.8.1
+[DEBUG] Loading mojo org.openjfx:javafx-maven-plugin:0.0.8:jlink from plugin realm ClassRealm[plugin>org.openjfx:javafx-maven-plugin:0.0.8, parent: jdk.internal.loader.ClassLoaders$AppClassLoader@5bc2b487]
+[DEBUG] Configuring mojo execution 'org.openjfx:javafx-maven-plugin:0.0.8:jlink:default-cli' with basic configurator -->
+[DEBUG]   (f) async = false
+[DEBUG]   (f) asyncDestroyOnShutdown = true
+[DEBUG]   (f) basedir = /home/Ahmed/IdeaProjects/java-mediaplayer
+[DEBUG]   (f) bindServices = false
+[DEBUG]   (f) builddir = /home/Ahmed/IdeaProjects/java-mediaplayer/target
+[DEBUG]   (f) compilePath = [/home/Ahmed/IdeaProjects/java-mediaplayer/target/classes, /home/Ahmed/.m2/repository/org/xerial/sqlite-jdbc/3.50.3.0/sqlite-jdbc-3.50.3.0.jar, /home/Ahmed/.m2/repository/com/google/code/gson/gson/2.11.0/gson-2.11.0.jar, /home/Ahmed/.m2/repository/com/google/errorprone/error_prone_annotations/2.27.0/error_prone_annotations-2.27.0.jar, /home/Ahmed/.m2/repository/net/java/dev/jna/jna-jpms/5.14.0/jna-jpms-5.14.0.jar, /home/Ahmed/.m2/repository/net/java/dev/jna/jna-platform-jpms/5.14.0/jna-platform-jpms-5.14.0.jar, /home/Ahmed/.m2/repository/com/github/RouHim/jaudiotagger/2.0.19-modular/jaudiotagger-2.0.19-modular.jar, /home/Ahmed/.m2/repository/com/squareup/okio/okio/3.17.0/okio-3.17.0.jar, /home/Ahmed/.m2/repository/com/squareup/okio/okio-jvm/3.17.0/okio-jvm-3.17.0.jar, /home/Ahmed/.m2/repository/org/jetbrains/kotlin/kotlin-stdlib/2.1.21/kotlin-stdlib-2.1.21.jar, /home/Ahmed/.m2/repository/org/jetbrains/annotations/13.0/annotations-13.0.jar, /home/Ahmed/.m2/repository/org/json/json/20250517/json-20250517.jar, /home/Ahmed/.m2/repository/uk/co/caprica/vlcj/4.8.3/vlcj-4.8.3.jar, /home/Ahmed/.m2/repository/uk/co/caprica/vlcj-natives/4.8.3/vlcj-natives-4.8.3.jar, /home/Ahmed/.m2/repository/uk/co/caprica/vlcj-javafx/1.2.1/vlcj-javafx-1.2.1.jar, /home/Ahmed/.m2/repository/org/slf4j/slf4j-api/2.0.17/slf4j-api-2.0.17.jar, /home/Ahmed/.m2/repository/ch/qos/logback/logback-classic/1.5.18/logback-classic-1.5.18.jar, /home/Ahmed/.m2/repository/ch/qos/logback/logback-core/1.5.18/logback-core-1.5.18.jar, /home/Ahmed/.m2/repository/org/openjfx/javafx-controls/25.0.1/javafx-controls-25.0.1.jar, /home/Ahmed/.m2/repository/org/openjfx/javafx-controls/25.0.1/javafx-controls-25.0.1-linux.jar, /home/Ahmed/.m2/repository/org/openjfx/javafx-graphics/25.0.1/javafx-graphics-25.0.1.jar, /home/Ahmed/.m2/repository/org/openjfx/javafx-graphics/25.0.1/javafx-graphics-25.0.1-linux.jar, /home/Ahmed/.m2/repository/org/openjfx/javafx-base/25.0.1/javafx-base-25.0.1.jar, /home/Ahmed/.m2/repository/org/openjfx/javafx-base/25.0.1/javafx-base-25.0.1-linux.jar, /home/Ahmed/.m2/repository/org/openjfx/javafx-fxml/25.0.1/javafx-fxml-25.0.1.jar, /home/Ahmed/.m2/repository/org/openjfx/javafx-fxml/25.0.1/javafx-fxml-25.0.1-linux.jar, /home/Ahmed/.m2/repository/org/controlsfx/controlsfx/11.2.1/controlsfx-11.2.1.jar, /home/Ahmed/.m2/repository/com/dlsc/formsfx/formsfx-core/11.6.0/formsfx-core-11.6.0.jar, /home/Ahmed/.m2/repository/org/kordamp/ikonli/ikonli-javafx/12.3.1/ikonli-javafx-12.3.1.jar, /home/Ahmed/.m2/repository/org/kordamp/ikonli/ikonli-core/12.3.1/ikonli-core-12.3.1.jar, /home/Ahmed/.m2/repository/org/kordamp/bootstrapfx/bootstrapfx-core/0.4.0/bootstrapfx-core-0.4.0.jar, /home/Ahmed/.m2/repository/eu/hansolo/tilesfx/21.0.3/tilesfx-21.0.3.jar, /home/Ahmed/.m2/repository/eu/hansolo/fx/countries/21.0.3/countries-21.0.3.jar, /home/Ahmed/.m2/repository/eu/hansolo/fx/heatmap/21.0.3/heatmap-21.0.3.jar, /home/Ahmed/.m2/repository/eu/hansolo/toolboxfx/21.0.3/toolboxfx-21.0.3.jar, /home/Ahmed/.m2/repository/eu/hansolo/toolbox/21.0.5/toolbox-21.0.5.jar]
+[DEBUG]   (f) compress = 0
+[DEBUG]   (f) ignoreSigningInformation = false
+[DEBUG]   (f) includePathExceptionsInClasspath = false
+[DEBUG]   (f) jlinkExecutable = jlink
+[DEBUG]   (f) jlinkImageName = app
+[DEBUG]   (f) jlinkVerbose = false
+[DEBUG]   (f) jlinkZipName = app
+[DEBUG]   (f) launcher = app
+[DEBUG]   (f) mainClass = org.example.moka_music_player/gui.main.MainLauncher
+[DEBUG]   (f) noHeaderFiles = true
+[DEBUG]   (f) noManPages = true
+[DEBUG]   (f) project = MavenProject: org.example:moka_music_player:1.0-SNAPSHOT @ /home/Ahmed/IdeaProjects/java-mediaplayer/pom.xml
+[DEBUG]   (f) session = org.apache.maven.execution.MavenSession@17a703f5
+[DEBUG]   (f) skip = false
+[DEBUG]   (f) stripDebug = true
+[DEBUG]   (f) stripJavaDebugAttributes = false
+[DEBUG] -- end configuration --
+[DEBUG] Executable [/usr/lib/jvm/jre-25-openjdk/bin/jlink]
+[DEBUG] Total dependencyArtifacts: 36
+[DEBUG] module descriptor path: /home/Ahmed/IdeaProjects/java-mediaplayer/target/classes/module-info.class
+[DEBUG] Classpath:23
+[DEBUG]  /home/Ahmed/.m2/repository/ch/qos/logback/logback-classic/1.5.18/logback-classic-1.5.18.jar
+[DEBUG]  /home/Ahmed/.m2/repository/ch/qos/logback/logback-core/1.5.18/logback-core-1.5.18.jar
+[DEBUG]  /home/Ahmed/.m2/repository/com/dlsc/formsfx/formsfx-core/11.6.0/formsfx-core-11.6.0.jar
+[DEBUG]  /home/Ahmed/.m2/repository/com/squareup/okio/okio/3.17.0/okio-3.17.0.jar
+[DEBUG]  /home/Ahmed/.m2/repository/com/squareup/okio/okio-jvm/3.17.0/okio-jvm-3.17.0.jar
+[DEBUG]  /home/Ahmed/.m2/repository/eu/hansolo/tilesfx/21.0.3/tilesfx-21.0.3.jar
+[DEBUG]  /home/Ahmed/.m2/repository/eu/hansolo/toolbox/21.0.5/toolbox-21.0.5.jar
+[DEBUG]  /home/Ahmed/.m2/repository/eu/hansolo/toolboxfx/21.0.3/toolboxfx-21.0.3.jar
+[DEBUG]  /home/Ahmed/.m2/repository/eu/hansolo/fx/countries/21.0.3/countries-21.0.3.jar
+[DEBUG]  /home/Ahmed/.m2/repository/eu/hansolo/fx/heatmap/21.0.3/heatmap-21.0.3.jar
+[DEBUG]  /home/Ahmed/.m2/repository/org/controlsfx/controlsfx/11.2.1/controlsfx-11.2.1.jar
+[DEBUG]  /home/Ahmed/.m2/repository/org/jetbrains/annotations/13.0/annotations-13.0.jar
+[DEBUG]  /home/Ahmed/.m2/repository/org/jetbrains/kotlin/kotlin-stdlib/2.1.21/kotlin-stdlib-2.1.21.jar
+[DEBUG]  /home/Ahmed/.m2/repository/org/json/json/20250517/json-20250517.jar
+[DEBUG]  /home/Ahmed/.m2/repository/org/kordamp/bootstrapfx/bootstrapfx-core/0.4.0/bootstrapfx-core-0.4.0.jar
+[DEBUG]  /home/Ahmed/.m2/repository/org/kordamp/ikonli/ikonli-core/12.3.1/ikonli-core-12.3.1.jar
+[DEBUG]  /home/Ahmed/.m2/repository/org/kordamp/ikonli/ikonli-javafx/12.3.1/ikonli-javafx-12.3.1.jar
+[DEBUG]  /home/Ahmed/.m2/repository/org/openjfx/javafx-base/25.0.1/javafx-base-25.0.1.jar
+[DEBUG]  /home/Ahmed/.m2/repository/org/openjfx/javafx-controls/25.0.1/javafx-controls-25.0.1.jar
+[DEBUG]  /home/Ahmed/.m2/repository/org/openjfx/javafx-fxml/25.0.1/javafx-fxml-25.0.1.jar
+[DEBUG]  /home/Ahmed/.m2/repository/org/openjfx/javafx-graphics/25.0.1/javafx-graphics-25.0.1.jar
+[DEBUG]  /home/Ahmed/.m2/repository/org/xerial/sqlite-jdbc/3.50.3.0/sqlite-jdbc-3.50.3.0.jar
+[DEBUG]  /home/Ahmed/.m2/repository/uk/co/caprica/vlcj-javafx/1.2.1/vlcj-javafx-1.2.1.jar
+[DEBUG] Modulepath: 13
+[DEBUG]  /home/Ahmed/IdeaProjects/java-mediaplayer/target/classes
+[DEBUG]  /home/Ahmed/.m2/repository/com/github/RouHim/jaudiotagger/2.0.19-modular/jaudiotagger-2.0.19-modular.jar
+[DEBUG]  /home/Ahmed/.m2/repository/com/google/code/gson/gson/2.11.0/gson-2.11.0.jar
+[DEBUG]  /home/Ahmed/.m2/repository/com/google/errorprone/error_prone_annotations/2.27.0/error_prone_annotations-2.27.0.jar
+[DEBUG]  /home/Ahmed/.m2/repository/net/java/dev/jna/jna-jpms/5.14.0/jna-jpms-5.14.0.jar
+[DEBUG]  /home/Ahmed/.m2/repository/net/java/dev/jna/jna-platform-jpms/5.14.0/jna-platform-jpms-5.14.0.jar
+[DEBUG]  /home/Ahmed/.m2/repository/org/openjfx/javafx-base/25.0.1/javafx-base-25.0.1-linux.jar
+[DEBUG]  /home/Ahmed/.m2/repository/org/openjfx/javafx-controls/25.0.1/javafx-controls-25.0.1-linux.jar
+[DEBUG]  /home/Ahmed/.m2/repository/org/openjfx/javafx-fxml/25.0.1/javafx-fxml-25.0.1-linux.jar
+[DEBUG]  /home/Ahmed/.m2/repository/org/openjfx/javafx-graphics/25.0.1/javafx-graphics-25.0.1-linux.jar
+[DEBUG]  /home/Ahmed/.m2/repository/org/slf4j/slf4j-api/2.0.17/slf4j-api-2.0.17.jar
+[DEBUG]  /home/Ahmed/.m2/repository/uk/co/caprica/vlcj/4.8.3/vlcj-4.8.3.jar
+[DEBUG]  /home/Ahmed/.m2/repository/uk/co/caprica/vlcj-natives/4.8.3/vlcj-natives-4.8.3.jar
+[DEBUG] pathElements: 36
+[DEBUG]  /home/Ahmed/IdeaProjects/java-mediaplayer/target/classes :: org.example.moka_music_player
+[DEBUG]  /home/Ahmed/.m2/repository/ch/qos/logback/logback-classic/1.5.18/logback-classic-1.5.18.jar :: ch.qos.logback.classic
+[DEBUG]  /home/Ahmed/.m2/repository/ch/qos/logback/logback-core/1.5.18/logback-core-1.5.18.jar :: ch.qos.logback.core
+[DEBUG]  /home/Ahmed/.m2/repository/com/dlsc/formsfx/formsfx-core/11.6.0/formsfx-core-11.6.0.jar :: com.dlsc.formsfx
+[DEBUG]  /home/Ahmed/.m2/repository/com/github/RouHim/jaudiotagger/2.0.19-modular/jaudiotagger-2.0.19-modular.jar :: jaudiotagger
+[DEBUG]  /home/Ahmed/.m2/repository/com/google/code/gson/gson/2.11.0/gson-2.11.0.jar :: com.google.gson
+[DEBUG]  /home/Ahmed/.m2/repository/com/google/errorprone/error_prone_annotations/2.27.0/error_prone_annotations-2.27.0.jar :: com.google.errorprone.annotations
+[DEBUG]  /home/Ahmed/.m2/repository/com/squareup/okio/okio/3.17.0/okio-3.17.0.jar :: okio
+[DEBUG]  /home/Ahmed/.m2/repository/com/squareup/okio/okio-jvm/3.17.0/okio-jvm-3.17.0.jar :: okio
+[DEBUG]  /home/Ahmed/.m2/repository/eu/hansolo/tilesfx/21.0.3/tilesfx-21.0.3.jar :: eu.hansolo.tilesfx
+[DEBUG]  /home/Ahmed/.m2/repository/eu/hansolo/toolbox/21.0.5/toolbox-21.0.5.jar :: eu.hansolo.toolbox
+[DEBUG]  /home/Ahmed/.m2/repository/eu/hansolo/toolboxfx/21.0.3/toolboxfx-21.0.3.jar :: eu.hansolo.toolboxfx
+[DEBUG]  /home/Ahmed/.m2/repository/eu/hansolo/fx/countries/21.0.3/countries-21.0.3.jar :: eu.hansolo.fx.countries
+[DEBUG]  /home/Ahmed/.m2/repository/eu/hansolo/fx/heatmap/21.0.3/heatmap-21.0.3.jar :: eu.hansolo.fx.heatmap
+[DEBUG]  /home/Ahmed/.m2/repository/net/java/dev/jna/jna-jpms/5.14.0/jna-jpms-5.14.0.jar :: com.sun.jna
+[DEBUG]  /home/Ahmed/.m2/repository/net/java/dev/jna/jna-platform-jpms/5.14.0/jna-platform-jpms-5.14.0.jar :: com.sun.jna.platform
+[DEBUG]  /home/Ahmed/.m2/repository/org/controlsfx/controlsfx/11.2.1/controlsfx-11.2.1.jar :: org.controlsfx.controls
+[DEBUG]  /home/Ahmed/.m2/repository/org/jetbrains/annotations/13.0/annotations-13.0.jar :: annotations
+[DEBUG]  /home/Ahmed/.m2/repository/org/jetbrains/kotlin/kotlin-stdlib/2.1.21/kotlin-stdlib-2.1.21.jar :: kotlin.stdlib
+[DEBUG]  /home/Ahmed/.m2/repository/org/json/json/20250517/json-20250517.jar :: org.json
+[DEBUG]  /home/Ahmed/.m2/repository/org/kordamp/bootstrapfx/bootstrapfx-core/0.4.0/bootstrapfx-core-0.4.0.jar :: org.kordamp.bootstrapfx.core
+[DEBUG]  /home/Ahmed/.m2/repository/org/kordamp/ikonli/ikonli-core/12.3.1/ikonli-core-12.3.1.jar :: org.kordamp.ikonli.core
+[DEBUG]  /home/Ahmed/.m2/repository/org/kordamp/ikonli/ikonli-javafx/12.3.1/ikonli-javafx-12.3.1.jar :: org.kordamp.ikonli.javafx
+[DEBUG]  /home/Ahmed/.m2/repository/org/openjfx/javafx-base/25.0.1/javafx-base-25.0.1-linux.jar :: javafx.base
+[DEBUG]  /home/Ahmed/.m2/repository/org/openjfx/javafx-base/25.0.1/javafx-base-25.0.1.jar :: javafx.baseEmpty
+[DEBUG]  /home/Ahmed/.m2/repository/org/openjfx/javafx-controls/25.0.1/javafx-controls-25.0.1-linux.jar :: javafx.controls
+[DEBUG]  /home/Ahmed/.m2/repository/org/openjfx/javafx-controls/25.0.1/javafx-controls-25.0.1.jar :: javafx.controlsEmpty
+[DEBUG]  /home/Ahmed/.m2/repository/org/openjfx/javafx-fxml/25.0.1/javafx-fxml-25.0.1-linux.jar :: javafx.fxml
+[DEBUG]  /home/Ahmed/.m2/repository/org/openjfx/javafx-fxml/25.0.1/javafx-fxml-25.0.1.jar :: javafx.fxmlEmpty
+[DEBUG]  /home/Ahmed/.m2/repository/org/openjfx/javafx-graphics/25.0.1/javafx-graphics-25.0.1-linux.jar :: javafx.graphics
+[DEBUG]  /home/Ahmed/.m2/repository/org/openjfx/javafx-graphics/25.0.1/javafx-graphics-25.0.1.jar :: javafx.graphicsEmpty
+[DEBUG]  /home/Ahmed/.m2/repository/org/slf4j/slf4j-api/2.0.17/slf4j-api-2.0.17.jar :: org.slf4j
+[DEBUG]  /home/Ahmed/.m2/repository/org/xerial/sqlite-jdbc/3.50.3.0/sqlite-jdbc-3.50.3.0.jar :: org.xerial.sqlitejdbc
+[DEBUG]  /home/Ahmed/.m2/repository/uk/co/caprica/vlcj/4.8.3/vlcj-4.8.3.jar :: uk.co.caprica.vlcj
+[DEBUG]  /home/Ahmed/.m2/repository/uk/co/caprica/vlcj-javafx/1.2.1/vlcj-javafx-1.2.1.jar :: uk.co.caprica.vlcj.javafx
+[DEBUG]  /home/Ahmed/.m2/repository/uk/co/caprica/vlcj-natives/4.8.3/vlcj-natives-4.8.3.jar :: uk.co.caprica.vlcj.natives
+[DEBUG] image output: /home/Ahmed/IdeaProjects/java-mediaplayer/target/app
+[DEBUG] Executing command line: [/usr/lib/jvm/jre-25-openjdk/bin/jlink, --module-path, /home/Ahmed/IdeaProjects/java-mediaplayer/target/classes:/home/Ahmed/.m2/repository/com/github/RouHim/jaudiotagger/2.0.19-modular/jaudiotagger-2.0.19-modular.jar:/home/Ahmed/.m2/repository/com/google/code/gson/gson/2.11.0/gson-2.11.0.jar:/home/Ahmed/.m2/repository/com/google/errorprone/error_prone_annotations/2.27.0/error_prone_annotations-2.27.0.jar:/home/Ahmed/.m2/repository/net/java/dev/jna/jna-jpms/5.14.0/jna-jpms-5.14.0.jar:/home/Ahmed/.m2/repository/net/java/dev/jna/jna-platform-jpms/5.14.0/jna-platform-jpms-5.14.0.jar:/home/Ahmed/.m2/repository/org/openjfx/javafx-base/25.0.1/javafx-base-25.0.1-linux.jar:/home/Ahmed/.m2/repository/org/openjfx/javafx-controls/25.0.1/javafx-controls-25.0.1-linux.jar:/home/Ahmed/.m2/repository/org/openjfx/javafx-fxml/25.0.1/javafx-fxml-25.0.1-linux.jar:/home/Ahmed/.m2/repository/org/openjfx/javafx-graphics/25.0.1/javafx-graphics-25.0.1-linux.jar:/home/Ahmed/.m2/repository/org/slf4j/slf4j-api/2.0.17/slf4j-api-2.0.17.jar:/home/Ahmed/.m2/repository/uk/co/caprica/vlcj/4.8.3/vlcj-4.8.3.jar:/home/Ahmed/.m2/repository/uk/co/caprica/vlcj-natives/4.8.3/vlcj-natives-4.8.3.jar, --add-modules, org.example.moka_music_player, --output, /home/Ahmed/IdeaProjects/java-mediaplayer/target/app, --strip-debug, --compress, 0, --no-header-files, --no-man-pages, --launcher, app=org.example.moka_music_player/gui.main.MainLauncher]
+Warning: The 0 argument for --compress is deprecated and may be removed in a future release
+Error: /usr/lib/jvm/java-25-openjdk/conf/security/java.security has been modified
+[ERROR] Command execution failed.
+org.apache.commons.exec.ExecuteException: Process exited with an error: 1 (Exit value: 1)
+    at org.apache.commons.exec.DefaultExecutor.executeInternal (DefaultExecutor.java:404)
+    at org.apache.commons.exec.DefaultExecutor.execute (DefaultExecutor.java:166)
+    at org.openjfx.JavaFXBaseMojo.executeCommandLine (JavaFXBaseMojo.java:567)
+    at org.openjfx.JavaFXBaseMojo.executeCommandLine (JavaFXBaseMojo.java:434)
+    at org.openjfx.JavaFXJLinkMojo.execute (JavaFXJLinkMojo.java:209)
+    at org.apache.maven.plugin.DefaultBuildPluginManager.executeMojo (DefaultBuildPluginManager.java:126)
+    at org.apache.maven.lifecycle.internal.MojoExecutor.doExecute2 (MojoExecutor.java:328)
+    at org.apache.maven.lifecycle.internal.MojoExecutor.doExecute (MojoExecutor.java:316)
+    at org.apache.maven.lifecycle.internal.MojoExecutor.execute (MojoExecutor.java:212)
+    at org.apache.maven.lifecycle.internal.MojoExecutor.execute (MojoExecutor.java:174)
+    at org.apache.maven.lifecycle.internal.MojoExecutor.access$000 (MojoExecutor.java:75)
+    at org.apache.maven.lifecycle.internal.MojoExecutor$1.run (MojoExecutor.java:162)
+    at org.apache.maven.plugin.DefaultMojosExecutionStrategy.execute (DefaultMojosExecutionStrategy.java:39)
+    at org.apache.maven.lifecycle.internal.MojoExecutor.execute (MojoExecutor.java:159)
+    at org.apache.maven.lifecycle.internal.LifecycleModuleBuilder.buildProject (LifecycleModuleBuilder.java:105)
+    at org.apache.maven.lifecycle.internal.LifecycleModuleBuilder.buildProject (LifecycleModuleBuilder.java:73)
+    at org.apache.maven.lifecycle.internal.builder.singlethreaded.SingleThreadedBuilder.build (SingleThreadedBuilder.java:53)
+    at org.apache.maven.lifecycle.internal.LifecycleStarter.execute (LifecycleStarter.java:118)
+    at org.apache.maven.DefaultMaven.doExecute (DefaultMaven.java:261)
+    at org.apache.maven.DefaultMaven.doExecute (DefaultMaven.java:173)
+    at org.apache.maven.DefaultMaven.execute (DefaultMaven.java:101)
+    at org.apache.maven.cli.MavenCli.execute (MavenCli.java:906)
+    at org.apache.maven.cli.MavenCli.doMain (MavenCli.java:283)
+    at org.apache.maven.cli.MavenCli.main (MavenCli.java:206)
+    at jdk.internal.reflect.DirectMethodHandleAccessor.invoke (DirectMethodHandleAccessor.java:104)
+    at java.lang.reflect.Method.invoke (Method.java:565)
+    at org.codehaus.plexus.classworlds.launcher.Launcher.launchEnhanced (Launcher.java:255)
+    at org.codehaus.plexus.classworlds.launcher.Launcher.launch (Launcher.java:201)
+    at org.codehaus.plexus.classworlds.launcher.Launcher.mainWithExitCode (Launcher.java:361)
+    at org.codehaus.plexus.classworlds.launcher.Launcher.main (Launcher.java:314)
+org.apache.commons.exec.ExecuteException: Process exited with an error: 1 (Exit value: 1)
+	at org.apache.commons.exec.DefaultExecutor.executeInternal(DefaultExecutor.java:404)
+	at org.apache.commons.exec.DefaultExecutor.execute(DefaultExecutor.java:166)
+	at org.openjfx.JavaFXBaseMojo.executeCommandLine(JavaFXBaseMojo.java:567)
+	at org.openjfx.JavaFXBaseMojo.executeCommandLine(JavaFXBaseMojo.java:434)
+	at org.openjfx.JavaFXJLinkMojo.execute(JavaFXJLinkMojo.java:209)
+	at org.apache.maven.plugin.DefaultBuildPluginManager.executeMojo(DefaultBuildPluginManager.java:126)
+	at org.apache.maven.lifecycle.internal.MojoExecutor.doExecute2(MojoExecutor.java:328)
+	at org.apache.maven.lifecycle.internal.MojoExecutor.doExecute(MojoExecutor.java:316)
+	at org.apache.maven.lifecycle.internal.MojoExecutor.execute(MojoExecutor.java:212)
+	at org.apache.maven.lifecycle.internal.MojoExecutor.execute(MojoExecutor.java:174)
+	at org.apache.maven.lifecycle.internal.MojoExecutor.access$000(MojoExecutor.java:75)
+	at org.apache.maven.lifecycle.internal.MojoExecutor$1.run(MojoExecutor.java:162)
+	at org.apache.maven.plugin.DefaultMojosExecutionStrategy.execute(DefaultMojosExecutionStrategy.java:39)
+	at org.apache.maven.lifecycle.internal.MojoExecutor.execute(MojoExecutor.java:159)
+	at org.apache.maven.lifecycle.internal.LifecycleModuleBuilder.buildProject(LifecycleModuleBuilder.java:105)
+	at org.apache.maven.lifecycle.internal.LifecycleModuleBuilder.buildProject(LifecycleModuleBuilder.java:73)
+	at org.apache.maven.lifecycle.internal.builder.singlethreaded.SingleThreadedBuilder.build(SingleThreadedBuilder.java:53)
+	at org.apache.maven.lifecycle.internal.LifecycleStarter.execute(LifecycleStarter.java:118)
+	at org.apache.maven.DefaultMaven.doExecute(DefaultMaven.java:261)
+	at org.apache.maven.DefaultMaven.doExecute(DefaultMaven.java:173)
+	at org.apache.maven.DefaultMaven.execute(DefaultMaven.java:101)
+	at org.apache.maven.cli.MavenCli.execute(MavenCli.java:906)
+	at org.apache.maven.cli.MavenCli.doMain(MavenCli.java:283)
+	at org.apache.maven.cli.MavenCli.main(MavenCli.java:206)
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:104)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:565)
+	at org.codehaus.plexus.classworlds.launcher.Launcher.launchEnhanced(Launcher.java:255)
+	at org.codehaus.plexus.classworlds.launcher.Launcher.launch(Launcher.java:201)
+	at org.codehaus.plexus.classworlds.launcher.Launcher.mainWithExitCode(Launcher.java:361)
+	at org.codehaus.plexus.classworlds.launcher.Launcher.main(Launcher.java:314)
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD FAILURE
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  1.191 s
+[INFO] Finished at: 2026-07-14T16:17:53+03:00
+[INFO] ------------------------------------------------------------------------
+[ERROR] Failed to execute goal org.openjfx:javafx-maven-plugin:0.0.8:jlink (default-cli) on project moka_music_player: Error: Command execution failed. Process exited with an error: 1 (Exit value: 1) -> [Help 1]
+org.apache.maven.lifecycle.LifecycleExecutionException: Failed to execute goal org.openjfx:javafx-maven-plugin:0.0.8:jlink (default-cli) on project moka_music_player: Error
+    at org.apache.maven.lifecycle.internal.MojoExecutor.doExecute2 (MojoExecutor.java:333)
+    at org.apache.maven.lifecycle.internal.MojoExecutor.doExecute (MojoExecutor.java:316)
+    at org.apache.maven.lifecycle.internal.MojoExecutor.execute (MojoExecutor.java:212)
+    at org.apache.maven.lifecycle.internal.MojoExecutor.execute (MojoExecutor.java:174)
+    at org.apache.maven.lifecycle.internal.MojoExecutor.access$000 (MojoExecutor.java:75)
+    at org.apache.maven.lifecycle.internal.MojoExecutor$1.run (MojoExecutor.java:162)
+    at org.apache.maven.plugin.DefaultMojosExecutionStrategy.execute (DefaultMojosExecutionStrategy.java:39)
+    at org.apache.maven.lifecycle.internal.MojoExecutor.execute (MojoExecutor.java:159)
+    at org.apache.maven.lifecycle.internal.LifecycleModuleBuilder.buildProject (LifecycleModuleBuilder.java:105)
+    at org.apache.maven.lifecycle.internal.LifecycleModuleBuilder.buildProject (LifecycleModuleBuilder.java:73)
+    at org.apache.maven.lifecycle.internal.builder.singlethreaded.SingleThreadedBuilder.build (SingleThreadedBuilder.java:53)
+    at org.apache.maven.lifecycle.internal.LifecycleStarter.execute (LifecycleStarter.java:118)
+    at org.apache.maven.DefaultMaven.doExecute (DefaultMaven.java:261)
+    at org.apache.maven.DefaultMaven.doExecute (DefaultMaven.java:173)
+    at org.apache.maven.DefaultMaven.execute (DefaultMaven.java:101)
+    at org.apache.maven.cli.MavenCli.execute (MavenCli.java:906)
+    at org.apache.maven.cli.MavenCli.doMain (MavenCli.java:283)
+    at org.apache.maven.cli.MavenCli.main (MavenCli.java:206)
+    at jdk.internal.reflect.DirectMethodHandleAccessor.invoke (DirectMethodHandleAccessor.java:104)
+    at java.lang.reflect.Method.invoke (Method.java:565)
+    at org.codehaus.plexus.classworlds.launcher.Launcher.launchEnhanced (Launcher.java:255)
+    at org.codehaus.plexus.classworlds.launcher.Launcher.launch (Launcher.java:201)
+    at org.codehaus.plexus.classworlds.launcher.Launcher.mainWithExitCode (Launcher.java:361)
+    at org.codehaus.plexus.classworlds.launcher.Launcher.main (Launcher.java:314)
+Caused by: org.apache.maven.plugin.MojoExecutionException: Error
+    at org.openjfx.JavaFXJLinkMojo.execute (JavaFXJLinkMojo.java:241)
+    at org.apache.maven.plugin.DefaultBuildPluginManager.executeMojo (DefaultBuildPluginManager.java:126)
+    at org.apache.maven.lifecycle.internal.MojoExecutor.doExecute2 (MojoExecutor.java:328)
+    at org.apache.maven.lifecycle.internal.MojoExecutor.doExecute (MojoExecutor.java:316)
+    at org.apache.maven.lifecycle.internal.MojoExecutor.execute (MojoExecutor.java:212)
+    at org.apache.maven.lifecycle.internal.MojoExecutor.execute (MojoExecutor.java:174)
+    at org.apache.maven.lifecycle.internal.MojoExecutor.access$000 (MojoExecutor.java:75)
+    at org.apache.maven.lifecycle.internal.MojoExecutor$1.run (MojoExecutor.java:162)
+    at org.apache.maven.plugin.DefaultMojosExecutionStrategy.execute (DefaultMojosExecutionStrategy.java:39)
+    at org.apache.maven.lifecycle.internal.MojoExecutor.execute (MojoExecutor.java:159)
+    at org.apache.maven.lifecycle.internal.LifecycleModuleBuilder.buildProject (LifecycleModuleBuilder.java:105)
+    at org.apache.maven.lifecycle.internal.LifecycleModuleBuilder.buildProject (LifecycleModuleBuilder.java:73)
+    at org.apache.maven.lifecycle.internal.builder.singlethreaded.SingleThreadedBuilder.build (SingleThreadedBuilder.java:53)
+    at org.apache.maven.lifecycle.internal.LifecycleStarter.execute (LifecycleStarter.java:118)
+    at org.apache.maven.DefaultMaven.doExecute (DefaultMaven.java:261)
+    at org.apache.maven.DefaultMaven.doExecute (DefaultMaven.java:173)
+    at org.apache.maven.DefaultMaven.execute (DefaultMaven.java:101)
+    at org.apache.maven.cli.MavenCli.execute (MavenCli.java:906)
+    at org.apache.maven.cli.MavenCli.doMain (MavenCli.java:283)
+    at org.apache.maven.cli.MavenCli.main (MavenCli.java:206)
+    at jdk.internal.reflect.DirectMethodHandleAccessor.invoke (DirectMethodHandleAccessor.java:104)
+    at java.lang.reflect.Method.invoke (Method.java:565)
+    at org.codehaus.plexus.classworlds.launcher.Launcher.launchEnhanced (Launcher.java:255)
+    at org.codehaus.plexus.classworlds.launcher.Launcher.launch (Launcher.java:201)
+    at org.codehaus.plexus.classworlds.launcher.Launcher.mainWithExitCode (Launcher.java:361)
+    at org.codehaus.plexus.classworlds.launcher.Launcher.main (Launcher.java:314)
+Caused by: org.apache.maven.plugin.MojoExecutionException: Command execution failed.
+    at org.openjfx.JavaFXJLinkMojo.execute (JavaFXJLinkMojo.java:235)
+    at org.apache.maven.plugin.DefaultBuildPluginManager.executeMojo (DefaultBuildPluginManager.java:126)
+    at org.apache.maven.lifecycle.internal.MojoExecutor.doExecute2 (MojoExecutor.java:328)
+    at org.apache.maven.lifecycle.internal.MojoExecutor.doExecute (MojoExecutor.java:316)
+    at org.apache.maven.lifecycle.internal.MojoExecutor.execute (MojoExecutor.java:212)
+    at org.apache.maven.lifecycle.internal.MojoExecutor.execute (MojoExecutor.java:174)
+    at org.apache.maven.lifecycle.internal.MojoExecutor.access$000 (MojoExecutor.java:75)
+    at org.apache.maven.lifecycle.internal.MojoExecutor$1.run (MojoExecutor.java:162)
+    at org.apache.maven.plugin.DefaultMojosExecutionStrategy.execute (DefaultMojosExecutionStrategy.java:39)
+    at org.apache.maven.lifecycle.internal.MojoExecutor.execute (MojoExecutor.java:159)
+    at org.apache.maven.lifecycle.internal.LifecycleModuleBuilder.buildProject (LifecycleModuleBuilder.java:105)
+    at org.apache.maven.lifecycle.internal.LifecycleModuleBuilder.buildProject (LifecycleModuleBuilder.java:73)
+    at org.apache.maven.lifecycle.internal.builder.singlethreaded.SingleThreadedBuilder.build (SingleThreadedBuilder.java:53)
+    at org.apache.maven.lifecycle.internal.LifecycleStarter.execute (LifecycleStarter.java:118)
+    at org.apache.maven.DefaultMaven.doExecute (DefaultMaven.java:261)
+    at org.apache.maven.DefaultMaven.doExecute (DefaultMaven.java:173)
+    at org.apache.maven.DefaultMaven.execute (DefaultMaven.java:101)
+    at org.apache.maven.cli.MavenCli.execute (MavenCli.java:906)
+    at org.apache.maven.cli.MavenCli.doMain (MavenCli.java:283)
+    at org.apache.maven.cli.MavenCli.main (MavenCli.java:206)
+    at jdk.internal.reflect.DirectMethodHandleAccessor.invoke (DirectMethodHandleAccessor.java:104)
+    at java.lang.reflect.Method.invoke (Method.java:565)
+    at org.codehaus.plexus.classworlds.launcher.Launcher.launchEnhanced (Launcher.java:255)
+    at org.codehaus.plexus.classworlds.launcher.Launcher.launch (Launcher.java:201)
+    at org.codehaus.plexus.classworlds.launcher.Launcher.mainWithExitCode (Launcher.java:361)
+    at org.codehaus.plexus.classworlds.launcher.Launcher.main (Launcher.java:314)
+Caused by: org.apache.commons.exec.ExecuteException: Process exited with an error: 1 (Exit value: 1)
+    at org.apache.commons.exec.DefaultExecutor.executeInternal (DefaultExecutor.java:404)
+    at org.apache.commons.exec.DefaultExecutor.execute (DefaultExecutor.java:166)
+    at org.openjfx.JavaFXBaseMojo.executeCommandLine (JavaFXBaseMojo.java:567)
+    at org.openjfx.JavaFXBaseMojo.executeCommandLine (JavaFXBaseMojo.java:434)
+    at org.openjfx.JavaFXJLinkMojo.execute (JavaFXJLinkMojo.java:209)
+    at org.apache.maven.plugin.DefaultBuildPluginManager.executeMojo (DefaultBuildPluginManager.java:126)
+    at org.apache.maven.lifecycle.internal.MojoExecutor.doExecute2 (MojoExecutor.java:328)
+    at org.apache.maven.lifecycle.internal.MojoExecutor.doExecute (MojoExecutor.java:316)
+    at org.apache.maven.lifecycle.internal.MojoExecutor.execute (MojoExecutor.java:212)
+    at org.apache.maven.lifecycle.internal.MojoExecutor.execute (MojoExecutor.java:174)
+    at org.apache.maven.lifecycle.internal.MojoExecutor.access$000 (MojoExecutor.java:75)
+    at org.apache.maven.lifecycle.internal.MojoExecutor$1.run (MojoExecutor.java:162)
+    at org.apache.maven.plugin.DefaultMojosExecutionStrategy.execute (DefaultMojosExecutionStrategy.java:39)
+    at org.apache.maven.lifecycle.internal.MojoExecutor.execute (MojoExecutor.java:159)
+    at org.apache.maven.lifecycle.internal.LifecycleModuleBuilder.buildProject (LifecycleModuleBuilder.java:105)
+    at org.apache.maven.lifecycle.internal.LifecycleModuleBuilder.buildProject (LifecycleModuleBuilder.java:73)
+    at org.apache.maven.lifecycle.internal.builder.singlethreaded.SingleThreadedBuilder.build (SingleThreadedBuilder.java:53)
+    at org.apache.maven.lifecycle.internal.LifecycleStarter.execute (LifecycleStarter.java:118)
+    at org.apache.maven.DefaultMaven.doExecute (DefaultMaven.java:261)
+    at org.apache.maven.DefaultMaven.doExecute (DefaultMaven.java:173)
+    at org.apache.maven.DefaultMaven.execute (DefaultMaven.java:101)
+    at org.apache.maven.cli.MavenCli.execute (MavenCli.java:906)
+    at org.apache.maven.cli.MavenCli.doMain (MavenCli.java:283)
+    at org.apache.maven.cli.MavenCli.main (MavenCli.java:206)
+    at jdk.internal.reflect.DirectMethodHandleAccessor.invoke (DirectMethodHandleAccessor.java:104)
+    at java.lang.reflect.Method.invoke (Method.java:565)
+    at org.codehaus.plexus.classworlds.launcher.Launcher.launchEnhanced (Launcher.java:255)
+    at org.codehaus.plexus.classworlds.launcher.Launcher.launch (Launcher.java:201)
+    at org.codehaus.plexus.classworlds.launcher.Launcher.mainWithExitCode (Launcher.java:361)
+    at org.codehaus.plexus.classworlds.launcher.Launcher.main (Launcher.java:314)
+[ERROR]
+[ERROR]
+[ERROR] For more information about the errors and possible solutions, please read the following articles:
+[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoExecutionException
+[DEBUG] Shutting down adapter factory; available factories [file-lock, rwlock-local, semaphore-local, noop]; available name mappers [discriminating, file-gav, file-hgav, file-static, gav, static]
+[DEBUG] Shutting down 'file-lock' factory
+[DEBUG] Shutting down 'rwlock-local' factory
+[DEBUG] Shutting down 'semaphore-local' factory
+[DEBUG] Shutting down 'noop' factory
