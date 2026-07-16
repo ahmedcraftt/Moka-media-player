@@ -22,43 +22,43 @@ public final class PlayerConfig {
     PlayerConfig() {
     }
 
-    int getPreferredSkipSeconds() {
+    public int getPreferredSkipSeconds() {
         return preferredSkipSeconds;
     }
 
-    void setPreferredSkipSeconds(int preferredSkipSeconds) {
+    public void setPreferredSkipSeconds(int preferredSkipSeconds) {
         this.preferredSkipSeconds = preferredSkipSeconds;
     }
 
-    int getPreferredVolumeLevel() {
+    public int getPreferredVolumeLevel() {
         return preferredVolumeLevel;
     }
 
-    void setPreferredVolumeLevel(int preferredVolumeLevel) {
+    public void setPreferredVolumeLevel(int preferredVolumeLevel) {
         this.preferredVolumeLevel = preferredVolumeLevel;
     }
 
-    int getPreferredVolumeModifier() {
+    public int getPreferredVolumeModifier() {
         return preferredVolumeModifier;
     }
 
-    void setPreferredVolumeModifier(int preferredVolumeModifier) {
+    public void setPreferredVolumeModifier(int preferredVolumeModifier) {
         this.preferredVolumeModifier = preferredVolumeModifier;
     }
 
-    RepeatMode getPreferredRepeatMode() {
+    public RepeatMode getPreferredRepeatMode() {
         return preferredRepeatMode;
     }
 
-    void setPreferredRepeatMode(RepeatMode preferredRepeatMode) {
+    public void setPreferredRepeatMode(RepeatMode preferredRepeatMode) {
         this.preferredRepeatMode = preferredRepeatMode;
     }
 
-    boolean isShuffle() {
+    public boolean isShuffle() {
         return shuffle;
     }
 
-    void setShuffle(boolean shuffle) {
+    public void setShuffle(boolean shuffle) {
         this.shuffle = shuffle;
     }
 }

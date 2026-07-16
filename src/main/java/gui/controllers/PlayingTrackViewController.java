@@ -1,7 +1,7 @@
 package gui.controllers;
 
 import application.service.PlayerService;
-import config.AppConfig;
+import config.UIConfig;
 import domain.model.media.Track;
 import gui.utils.DialogFactory;
 import gui.main.AppContext;
@@ -11,6 +11,7 @@ import javafx.animation.Interpolator;
 import javafx.animation.RotateTransition;
 import javafx.animation.ScaleTransition;
 import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
 import javafx.fxml.FXML;
 import javafx.scene.CacheHint;
 import javafx.scene.control.Alert;
@@ -30,6 +31,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
 
 public class PlayingTrackViewController {
 
@@ -50,8 +52,10 @@ public class PlayingTrackViewController {
     private ScaleTransition scaleTransition;
 
     private AppContext appContext;
-
     private int rotationSpeed;
+
+    private ChangeListener<Track> trackListener;
+    private ChangeListener<Object> playbackStateListener;
 
     public void setUiContext(AppContext appContext) {
         this.appContext = appContext;
@@ -59,38 +63,31 @@ public class PlayingTrackViewController {
     }
 
     private void init() {
-        AppConfig config = appContext.config();
+        UIConfig config = appContext.config().getUIConfig();
         imgTrack.setFitWidth(config.getArtworkImageWidth());
         imgTrack.setFitHeight(config.getArtworkImageHeight());
 
-        rotationSpeed = config.getArtworkImageRotationSpeed();
+        rotationSpeed = config.getArtworkRotationSpeed();
+        setupRotation();
 
         PlayerService playerService = appContext.playerService();
 
-        playerService.currentTrackProperty().addListener((obs, oldT, newT) -> updateUI(newT));
+        trackListener = (obs, oldT, newT) -> updateUI(newT);
+        playerService.currentTrackProperty().addListener(trackListener);
+
         if (playerService.getCurrentTrack() != null) {
             updateUI(playerService.getCurrentTrack());
-        } else updateUI(playerService.getSelectedTrack());
+        } else {
+            updateUI(playerService.getSelectedTrack());
+        }
 
-        playerService.playbackStateProperty().addListener((obs, oldState, newState) -> {
-            switch (newState) {
-                case PLAYING -> {
-                    rotateTransition.play();
-                    scaleTransition.play();
-                }
-                case PAUSED -> {
-                    rotateTransition.pause();
-                    scaleTransition.pause();
-                }
-                case STOPPED -> {
-                    rotateTransition.stop();
-                    scaleTransition.stop();
-                    imgTrack.setRotate(0);
-                    imgTrack.setScaleX(1);
-                    imgTrack.setScaleY(1);
-                }
-            }
-        });
+        playbackStateListener = (obs, oldState, newState) -> handlePlaybackStateChange(newState);
+        playerService.playbackStateProperty()
+                .addListener(playbackStateListener);
+
+        if (playerService.playbackStateProperty().getValue() != null) {
+            handlePlaybackStateChange(playerService.playbackStateProperty().getValue());
+        }
     }
 
     @FXML
@@ -102,10 +99,7 @@ public class PlayingTrackViewController {
         imgTrack.setCache(true);
 
         makeCircular(spImageContainer);
-        setupRotation();
         setupBreathingAnimation();
-
-        scaleTransition.play();
 
         btnChangeArtwork.setVisible(false);
     }
@@ -125,29 +119,41 @@ public class PlayingTrackViewController {
         File selectedFile = fileChooser.showOpenDialog(btnChangeArtwork.getScene().getWindow());
 
         if (selectedFile != null) {
-            try {
-                byte[] rawBytes = Files.readAllBytes(selectedFile.toPath());
+            btnChangeArtwork.setDisable(true);
 
-                String brandNewDiskPath = appContext.artStorage().saveArtwork(rawBytes, selectedFile.getName());
+            CompletableFuture.runAsync(() -> {
+                try {
+                    byte[] rawBytes = Files.readAllBytes(selectedFile.toPath());
+                    String brandNewDiskPath = appContext.artStorage().saveArtwork(rawBytes, selectedFile.getName());
 
-                if (brandNewDiskPath != null) {
-                    currentTrack.getMetadata().setArtworkPath(brandNewDiskPath);
-                    appContext.trackStorage().update(currentTrack);
+                    if (brandNewDiskPath != null) {
+                        currentTrack.getMetadata().setArtworkPath(brandNewDiskPath);
+                        appContext.trackStorage().update(currentTrack);
 
-                    logger.info("Successfully updated artwork for track '{}' to local path: {}",
-                            currentTrack.getTitle(), brandNewDiskPath);
+                        logger.info("Successfully updated artwork for track '{}' to local path: {}",
+                                currentTrack.getTitle(), brandNewDiskPath);
 
-                    updateUI(currentTrack);
-                } else {
-                    logger.warn("Artwork processing failed. Storage returned null path for file target: {}",
-                            selectedFile.getName());
-                    showErrorAlert("Storage Error", "Could not save the artwork image to disk storage.");
+                        Platform.runLater(() -> {
+                            updateUI(currentTrack);
+                            btnChangeArtwork.setDisable(false);
+                        });
+                    } else {
+                        logger.warn("Artwork processing failed. Storage returned null path for file target: {}",
+                                selectedFile.getName());
+                        Platform.runLater(() -> {
+                            showErrorAlert("Storage Error", "Could not save the artwork image to disk storage.");
+                            btnChangeArtwork.setDisable(false);
+                        });
+                    }
+                } catch (IOException e) {
+                    logger.error("Exception encountered while reading or assigning new artwork file from input: {}",
+                            selectedFile.getAbsolutePath(), e);
+                    Platform.runLater(() -> {
+                        showErrorAlert("File IO Error", "Failed to read selected file: " + e.getMessage());
+                        btnChangeArtwork.setDisable(false);
+                    });
                 }
-            } catch (IOException e) {
-                logger.error("Exception encountered while reading or assigning new artwork file from input: {}",
-                        selectedFile.getAbsolutePath(), e);
-                showErrorAlert("File IO Error", "Failed to read selected file: " + e.getMessage());
-            }
+            });
         }
     }
 
@@ -200,6 +206,29 @@ public class PlayingTrackViewController {
         }
     }
 
+    private void handlePlaybackStateChange(Object state) {
+        if (state == null) return;
+
+        String stateStr = state.toString();
+        switch (stateStr) {
+            case "PLAYING" -> {
+                rotateTransition.play();
+                scaleTransition.play();
+            }
+            case "PAUSED" -> {
+                rotateTransition.pause();
+                scaleTransition.pause();
+            }
+            case "STOPPED" -> {
+                rotateTransition.stop();
+                scaleTransition.stop();
+                imgTrack.setRotate(0);
+                imgTrack.setScaleX(1);
+                imgTrack.setScaleY(1);
+            }
+        }
+    }
+
     private void loadDefaultArtwork() {
         imgTrack.setImage(new Image(
                 Objects.requireNonNull(
@@ -240,5 +269,20 @@ public class PlayingTrackViewController {
         scaleTransition.setAutoReverse(true);
         scaleTransition.setCycleCount(Animation.INDEFINITE);
         scaleTransition.setInterpolator(Interpolator.EASE_BOTH);
+    }
+
+    public void dispose() {
+        if (appContext != null && appContext.playerService() != null) {
+            PlayerService playerService = appContext.playerService();
+            if (trackListener != null) {
+                playerService.currentTrackProperty().removeListener(trackListener);
+            }
+            if (playbackStateListener != null) {
+                playerService.playbackStateProperty()
+                        .removeListener(playbackStateListener);
+            }
+        }
+        if (rotateTransition != null) rotateTransition.stop();
+        if (scaleTransition != null) scaleTransition.stop();
     }
 }

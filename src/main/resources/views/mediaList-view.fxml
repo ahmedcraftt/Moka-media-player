@@ -26,7 +26,7 @@
          </padding>
          <Button fx:id="btnListPlay" text="▶" />
          <TextField fx:id="searchBar" promptText="Search" HBox.hgrow="ALWAYS" />
-         <Button fx:id="btnAddDirectory" mnemonicParsing="false" text="+" />
+          <Button fx:id="btnAdd" mnemonicParsing="false" text="+"/>
          <MenuButton fx:id="btnSort" mnemonicParsing="false" text="sort by">
             <items>
                <MenuItem onAction="#sortByTitle" text="Title" />

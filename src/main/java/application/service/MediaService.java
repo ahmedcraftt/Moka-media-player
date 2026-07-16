@@ -62,7 +62,7 @@ public class MediaService {
     }
 
 
-    private void rebuildMetadataCaches() {
+    public void rebuildMetadataCaches() {
 
         List<Track> allTracks = getTracks();
 
@@ -146,6 +146,10 @@ public class MediaService {
 
     public List<Playlist> getGenre() {
         return cachedGenres;
+    }
+
+    public void addTrack(Track track) {
+        mediaLibrary.addTrack(track);
     }
 
     public List<Track> search(String query) {

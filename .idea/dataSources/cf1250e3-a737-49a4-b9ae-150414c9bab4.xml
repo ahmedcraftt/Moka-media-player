@@ -568,7 +568,7 @@
     <routine id="213" parent="1" name="padr"/>
     <schema id="214" parent="1" name="main">
       <Current>1</Current>
-      <LastIntrospectionLocalTimestamp>2026-07-03.12:41:09</LastIntrospectionLocalTimestamp>
+      <LastIntrospectionLocalTimestamp>2026-07-16.14:48:00</LastIntrospectionLocalTimestamp>
     </schema>
     <argument id="215" parent="14">
       <ArgumentDirection>R</ArgumentDirection>
@@ -1937,6 +1937,10 @@
     </column>
     <column id="661" parent="629" name="fileType">
       <Position>12</Position>
+      <StoredType>integer|0s</StoredType>
+    </column>
+    <column id="662" parent="629" name="last_played">
+      <Position>13</Position>
       <StoredType>integer|0s</StoredType>
     </column>
   </database-model>

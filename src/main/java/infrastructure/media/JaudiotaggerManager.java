@@ -74,30 +74,19 @@ public class JaudiotaggerManager implements MetadataManager {
             AudioHeader header = audioFile.getAudioHeader();
 
             if (header == null) {
-                throw new IllegalArgumentException("Invalid or corrupted audio file: " + file);
+                logger.error("Audio header is null. Invalid or corrupted audio file: [{}]", file);
             }
 
             if (tag != null) {
-                metadata.setTitle(tag.getFirst(FieldKey.TITLE));
+                readTitle(track, tag);
                 metadata.setGenre(tag.getFirst(FieldKey.GENRE));
                 metadata.setYear(safeParseYear(tag.getFirst(FieldKey.YEAR)));
                 metadata.setLanguage(tag.getFirst(FieldKey.LANGUAGE));
-                metadata.setDurationInSeconds(header.getTrackLength());
-
-                Integer br = null;
-                try {
-                    br = Math.toIntExact(header.getBitRateAsNumber());
-                } catch (Exception ignored) {}
-
-                if (br != null) {
-                    metadata.setBitrate(br);
-                }
-
-                // Cleaned up the duplicate samplerate mutation statement here
-                metadata.setSamplerate(header.getSampleRateAsNumber());
+                readDuration(track, header);
+                readBitrate(track, header);
+                readSamplerate(track, header);
                 metadata.setDescription(tag.getFirst(FieldKey.COMMENT));
                 metadata.setLyrics(tag.getFirst(FieldKey.LYRICS));
-
                 metadata.setArtist(tag.getFirst(FieldKey.ARTIST));
                 metadata.setSeries(tag.getFirst(FieldKey.ALBUM));
                 metadata.setSeriesArtist(tag.getFirst(FieldKey.ALBUM_ARTIST));
@@ -108,6 +97,46 @@ public class JaudiotaggerManager implements MetadataManager {
             logger.error("Metadata read failed for path: {}", track.getFiledata().getFilePath(), e);
         }
     }
+
+    private void readTitle(Track track, Tag tag) {
+        if (tag != null) {
+            Metadata metadata = track.getMetadata();
+            metadata.setTitle(tag.getFirst(FieldKey.TITLE));
+        }
+    }
+
+    private void readDuration(Track track, AudioHeader header) {
+        if (header == null) {
+            return;
+        }
+        Metadata metadata = track.getMetadata();
+        metadata.setDurationInSeconds(header.getTrackLength());
+    }
+
+    private void readBitrate(Track track, AudioHeader header) {
+        if (header == null) {
+            return;
+        }
+        Metadata metadata = track.getMetadata();
+        Integer br = null;
+        try {
+            br = Math.toIntExact(header.getBitRateAsNumber());
+        } catch (Exception ignored) {
+        }
+
+        if (br != null) {
+            metadata.setBitrate(br);
+        }
+    }
+
+    private void readSamplerate(Track track, AudioHeader header) {
+        if (header == null) {
+            return;
+        }
+        Metadata metadata = track.getMetadata();
+        metadata.setSamplerate(header.getSampleRateAsNumber());
+    }
+
 
     @Override
     public byte[] extractRawArtworkBytes(Path path) {

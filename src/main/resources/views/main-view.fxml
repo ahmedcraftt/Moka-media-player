@@ -3,8 +3,8 @@
 <?import java.net.URL?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ContextMenu?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.control.MenuButton?>
 <?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.Slider?>
 <?import javafx.scene.layout.AnchorPane?>
@@ -18,7 +18,7 @@
             xmlns="http://javafx.com/javafx/25.0.1" xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="gui.controllers.MainViewController">
    <stylesheets>
-      <URL value="@../styles/main.css"/>
+       <URL value="@../styles/main.css"/>
    </stylesheets>
    <left>
       <VBox alignment="CENTER" spacing="15.0" BorderPane.alignment="CENTER">
@@ -40,7 +40,7 @@
             </VBox>
             <VBox id="utils" fx:id="vbUtils" spacing="10.0" styleClass="utils-controls">
                <children>
-                  <Button fx:id="btnFolders" mnemonicParsing="false" text="My Folders"/>
+                   <Button fx:id="btnFolders" mnemonicParsing="false" text="My Folders"/>
                </children>
                <padding>
                   <Insets top="5.0" />
@@ -61,25 +61,25 @@
    <bottom>
       <VBox alignment="CENTER" spacing="8.0" BorderPane.alignment="CENTER">
          <children>
-            <Label fx:id="currentTrack" alignment="CENTER" prefHeight="18.0" prefWidth="500.0"
-                   styleClass="playing-track-label" text="---"/>
+             <Label fx:id="currentTrack" alignment="CENTER" prefHeight="18.0" prefWidth="500.0"
+                    styleClass="playing-track-label" text="---"/>
 
             <Slider fx:id="progressSlider" maxWidth="1.7976931348623157E308" />
             <HBox alignment="CENTER" spacing="20.0">
                <children>
                   <HBox alignment="CENTER_LEFT" spacing="10.0" HBox.hgrow="ALWAYS">
                      <children>
-                        <Button fx:id="btnShuffle" mnemonicParsing="false" text="shuffle"/>
+                         <Button fx:id="btnShuffle" mnemonicParsing="false" text="shuffle"/>
                      </children>
                   </HBox>
 
                   <HBox alignment="CENTER" spacing="10.0">
                      <children>
-                        <Button fx:id="btnFastBackward" text="⏪ -10s"/>
+                         <Button fx:id="btnFastBackward" text="⏪ -10s"/>
                         <Button fx:id="btnPrev" text="⏮" />
                         <Button fx:id="btnPlay" text="▶" />
                         <Button fx:id="btnNext" text="⏭" />
-                        <Button fx:id="btnFastForward" text="+10s ⏩"/>
+                         <Button fx:id="btnFastForward" text="+10s ⏩"/>
                      </children>
                      <padding>
                         <Insets top="5.0" />
@@ -111,17 +111,21 @@
          <children>
             <VBox id="controls" fx:id="vbControls" alignment="CENTER" spacing="20.0" styleClass="player-controls">
                <children>
-                  <Button fx:id="btnQueue" mnemonicParsing="false" text="Queue"/>
+                   <Button fx:id="btnQueue" mnemonicParsing="false" text="Queue"/>
                   <Button fx:id="btnCurrentTrack" mnemonicParsing="false" text="Track" />
                   <Button fx:id="btnLyrics" mnemonicParsing="false" text="Lyrics" />
-                  <MenuButton fx:id="btnRepeatAndStop" mnemonicParsing="false" text="repeat">
-                     <items>
-                        <MenuItem fx:id="miPlayOne" mnemonicParsing="false" text="Play 1"/>
-                        <MenuItem fx:id="miLoopOne" mnemonicParsing="false" text="Loop 1"/>
-                        <MenuItem fx:id="miPlayQueue" mnemonicParsing="false" text="Play queue"/>
-                        <MenuItem fx:id="miLoopQueue" mnemonicParsing="false" text="Loop queue"/>
-                     </items>
-                  </MenuButton>
+                   <Button fx:id="btnRepeat" mnemonicParsing="false" text="repeat">
+                       <contextMenu>
+                           <ContextMenu fx:id="cxmRepeatMenu">
+                               <items>
+                                   <MenuItem fx:id="miPlayOne" mnemonicParsing="false" text="Play 1"/>
+                                   <MenuItem fx:id="miLoopOne" mnemonicParsing="false" text="Loop 1"/>
+                                   <MenuItem fx:id="miLoopQueue" mnemonicParsing="false" text="Loop queue"/>
+                                   <MenuItem fx:id="miPlayQueue" mnemonicParsing="false" text="Play queue"/>
+                               </items>
+                           </ContextMenu>
+                       </contextMenu>
+                   </Button>
                </children>
                <opaqueInsets>
                   <Insets />

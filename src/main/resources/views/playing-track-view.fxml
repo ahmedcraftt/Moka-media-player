@@ -19,8 +19,7 @@
             <StackPane fx:id="spImageContainer" styleClass="image-circle">
                 <children>
 
-                    <ImageView fx:id="imgTrack" fitHeight="400.0" fitWidth="400.0" preserveRatio="true"
-                               styleClass="track-image"/>
+                    <ImageView fx:id="imgTrack" fitHeight="400.0" fitWidth="400.0" styleClass="track-image"/>
                 </children>
             </StackPane>
 

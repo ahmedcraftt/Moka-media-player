@@ -7,11 +7,11 @@ public final class SearchConfig {
 
     private SearchEngine preferredSearchEngine = DEFAULT_SEARCH_ENGINE;
 
-    SearchEngine getPreferredSearchEngine() {
+    public SearchEngine getPreferredSearchEngine() {
         return preferredSearchEngine;
     }
 
-    void setPreferredSearchEngine(SearchEngine preferredSearchEngine) {
+    public void setPreferredSearchEngine(SearchEngine preferredSearchEngine) {
         this.preferredSearchEngine = preferredSearchEngine;
     }
 }

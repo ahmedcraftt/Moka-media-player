@@ -3,7 +3,7 @@ package gui.controllers;
 import application.service.LibraryService;
 import application.service.MediaService;
 import application.service.PlayerService;
-import config.AppConfig;
+import config.UIConfig;
 import domain.model.media.Playlist;
 import domain.model.media.Track;
 import gui.utils.DialogFactory;
@@ -15,6 +15,7 @@ import domain.audio.RepeatMode;
 import javafx.animation.*;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
+import javafx.geometry.Side;
 import javafx.util.Duration;
 import domain.model.library.Library;
 
@@ -29,9 +30,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static domain.audio.PlaybackState.*;
 
@@ -46,12 +45,11 @@ public class MainViewController {
     @FXML
     private Button btnCurrentTrack, btnQueue, btnArtists, btnGenres;
     @FXML
-    private Button btnAlbum, btnFolders, btnFastForward, btnFastBackward;
+    private Button btnAlbum, btnFolders, btnFastForward, btnFastBackward, btnRepeat;
     @FXML
     private Button btnFavorite, btnShuffle, btnLyrics;
-
     @FXML
-    private MenuButton btnRepeatAndStop;
+    private ContextMenu cxmRepeatMenu;
     @FXML
     private MenuItem miPlayOne, miLoopOne, miPlayQueue, miLoopQueue;
 
@@ -67,8 +65,10 @@ public class MainViewController {
 
     private boolean seeking = false;
     private ViewMode currentViewMode;
-    private ViewMode oldViewMode;
     private int skipSeconds;
+
+    private final Deque<ViewMode> viewModeStack = new ArrayDeque<>();
+    private final Deque<ViewMode> pastViewStack = new ArrayDeque<>();
 
     public void setAppContext(AppContext appContext) {
         this.appContext = appContext;
@@ -86,14 +86,52 @@ public class MainViewController {
     }
 
     public void handleRefresh() {
+        Platform.runLater(() -> switchViewMode(currentViewMode));
+    }
+
+    public void switchViewMode(ViewMode viewMode) {
+        MediaService mediaService = appContext.mediaService();
+        switch (viewMode) {
+            case TRACKS -> switchMediaView(new ArrayList<>(mediaService.getTracks()), viewMode);
+            case SONGS -> switchMediaView(new ArrayList<>(mediaService.getSongs()), viewMode);
+            case BOOKS -> switchMediaView(new ArrayList<>(mediaService.getAudioBooks()), viewMode);
+            case PODCASTS -> switchMediaView(new ArrayList<>(mediaService.getPodcasts()), viewMode);
+            case ALBUM -> switchCategoryView(new ArrayList<>(mediaService.getAlbums()), viewMode);
+            case GENRE -> switchCategoryView(new ArrayList<>(mediaService.getGenre()), viewMode);
+            case ARTISTS -> switchCategoryView(new ArrayList<>(mediaService.getArtists()), viewMode);
+            case PLAYLIST -> loadPlaylistView();
+            case TRACK -> loadPlayingTrackView();
+            case LYRICS -> loadLyricsView();
+            case FOLDERS -> loadFoldersView();
+            case QUEUE -> loadQueueView();
+            case SETTINGS -> IO.println("Settings not implemented yet");
+        }
+    }
+
+    public void switchBack() {
         Platform.runLater(() -> {
+            if (pastViewStack.isEmpty()) {
+                return;
+            }
+
+            viewModeStack.push(currentViewMode);
+            currentViewMode = pastViewStack.pop();
+
             switchViewMode(currentViewMode);
-            appContext.mediaService().refreshActiveLibrary();
         });
     }
 
-    public void handelSwitchingBack() {
-        Platform.runLater(() -> switchViewMode(oldViewMode));
+    public void switchNext() {
+        Platform.runLater(() -> {
+            if (viewModeStack.isEmpty()) {
+                return;
+            }
+
+            pastViewStack.push(currentViewMode);
+            currentViewMode = viewModeStack.pop();
+
+            switchViewMode(currentViewMode);
+        });
     }
 
     @FXML
@@ -103,8 +141,8 @@ public class MainViewController {
     }
 
     private void init() {
-        skipSeconds = appContext.config().getPreferredSkipSeconds();
-        currentViewMode = oldViewMode = appContext.config().getViewMode();
+        skipSeconds = appContext.config().getPlayerConfig().getPreferredSkipSeconds();
+        currentViewMode = appContext.config().getUIConfig().getStartingViewMode();
         setupButtonsVisibility();
         updatePlayButton();
         updateFavoriteButton();
@@ -122,7 +160,7 @@ public class MainViewController {
     }
 
     private void setupButtonsVisibility() {
-        AppConfig config = appContext.config();
+        UIConfig config = appContext.config().getUIConfig();
         btnTracks.setVisible(config.isTracksBtnVisibility());
         btnSongs.setVisible(config.isSongsBtnVisibility());
         btnBooks.setVisible(config.isBooksBtnVisibility());
@@ -170,63 +208,46 @@ public class MainViewController {
                         obs,
                         oldRepeat,
                         newRepeat
-                ) -> btnRepeatAndStop.setText(newRepeat.getText()));
+                ) -> btnRepeat.setText(newRepeat.getText()));
     }
 
     private void setUpViewButtons() {
-        btnTracks.setOnAction(event -> switchViewMode(ViewMode.TRACKS));
-        btnSongs.setOnAction(event -> switchViewMode(ViewMode.SONGS));
-        btnBooks.setOnAction(event -> switchViewMode(ViewMode.BOOKS));
-        btnPodcasts.setOnAction(event -> switchViewMode(ViewMode.PODCASTS));
-        btnPlaylist.setOnAction(event -> switchViewMode(ViewMode.PLAYLIST));
-        btnArtists.setOnAction(event -> switchViewMode(ViewMode.ARTISTS));
-        btnGenres.setOnAction(event -> switchViewMode(ViewMode.GENRE));
-        btnAlbum.setOnAction(event -> switchViewMode(ViewMode.ALBUM));
-        btnCurrentTrack.setOnAction(event -> switchViewMode(ViewMode.TRACK));
-        btnFolders.setOnAction(event -> switchViewMode(ViewMode.FOLDERS));
-        btnLyrics.setOnAction(event -> switchViewMode(ViewMode.LYRICS));
-        btnQueue.setOnAction(event -> switchViewMode(ViewMode.QUEUE));
+        btnTracks.setOnAction(event -> loadView(ViewMode.TRACKS));
+        btnSongs.setOnAction(event -> loadView(ViewMode.SONGS));
+        btnBooks.setOnAction(event -> loadView(ViewMode.BOOKS));
+        btnPodcasts.setOnAction(event -> loadView(ViewMode.PODCASTS));
+        btnPlaylist.setOnAction(event -> loadView(ViewMode.PLAYLIST));
+        btnArtists.setOnAction(event -> loadView(ViewMode.ARTISTS));
+        btnGenres.setOnAction(event -> loadView(ViewMode.GENRE));
+        btnAlbum.setOnAction(event -> loadView(ViewMode.ALBUM));
+        btnCurrentTrack.setOnAction(event -> loadView(ViewMode.TRACK));
+        btnFolders.setOnAction(event -> loadView(ViewMode.FOLDERS));
+        btnLyrics.setOnAction(event -> loadView(ViewMode.LYRICS));
+        btnQueue.setOnAction(event -> loadView(ViewMode.QUEUE));
     }
 
-    private void switchViewMode(ViewMode viewMode) {
-        MediaService mediaService = appContext.mediaService();
-        oldViewMode = currentViewMode;
-        switch (viewMode) {
-            case TRACKS -> switchMediaView(new ArrayList<>(mediaService.getTracks()), viewMode);
-            case SONGS -> switchMediaView(new ArrayList<>(mediaService.getSongs()), viewMode);
-            case BOOKS -> switchMediaView(new ArrayList<>(mediaService.getAudioBooks()), viewMode);
-            case PODCASTS -> switchMediaView(new ArrayList<>(mediaService.getPodcasts()), viewMode);
-            case ALBUM -> switchCategoryView(new ArrayList<>(mediaService.getAlbums()), viewMode);
-            case GENRE -> switchCategoryView(new ArrayList<>(mediaService.getGenre()), viewMode);
-            case ARTISTS -> switchCategoryView(new ArrayList<>(mediaService.getArtists()), viewMode);
-            case PLAYLIST -> loadPlaylistView();
-            case TRACK -> loadPlayingTrackView();
-            case LYRICS -> loadLyricsView();
-            case FOLDERS -> loadFoldersView();
-            case QUEUE -> loadQueueView();
-            case SETTINGS -> IO.println("Settings not implemented yet");
+    private void loadView(ViewMode mode) {
+        if (mode == currentViewMode) {
+            return;
         }
+
+        pastViewStack.push(currentViewMode);
+
+        currentViewMode = mode;
+
+        viewModeStack.clear();
+
+        switchViewMode(mode);
     }
 
     private void setUpMenuOptions() {
         AudioPlayer player = appContext.player();
-        btnRepeatAndStop.setText(player.getRepeatMode().getText());
-        miPlayOne.setOnAction(e -> {
-            player.setRepeatMode(RepeatMode.PLAY_ONE);
-            updateRepeatButton(RepeatMode.PLAY_ONE);
-        });
-        miLoopOne.setOnAction(e -> {
-            player.setRepeatMode(RepeatMode.LOOP_CURRENT_ONE);
-            updateRepeatButton(RepeatMode.LOOP_CURRENT_ONE);
-        });
-        miPlayQueue.setOnAction(e -> {
-            player.setRepeatMode(RepeatMode.STOP_WHEN_QUEUE_END);
-            updateRepeatButton(RepeatMode.STOP_WHEN_QUEUE_END);
-        });
-        miLoopQueue.setOnAction(e -> {
-            player.setRepeatMode(RepeatMode.LOOP_CURRENT_QUEUE);
-            updateRepeatButton(RepeatMode.LOOP_CURRENT_QUEUE);
-        });
+        btnRepeat.setText(player.getRepeatMode().getText());
+        btnRepeat.setOnAction(event -> cxmRepeatMenu.show(btnRepeat, Side.BOTTOM, 0, 0));
+        miPlayOne.setOnAction(e -> player.setRepeatMode(RepeatMode.PLAY_ONE));
+        miLoopOne.setOnAction(e -> player.setRepeatMode(RepeatMode.LOOP_CURRENT_ONE));
+        miPlayQueue.setOnAction(e -> player.setRepeatMode(RepeatMode.STOP_WHEN_QUEUE_END));
+        miLoopQueue.setOnAction(e -> player.setRepeatMode(RepeatMode.LOOP_CURRENT_QUEUE));
     }
 
     private void setUpControlButtons() {
@@ -293,9 +314,6 @@ public class MainViewController {
         );
     }
 
-    private void updateRepeatButton(RepeatMode mode) {
-        btnRepeatAndStop.setText(mode.getText());
-    }
 
     private void setButtonsEnabled(boolean disabled) {
         btnTracks.setDisable(disabled);
@@ -352,7 +370,7 @@ public class MainViewController {
         try {
             FXMLLoader loader = loadView("/views/mediaList-view.fxml");
             mediaListViewController = loader.getController();
-            mediaListViewController.setUIContext(appContext);
+            mediaListViewController.setAppContext(appContext);
             mediaListViewController.setViewLoader(viewLoader);
             mediaListViewController.setOnSaveSuccessCallback(this::handleRefresh);
         } catch (IOException e) {

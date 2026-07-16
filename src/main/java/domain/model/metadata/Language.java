@@ -4,7 +4,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class Language {
-    private static final Set<String> rtlLangs = new HashSet<>(Set.of(
+    private static final Set<String> rtlLanguages = new HashSet<>(Set.of(
             "ara", // Arabic
             "fas", "per", // Persian / Farsi
             "urd", // Urdu
@@ -25,7 +25,7 @@ public class Language {
 
         this.language = normalizeLanguage(language);
 
-        this.isRTL = rtlLangs.contains(this.language);
+        this.isRTL = rtlLanguages.contains(this.language);
     }
 
     public boolean isRTL() {

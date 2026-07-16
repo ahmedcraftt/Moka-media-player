@@ -14,6 +14,7 @@ import infrastructure.storage.ArtworkStorage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.*;
 import java.util.*;
@@ -48,6 +49,17 @@ public class MediaScanner {
         this.trackStorage = trackStorage;
         this.metadataStorage = metadataStorage;
         this.artworkStorage = artworkStorage;
+    }
+
+    public Track scan(File file) {
+        Path path = file.toPath();
+        if (!isAudioFile(path)) throw new IllegalArgumentException("Not a audio file");
+        Track track = new Track(path);
+        metadataManager.read(track);
+        filedataManager.read(track);
+        scanForArtwork(track);
+        track.setType(TrackClassifier.classify(path, track.getMetadata()));
+        return track;
     }
 
     public List<Track> scan(List<Path> paths) {
@@ -98,7 +110,7 @@ public class MediaScanner {
         }
     }
 
-    public void scanArtwork(Track track) {
+    public void scanForArtwork(Track track) {
         Path path = track.getFilePath();
 
         byte[] rawArtworkBytes = metadataManager.extractRawArtworkBytes(path);
@@ -170,7 +182,7 @@ public class MediaScanner {
                 Track track = trackStorage.load(path.toString());
 
                 if (track == null) {
-                    track = new Track(path.getFileName().toString(), path);
+                    track = new Track(path);
                 }
 
                 if (!exists || fileChanged) {
@@ -215,7 +227,7 @@ public class MediaScanner {
             track.setType(MediaType.StringToMediaType(state.mediaType()));
         }
 
-        scanArtwork(track);
+        scanForArtwork(track);
 
         Metadata metadata = track.getMetadata();
         if (metadata != null) {

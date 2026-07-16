@@ -5,7 +5,6 @@ module org.example.moka_music_player {
     requires javafx.base;
 
     // Explicitly require JNA for native library access
-    //noinspection JavaModuleDefinition
     requires com.sun.jna;
     requires com.sun.jna.platform;
     requires jaudiotagger;
@@ -14,11 +13,12 @@ module org.example.moka_music_player {
     requires java.desktop;
     requires java.sql;
     requires uk.co.caprica.vlcj;
-    requires kotlin.stdlib;
+    requires org.xerial.sqlitejdbc;
 
     // Export packages that need to be accessed by other modules or the JVM
     exports gui.main;
     exports gui.controllers;
+    exports gui.utils;
     exports infrastructure.audio;
     exports config;
     exports domain.model.metadata;
@@ -48,5 +48,5 @@ module org.example.moka_music_player {
     opens domain.model.media to com.google.gson, javafx.base;
     opens domain.model.metadata to com.google.gson, javafx.base;
     opens domain.model.library to com.google.gson, javafx.base;
-    opens config to com.google.gson, javafx.base;
+    opens config to com.google.gson, javafx.base, java.base;
 }

@@ -1,6 +1,7 @@
 package gui.controllers;
 
 import application.service.AppState;
+import application.service.MediaService;
 import application.service.PlayerService;
 import domain.model.media.Track;
 import gui.controllers.listcells.MediaTrackCell;
@@ -10,7 +11,10 @@ import gui.utils.ViewLoader;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
+import javafx.stage.FileChooser;
 
+import java.io.File;
+import java.nio.file.Path;
 import java.util.*;
 
 
@@ -21,31 +25,31 @@ public class MediaListViewController {
     @FXML private ListView<Track> contentList;
     @FXML private TextField searchBar;
     @FXML private MenuButton btnSort;
-    @FXML private Button btnRefresh;
     @FXML
-    private Button btnListPlay;
+    private Button btnRefresh, btnListPlay, btnAdd;
     @FXML
     private CheckMenuItem cmiAscending;
 
     private List<Track> currentData = new ArrayList<>();
 
-    private static Runnable onSaveSuccessCallback;
+    private static Runnable onSaveSuccess;
 
     private ViewLoader viewLoader;
     private AppContext appContext;
 
     private SortByModes currentSortMode;
 
-    public void setOnSaveSuccessCallback(Runnable onSaveSuccessCallback) {
-        MediaListViewController.onSaveSuccessCallback = onSaveSuccessCallback;
+    public void setOnSaveSuccessCallback(Runnable onSaveSuccess) {
+        MediaListViewController.onSaveSuccess = onSaveSuccess;
     }
 
 
-    public void setUIContext(AppContext appContext) {
+    public void setAppContext(AppContext appContext) {
         this.appContext = appContext;
         currentSortMode = appContext.appState().getCurrentSortByMode();
         setupListView();
         setupPlay();
+        handleAdd();
     }
 
     public void setViewLoader(ViewLoader viewLoader) {
@@ -71,11 +75,47 @@ public class MediaListViewController {
     private void sort(SortByModes mode) {
         AppState appState = appContext.appState();
         this.currentSortMode = mode;
+
         if (btnSort != null) {
             btnSort.setText("sort by " + mode.toString().toLowerCase());
         }
         appState.setCurrentSortByMode(mode);
         applyFilterAndSort();
+    }
+
+    private void handleAdd() {
+        btnAdd.setOnAction(event -> {
+            addTrack();
+        });
+    }
+
+    private void addTrack() {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Select a File");
+
+        fileChooser.setInitialDirectory(
+                new File(System.getProperty("user.home"))
+        );
+
+        fileChooser.getExtensionFilters().addAll(
+                new FileChooser.ExtensionFilter("Audio Files",
+                        "*.mp3", "*.flac", "*.wav",
+                        "*.m4a", "*.ogg", "*.aac",
+                        "*.opus", "*.wma", "*.alac"),
+                new FileChooser.ExtensionFilter("All Files", "*.*")
+        );
+
+        File file = fileChooser.showOpenDialog(btnAdd.getScene().getWindow());
+
+        Track added = appContext.mediaScanner().scan(file);
+        MediaService mediaService = appContext.mediaService();
+        PlayerService playerService = appContext.playerService();
+        if (added != null && !mediaService.getTracks().contains(added)) {
+            mediaService.addTrack(added);
+        }
+        playerService.setSelectTrack(added);
+        playerService.playSelectedTrack();
+
     }
 
     @FXML private void sortByTitle() { sort(SortByModes.TITLE); }
@@ -116,28 +156,7 @@ public class MediaListViewController {
 
         List<Track> workingList = new ArrayList<>(processedList);
 
-        Comparator<Track> baseComparator = switch (currentSortMode) {
-            case TITLE -> Comparator.comparing(t -> safe(t.getTitle()), String.CASE_INSENSITIVE_ORDER);
-            case FILE_NAME -> Comparator.comparing(t -> safe(t.getFileName()), String.CASE_INSENSITIVE_ORDER);
-            case ARTISTS ->
-                    Comparator.comparing(t -> t.getMetadata() != null ? safe(t.getMetadata().getArtist()) : "", String.CASE_INSENSITIVE_ORDER);
-            case DURATION ->
-                    Comparator.comparingInt(t -> t.getMetadata() != null ? t.getMetadata().getDurationInSeconds() : 0);
-            case YEAR ->
-                    Comparator.comparingInt(t -> (t.getMetadata() != null && t.getMetadata().getYear() != null) ? t.getMetadata().getYear().getValue() : 0);
-            case DATE_ADDED ->
-                    Comparator.comparing(Track::getDateAdded, Comparator.nullsLast(Comparator.naturalOrder()));
-            case DATE_MODIFIED ->
-                    Comparator.comparing(t -> t.getFiledata() != null ? t.getFiledata().getDateModified() : null, Comparator.nullsLast(Comparator.naturalOrder()));
-            case DATE_CREATED ->
-                    Comparator.comparing(t -> t.getFiledata() != null ? t.getFiledata().getDateCreated() : null, Comparator.nullsLast(Comparator.naturalOrder()));
-            default -> throw new IllegalStateException("Unexpected value: " + currentSortMode);
-        };
-
-        if (cmiAscending != null && !cmiAscending.isSelected()) baseComparator = baseComparator.reversed();
-
-        Comparator<Track> hierarchicalComparator = Comparator.comparing((Track t) -> !t.isFavorite())
-                .thenComparing(baseComparator);
+        Comparator<Track> hierarchicalComparator = getTrackComparator();
 
         workingList.sort(hierarchicalComparator);
 
@@ -147,9 +166,37 @@ public class MediaListViewController {
 
     }
 
+    private Comparator<Track> getTrackComparator() {
+        Comparator<Track> baseComparator = switch (currentSortMode) {
+            case TITLE -> Comparator.comparing(t -> safe(t.getTitle()), String.CASE_INSENSITIVE_ORDER);
+
+            case FILE_NAME -> Comparator.comparing(t -> safe(t.getFileName()), String.CASE_INSENSITIVE_ORDER);
+            case ARTISTS ->
+                    Comparator.comparing(t -> t.getMetadata() != null ? safe(t.getMetadata().getArtist()) : "", String.CASE_INSENSITIVE_ORDER);
+            case DURATION ->
+                    Comparator.comparingInt(t -> t.getMetadata() != null ? t.getMetadata().getDurationInSeconds() : 0);
+            case YEAR -> Comparator.comparingInt(t -> (t.getMetadata() != null && t.getMetadata().getYear() != null)
+                    ? t.getMetadata().getYear().getValue() : 0);
+            case DATE_ADDED ->
+                    Comparator.comparing(Track::getDateAdded, Comparator.nullsLast(Comparator.naturalOrder()));
+            case DATE_MODIFIED ->
+                    Comparator.comparing(t -> t.getFiledata() != null ? t.getFiledata().getDateModified() : null,
+                            Comparator.nullsLast(Comparator.naturalOrder()));
+            case DATE_CREATED ->
+                    Comparator.comparing(t -> t.getFiledata() != null ? t.getFiledata().getDateCreated() : null,
+                            Comparator.nullsLast(Comparator.naturalOrder()));
+            default -> throw new IllegalStateException("Unexpected value: " + currentSortMode);
+        };
+
+        if (cmiAscending != null && !cmiAscending.isSelected()) baseComparator = baseComparator.reversed();
+
+        return Comparator.comparing((Track t) -> !t.isFavorite())
+                .thenComparing(baseComparator);
+    }
+
     private void setupListView() {
         PlayerService playerService = appContext.playerService();
-        contentList.setCellFactory(lv -> new MediaTrackCell(playerService, viewLoader, onSaveSuccessCallback));
+        contentList.setCellFactory(lv -> new MediaTrackCell(playerService, viewLoader, onSaveSuccess));
         contentList.setOnMouseClicked(e -> {
             Track selected = contentList.getSelectionModel().getSelectedItem();
             if (selected != null) {

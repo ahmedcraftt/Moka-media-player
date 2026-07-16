@@ -18,6 +18,7 @@ public final class ArtworkCache {
             new ConcurrentHashMap<>();
 
     private ArtworkCache() {
+
     }
 
     public static Image get(String artworkPath) {

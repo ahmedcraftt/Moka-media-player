@@ -28,6 +28,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -51,6 +52,7 @@ public class PlaylistViewController {
     private final Set<ViewMode> viewModes = new HashSet<>(Set.of(ViewMode.ALBUM, ViewMode.ARTISTS, ViewMode.GENRE));
 
     private final ObservableList<Playlist> playlists = FXCollections.observableArrayList();
+
     private final ObservableList<Displayable> filteredDisplayables = FXCollections.observableArrayList();
 
     private Displayable selectedItem;
@@ -58,9 +60,10 @@ public class PlaylistViewController {
     private Playlist currentPlaylist;
 
     private AppContext appContext;
+
     private ViewLoader viewLoader;
 
-    private static Runnable onSaveSuccess;
+    private Runnable onSaveSuccess;
 
     private SortByModes currentSortMode = SortByModes.TITLE;
 
@@ -80,7 +83,7 @@ public class PlaylistViewController {
     }
 
     public void setOnSaveSuccess(Runnable onSaveSuccess) {
-        PlaylistViewController.onSaveSuccess = onSaveSuccess;
+        this.onSaveSuccess = onSaveSuccess;
     }
 
     @FXML
@@ -300,7 +303,7 @@ public class PlaylistViewController {
         btnFavorites.setOnAction(e -> setupButton(FilterMode.FAVORITE));
         btnRecentlyAdded.setOnAction(e -> setupButton(FilterMode.RECENTLY_ADDED));
         btnMostPlayed.setOnAction(e -> setupButton(FilterMode.MOST_PLAYED));
-        btnRecentlyPlayed.setVisible(false);
+        btnRecentlyPlayed.setOnAction(e -> setupButton(FilterMode.RECENTLY_PLAYED));
         btnAdd.setOnAction(e -> createPlaylist());
 
         btnBack.setOnAction(event -> {
@@ -314,6 +317,8 @@ public class PlaylistViewController {
 
     private void setupButton(FilterMode mode) {
         List<Track> tracks = appContext.mediaService().getTracks();
+        LocalDateTime cutoff = appContext.config().getUIConfig().getCutoff();
+
         if (tracks == null) return;
         List<Track> filtered = List.of();
         switch (mode) {
@@ -322,6 +327,11 @@ public class PlaylistViewController {
                     filtered = tracks.stream().sorted(Comparator.comparing(Track::getDateAdded).reversed()).toList();
             case MOST_PLAYED ->
                     filtered = tracks.stream().sorted(Comparator.comparingInt(Track::getTimesPlayed).reversed()).toList();
+            case RECENTLY_PLAYED -> filtered = tracks.stream()
+                    .filter(track -> track.getLastPlayed() != null)
+                    .filter(track -> track.getLastPlayed().isAfter(cutoff))
+                    .sorted(Comparator.comparing(Track::getLastPlayed).reversed())
+                    .toList();
         }
         openList(filtered);
     }

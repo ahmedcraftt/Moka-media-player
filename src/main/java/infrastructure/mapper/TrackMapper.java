@@ -12,6 +12,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Instant;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 
 public class TrackMapper {
@@ -28,6 +29,20 @@ public class TrackMapper {
 
         logger.debug("Mapping metadata ID: {}", track.getMetadata().getId());
 
+        if (track.getFilePath()
+                .equals(Path.of("/home/Ahmed/Music/Fandroid Music - CUPHEAD RAP SONG ► Cover by Caleb Hyles ＂You Signed a Contract＂.opus"))) {
+            System.out.println("found " + track.getTitle());
+            System.out.println(System.identityHashCode(track));
+            System.out.println("last played " + track.getLastPlayedAsString());
+
+        }
+
+        String lastPlayed;
+        if (track.getLastPlayed() != null) {
+            lastPlayed = track.getLastPlayed().toString();
+        } else lastPlayed = "none";
+
+
         return new TrackDTO(
                 track.getMetadata().getId()
                 , track.isFavorite()
@@ -40,6 +55,7 @@ public class TrackMapper {
                 , track.getFiledata().getDateCreatedString()
                 , track.getFiledata().getLastAccessedString()
                 , track.getFiledata().getFileType()
+                , lastPlayed
         );
     }
 
@@ -47,6 +63,20 @@ public class TrackMapper {
         Path path = Path.of(dto.path());
         String fileName = path.getFileName().toString();
         LocalDate dateModified = Instant.ofEpochMilli(dto.lastModified()).atZone(ZoneId.systemDefault()).toLocalDate();
+        LocalDateTime lastPlayed;
+        String strLastPlayed = dto.lastPlayed();
+
+        if (strLastPlayed == null || strLastPlayed.isBlank() || strLastPlayed.equals("none")) {
+            lastPlayed = null;
+        } else lastPlayed = LocalDateTime.parse(dto.lastPlayed());
+
+        if (dto.path()
+                .equals("/home/Ahmed/Music/Fandroid Music - CUPHEAD RAP SONG ► Cover by Caleb Hyles ＂You Signed a Contract＂.opus")) {
+            System.out.println("found " + dto.path());
+            System.out.println("last played " + dto.lastPlayed());
+
+        }
+
         return new Track(
                 metadata,
                 dto.metadataId(),
@@ -60,7 +90,8 @@ public class TrackMapper {
                 dateModified,
                 LocalDate.parse(dto.lastAccessed()),
                 dto.fileType(),
-                dto.size()
+                dto.size(),
+                lastPlayed
         );
     }
 }

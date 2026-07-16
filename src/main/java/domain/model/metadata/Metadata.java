@@ -16,14 +16,14 @@ public class Metadata {
     private int durationInSeconds = 0;
     private long bitrate = 0;
     private long samplerate = 0;
-    private String title = "Unknown";
-    private String genre = "Unknown";
+    private String title = "";
+    private String genre = "";
     private String description = "";
     private String lyrics = "";
     private String series = "";
-    private String artist = "Unknown";
+    private String artist = "";
     private String seriesArtist = "";
-    private String artworkPath = "Unknown";
+    private String artworkPath = "";
     private Language language;
     private Year year = Year.of(0);
 
@@ -123,9 +123,8 @@ public class Metadata {
     }
 
     public void setLanguage(String language) {
-        if (language != null && !language.isBlank()) {
-            this.language = new Language(language);
-        } else throw new IllegalArgumentException("Language cannot be null or blank");
+        if (language == null || language.isBlank()) language = "Unknown";
+        this.language = new Language(language);
     }
 
     public Language getLanguage() {

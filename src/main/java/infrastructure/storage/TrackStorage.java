@@ -16,7 +16,7 @@ public class TrackStorage {
 
     private static final Logger logger = LoggerFactory.getLogger(TrackStorage.class);
 
-    private static final int SCHEMA_VERSION = 2;
+    private static final int SCHEMA_VERSION = 3;
 
     private final MetadataStorage metadataStorage;
 
@@ -41,8 +41,8 @@ public class TrackStorage {
 
         String sql = """
                 INSERT INTO tracks(metadata_id, favorite, times_played, path, media_type,
-                                   last_modified, size, dateAdded,dateCreated,lastAccessed,fileType)
-                           VALUES(?,?,?,?,?,?,?,?,?,?,?)
+                                   last_modified, size, dateAdded,dateCreated,lastAccessed,fileType,last_played)
+                           VALUES(?,?,?,?,?,?,?,?,?,?,?,?)
                            ON CONFLICT(path) DO UPDATE SET
                                metadata_id = excluded.metadata_id,
                                favorite = excluded.favorite,
@@ -53,7 +53,8 @@ public class TrackStorage {
                                dateAdded = excluded.dateAdded,
                                dateCreated = excluded.dateCreated,
                                lastAccessed = excluded.lastAccessed,
-                               fileType = excluded.fileType;
+                               fileType = excluded.fileType,
+                               last_played = excluded.last_played;
                 """;
 
         try (
@@ -70,40 +71,8 @@ public class TrackStorage {
     }
 
     public void saveAll(List<Track> tracks) {
-        String sql = """
-                INSERT INTO tracks(metadata_id, favorite, times_played, path,
-                                   media_type, last_modified, size, dateAdded,dateCreated,lastAccessed,fileType)
-                           VALUES(?,?,?,?,?,?,?,?,?,?,?)
-                           ON CONFLICT(path) DO UPDATE SET
-                               metadata_id = excluded.metadata_id,
-                               favorite = excluded.favorite,
-                               times_played = excluded.times_played,
-                               media_type = excluded.media_type,
-                               last_modified = excluded.last_modified,
-                               size = excluded.size,
-                               dateAdded = excluded.dateAdded,
-                               dateCreated = excluded.dateCreated,
-                               lastAccessed = excluded.lastAccessed,
-                               fileType = excluded.fileType;
-                """;
-
-        try (Connection connection = DatabaseManager.connect()) {
-            connection.setAutoCommit(false);
-
-            try (PreparedStatement statement = connection.prepareStatement(sql)) {
-                for (Track track : tracks) {
-                    TrackDTO dto = TrackMapper.toDTO(track);
-                    mapDtoToStatement(statement, dto);
-                    statement.addBatch();
-                }
-                statement.executeBatch();
-                connection.commit();
-            } catch (SQLException e) {
-                connection.rollback();
-                throw e;
-            }
-        } catch (SQLException e) {
-            logger.error("Failed to execute batch track save operation.", e);
+        for (Track track : tracks) {
+            save(track);
         }
     }
 
@@ -132,10 +101,12 @@ public class TrackStorage {
                         resultSet.getString("dateAdded"),
                         resultSet.getString("dateCreated"),
                         resultSet.getString("lastAccessed"),
-                        resultSet.getString("fileType")
+                        resultSet.getString("fileType"),
+                        resultSet.getString("last_played")
                 );
 
                 Metadata metadata = metadataStorage.load(dto.metadataId());
+
                 Track track = TrackMapper.fromDTO(dto, metadata);
 
                 if (track != null && track.getMetadata() != null) {
@@ -163,7 +134,8 @@ public class TrackStorage {
                     dateAdded = ?,
                     dateCreated = ?,
                     lastAccessed = ?,
-                    fileType = ?
+                    fileType = ?,
+                    last_played = ?
                 WHERE path = ?
                 """;
 
@@ -181,12 +153,19 @@ public class TrackStorage {
             statement.setString(8, dto.dateCreated());
             statement.setString(9, dto.lastAccessed());
             statement.setString(10, dto.fileType());
-            statement.setString(11, dto.path());
+            statement.setString(11, dto.lastPlayed());
+            statement.setString(12, dto.path());
             metadataStorage.update(track.getMetadata());
 
             statement.executeUpdate();
         } catch (SQLException e) {
             logger.error("Failed to update track record at path: {}", dto.path(), e);
+        }
+    }
+
+    public void UpdateAll(List<Track> tracks) {
+        for (Track track : tracks) {
+            update(track);
         }
     }
 
@@ -234,7 +213,8 @@ public class TrackStorage {
         }
     }
 
-    private void mapDtoToStatement(PreparedStatement statement, TrackDTO dto) throws SQLException {
+    private void mapDtoToStatement(PreparedStatement statement, TrackDTO dto)
+            throws SQLException {
         statement.setInt(1, dto.metadataId());
         statement.setInt(2, dto.favorite() ? 1 : 0);
         statement.setInt(3, dto.timesPlayed());
@@ -246,6 +226,7 @@ public class TrackStorage {
         statement.setString(9, dto.dateCreated());
         statement.setString(10, dto.lastAccessed());
         statement.setString(11, dto.fileType());
+        statement.setString(12, dto.lastPlayed());
     }
 
     private void createTableIfMissing(Connection connection) throws SQLException {
@@ -263,6 +244,7 @@ public class TrackStorage {
                     dateCreated TEXT NOT NULL,
                     lastAccessed TEXT NOT NULL,
                     fileType TEXT NOT NULL,
+                    last_played TEXT,
                     FOREIGN KEY(metadata_id)
                         REFERENCES metadata(metadata_id)
                         ON DELETE SET NULL
@@ -285,6 +267,8 @@ public class TrackStorage {
                 case 0 -> migrateToVersion1(connection);
 
                 case 1 -> migrateToVersion2(connection);
+
+                case 2 -> migrateToVersion3(connection);
 
                 default -> throw new IllegalStateException(
                         "Unknown database version: " + version);
@@ -317,9 +301,6 @@ public class TrackStorage {
 
         logger.info("Migrating database -> Version 1");
 
-        // Nothing needed because createTableIfMissing()
-        // already creates the newest schema.
-
     }
 
     private void migrateToVersion2(Connection connection)
@@ -338,6 +319,17 @@ public class TrackStorage {
         executeIfMissing(connection,
                 "fileType",
                 "ALTER TABLE tracks ADD COLUMN fileType TEXT NOT NULL DEFAULT ''");
+    }
+
+    private void migrateToVersion3(Connection connection) throws SQLException {
+        logger.info("Migrating database -> Version 3");
+
+        executeIfMissing(
+                connection,
+                "last_played",
+                "ALTER TABLE tracks ADD COLUMN last_played TEXT ''"
+        );
+
     }
 
     private void executeIfMissing(Connection connection,

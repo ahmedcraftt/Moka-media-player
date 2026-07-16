@@ -18,7 +18,7 @@ public class AppState {
     private SortByModes currentSortByMode;
 
     public AppState(AppConfig appConfig) {
-        currentSortByMode = appConfig.getSortByMode();
+        currentSortByMode = appConfig.getUIConfig().getStartingSortByMode();
     }
 
     public ObservableList<Displayable> getCurrentView() {

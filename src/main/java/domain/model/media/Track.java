@@ -8,6 +8,8 @@ import org.slf4j.LoggerFactory;
 import java.net.URI;
 import java.nio.file.Path;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 
 public class Track implements AudioSource, Displayable {
@@ -17,14 +19,15 @@ public class Track implements AudioSource, Displayable {
     private final Filedata filedata;
     private final Metadata metadata;
     private final LocalDate dateAdded;
+    private LocalDateTime lastPlayed;
     private MediaType type;
     private int timesPlayed;
     private boolean favorite;
 
-    public Track(String fileName, Path filePath) {
+    public Track(Path filePath) {
         metadata = new Metadata();
         filedata = new Filedata();
-        filedata.setFileName(fileName);
+        filedata.setFileName(filePath.getFileName().toString());
         filedata.setFilePath(filePath);
         dateAdded = LocalDate.now();
 
@@ -43,7 +46,8 @@ public class Track implements AudioSource, Displayable {
                  LocalDate dateModified,
                  LocalDate lastAccessed,
                  String fileType,
-                 long fileSize
+                 long fileSize,
+                 LocalDateTime lastPlayed
     ) {
         this.metadata = metadata;
         this.metadata.setId(metadataId);
@@ -58,6 +62,7 @@ public class Track implements AudioSource, Displayable {
         setFavorite(favorite);
         setTimesPlayed(timesPlayed);
         setType(type);
+        setLastPlayed(lastPlayed);
         this.dateAdded = dateAdded;
 
         logger.debug("Track multi-arg constructor called for: {}", this.getTitle());
@@ -140,6 +145,26 @@ public class Track implements AudioSource, Displayable {
 
     public LocalDate getDateAdded() {
         return dateAdded;
+    }
+
+    public LocalDateTime getLastPlayed() {
+        return lastPlayed;
+    }
+
+    public String getLastPlayedAsString() {
+        if (lastPlayed == null) {
+            return "none";
+        }
+
+        DateTimeFormatter formatter =
+                DateTimeFormatter.ofPattern("yyyy/MM/dd/HH:mm");
+
+        return lastPlayed.format(formatter);
+    }
+
+    public void setLastPlayed(LocalDateTime lastPlayed) {
+        if (lastPlayed == null) return;
+        this.lastPlayed = lastPlayed;
     }
 
     @Override

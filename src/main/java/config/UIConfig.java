@@ -4,6 +4,8 @@ import gui.controllers.SortByModes;
 import gui.controllers.ViewMode;
 import javafx.scene.text.TextAlignment;
 
+import java.time.LocalDateTime;
+
 public final class UIConfig {
     private static final int DEFAULT_WIDTH = 400;
     private static final int DEFAULT_HEIGHT = 400;
@@ -11,6 +13,7 @@ public final class UIConfig {
     private static final ViewMode DEFAULT_STARTING_VIEW_MODE = ViewMode.TRACKS;
     private static final TextAlignment DEFAULT_TEXT_ALIGNMENT = TextAlignment.CENTER;
     private static final SortByModes DEFAULT_STARTING_SORT_BY_MODE = SortByModes.TITLE;
+    private static final LocalDateTime DEFAULT_CUTOFF_TIME = LocalDateTime.now().minusDays(30);
 
     private boolean tracksBtnVisibility = true;
     private boolean songsBtnVisibility = true;
@@ -28,116 +31,125 @@ public final class UIConfig {
     private ViewMode startingViewMode = DEFAULT_STARTING_VIEW_MODE;
     private TextAlignment lyricsTextAlignment = DEFAULT_TEXT_ALIGNMENT;
     private SortByModes startingSortByMode = DEFAULT_STARTING_SORT_BY_MODE;
+    private LocalDateTime cutoff = DEFAULT_CUTOFF_TIME;
 
-    boolean isTracksBtnVisibility() {
+    public boolean isTracksBtnVisibility() {
         return tracksBtnVisibility;
     }
 
-    void setTracksBtnVisibility(boolean tracksBtnVisibility) {
+    public void setTracksBtnVisibility(boolean tracksBtnVisibility) {
         this.tracksBtnVisibility = tracksBtnVisibility;
     }
 
-    boolean isSongsBtnVisibility() {
+    public boolean isSongsBtnVisibility() {
         return songsBtnVisibility;
     }
 
-    void setSongsBtnVisibility(boolean songsBtnVisibility) {
+    public void setSongsBtnVisibility(boolean songsBtnVisibility) {
         this.songsBtnVisibility = songsBtnVisibility;
     }
 
-    boolean isBooksBtnVisibility() {
+    public boolean isBooksBtnVisibility() {
         return booksBtnVisibility;
     }
 
-    void setBooksBtnVisibility(boolean booksBtnVisibility) {
+    public void setBooksBtnVisibility(boolean booksBtnVisibility) {
         this.booksBtnVisibility = booksBtnVisibility;
     }
 
-    boolean isPodcastsBtnVisibility() {
+    public boolean isPodcastsBtnVisibility() {
         return podcastsBtnVisibility;
     }
 
-    void setPodcastsBtnVisibility(boolean podcastsBtnVisibility) {
+    public void setPodcastsBtnVisibility(boolean podcastsBtnVisibility) {
         this.podcastsBtnVisibility = podcastsBtnVisibility;
     }
 
-    boolean isArtistsBtnVisibility() {
+    public boolean isArtistsBtnVisibility() {
         return artistsBtnVisibility;
     }
 
-    void setArtistsBtnVisibility(boolean artistsBtnVisibility) {
+    public void setArtistsBtnVisibility(boolean artistsBtnVisibility) {
         this.artistsBtnVisibility = artistsBtnVisibility;
     }
 
-    boolean isAlbumsBtnVisibility() {
+    public boolean isAlbumsBtnVisibility() {
         return albumsBtnVisibility;
     }
 
-    void setAlbumsBtnVisibility(boolean albumsBtnVisibility) {
+    public void setAlbumsBtnVisibility(boolean albumsBtnVisibility) {
         this.albumsBtnVisibility = albumsBtnVisibility;
     }
 
-    boolean isGenresBtnVisibility() {
+    public boolean isGenresBtnVisibility() {
         return genresBtnVisibility;
     }
 
-    void setGenresBtnVisibility(boolean genresBtnVisibility) {
+    public void setGenresBtnVisibility(boolean genresBtnVisibility) {
         this.genresBtnVisibility = genresBtnVisibility;
     }
 
-    boolean isPlaylistsBtnVisibility() {
+    public boolean isPlaylistsBtnVisibility() {
         return playlistsBtnVisibility;
     }
 
-    void setPlaylistsBtnVisibility(boolean playlistsBtnVisibility) {
+    public void setPlaylistsBtnVisibility(boolean playlistsBtnVisibility) {
         this.playlistsBtnVisibility = playlistsBtnVisibility;
     }
 
-    int getArtworkImageWidth() {
+    public int getArtworkImageWidth() {
         return artworkImageWidth;
     }
 
-    void setArtworkImageWidth(int artworkImageWidth) {
+    public void setArtworkImageWidth(int artworkImageWidth) {
         this.artworkImageWidth = artworkImageWidth;
     }
 
-    int getArtworkImageHeight() {
+    public int getArtworkImageHeight() {
         return artworkImageHeight;
     }
 
-    void setArtworkImageHeight(int artworkImageHeight) {
+    public void setArtworkImageHeight(int artworkImageHeight) {
         this.artworkImageHeight = artworkImageHeight;
     }
 
-    int getArtworkRotationSpeed() {
+    public int getArtworkRotationSpeed() {
         return artworkRotationSpeed;
     }
 
-    void setArtworkRotationSpeed(int artworkRotationSpeed) {
+    public void setArtworkRotationSpeed(int artworkRotationSpeed) {
         this.artworkRotationSpeed = artworkRotationSpeed;
     }
 
-    ViewMode getStartingViewMode() {
+    public ViewMode getStartingViewMode() {
         return startingViewMode;
     }
 
-    void setStartingViewMode(ViewMode startingViewMode) {
+    public void setStartingViewMode(ViewMode startingViewMode) {
         this.startingViewMode = startingViewMode;
     }
 
-    TextAlignment getLyricsTextAlignment() {
+    public TextAlignment getLyricsTextAlignment() {
         return lyricsTextAlignment;
     }
 
-    void setLyricsTextAlignment(TextAlignment lyricsTextAlignment) {
+    public void setLyricsTextAlignment(TextAlignment lyricsTextAlignment) {
         this.lyricsTextAlignment = lyricsTextAlignment;
     }
 
-    SortByModes getStartingSortByMode() {
+    public SortByModes getStartingSortByMode() {
         return startingSortByMode;
     }
 
-    void setStartingSortByMode(SortByModes startingSortByMode) {
+    public void setStartingSortByMode(SortByModes startingSortByMode) {
         this.startingSortByMode = startingSortByMode;
+    }
+
+    public LocalDateTime getCutoff() {
+        return cutoff;
+    }
+
+    public void setCutoff(LocalDateTime cutoff) {
+        this.cutoff = cutoff;
     }
 }

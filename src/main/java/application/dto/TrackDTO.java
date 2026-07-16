@@ -11,7 +11,8 @@ public record TrackDTO(
         String dateAdded,
         String dateCreated,
         String lastAccessed,
-        String fileType
+        String fileType,
+        String lastPlayed
 ) {
 
     @Override

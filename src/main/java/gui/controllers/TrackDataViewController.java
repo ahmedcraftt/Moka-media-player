@@ -164,6 +164,10 @@ public class TrackDataViewController {
 
         Metadata metadata = track.getMetadata();
 
+        String oldArtist = metadata.getArtist();
+        String oldAlbum = metadata.getSeries();
+        String oldGenre = metadata.getGenre();
+
         String yearText = tfYear.getText().trim();
 
         if (!yearText.isBlank()) {
@@ -198,6 +202,12 @@ public class TrackDataViewController {
         appContext.metadataManager().write(track);
 
         appContext.trackStorage().update(track);
+
+        if (!oldGenre.equals(metadata.getGenre()) ||
+                !oldArtist.equals(metadata.getArtist()) ||
+                !oldAlbum.equals(metadata.getSeries())) {
+            appContext.mediaService().rebuildMetadataCaches();
+        }
 
         Stage stage = (Stage) btnSave.getScene().getWindow();
         stage.getScene().getRoot().fireEvent(new RefreshEvent());

@@ -9,11 +9,15 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.LocalDateTime;
 
 public final class ConfigStorage {
     private static final Logger logger = LoggerFactory.getLogger(ConfigStorage.class);
 
-    private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
+    private static final Gson GSON = new GsonBuilder()
+            .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeAdapter())
+            .setPrettyPrinting()
+            .create();
     private static final Path BASE_DIR =
             Path.of(
                     System.getProperty("user.home"),

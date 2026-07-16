@@ -6,6 +6,7 @@ import config.AppConfig;
 import config.storage.ConfigStorage;
 import domain.model.media.Track;
 import gui.controllers.RefreshEvent;
+import gui.controllers.ViewMode;
 import infrastructure.audio.AudioEngine;
 import infrastructure.audio.AudioPlayer;
 import domain.audio.PlaybackState;
@@ -93,14 +94,15 @@ public final class MainApplication extends Application {
 
     @Override
     public void start(Stage stage) throws IOException {
+
         AppConfig config = appContext.config();
         TrackStorage trackStorage = appContext.trackStorage();
         MetadataStorage metadataStorage = appContext.metadataStorage();
         AudioPlayer audioPlayer = appContext.player();
 
-        audioPlayer.setRepeatMode(config.getPrefferredRepeatMode());
-        audioPlayer.setShuffle(config.isShuffle());
-        audioPlayer.setVolume(config.getPreferredVolumeLevel());
+        audioPlayer.setRepeatMode(config.getPlayerConfig().getPreferredRepeatMode());
+        audioPlayer.setShuffle(config.getPlayerConfig().isShuffle());
+        audioPlayer.setVolume(config.getPlayerConfig().getPreferredVolumeLevel());
 
         oldVolume = audioPlayer.getVolume();
 
@@ -148,9 +150,10 @@ public final class MainApplication extends Application {
 
         root.fireEvent(new RefreshEvent());
 
-        setupStartupFiles();
-
-        setupStartupDirectories();
+        boolean hasStartupTracks = setupStartupTracks();
+        if (hasStartupTracks) {
+            Platform.runLater(() -> controller.switchViewMode(ViewMode.TRACK));
+        }
 
         logger.info("Start up tracks {}", startupTracks);
 
@@ -159,24 +162,25 @@ public final class MainApplication extends Application {
                 String.format("%.3f", (float) elapsed / 1_000_000_000.0f));
     }
 
-    private void setupStartupFiles() {
-        if (startupFiles.isEmpty()) return;
+    private boolean setupStartupTracks() {
+        if (startupFiles.isEmpty() && startupDirectories.isEmpty()) {
+            return false;
+        }
         CompletableFuture
-                .runAsync(() ->
-                        startupTracks.addAll(appContext.mediaScanner().scan(startupFiles)))
-                .thenRun(() -> Platform.runLater(() ->
-                        enqueueTracks(startupTracks)));
-    }
-
-    private void setupStartupDirectories() {
-        if (startupDirectories.isEmpty()) return;
-        CompletableFuture.runAsync(() -> {
-                    for (Path startupDirectory : startupDirectories) {
-                        startupTracks.addAll(appContext.mediaScanner().scan(startupDirectory));
-                    }
-                })
-                .thenRun(() -> Platform.runLater(() ->
-                        enqueueTracks(startupTracks)));
+                .runAsync(
+                        () -> {
+                            if (!startupFiles.isEmpty()) {
+                                startupTracks.addAll(appContext.mediaScanner().scan(startupFiles));
+                            }
+                            if (!startupDirectories.isEmpty()) {
+                                for (Path directory : startupDirectories) {
+                                    startupTracks.addAll(appContext.mediaScanner().scan(directory));
+                                }
+                            }
+                        }
+                ).thenRun(() ->
+                        Platform.runLater(() -> enqueueTracks(startupTracks)));
+        return true;
     }
 
     private void enqueueTracks(List<Track> tracks) {
@@ -186,7 +190,6 @@ public final class MainApplication extends Application {
             playerService.playSelectedTrack();
             logger.debug("Playing starting track at{} :\n {}", track.getFilePath(), track);
         }
-
     }
 
     private void setupKeyBindings(Parent root, MainViewController controller, Scene scene, Stage stage) {
@@ -203,14 +206,15 @@ public final class MainApplication extends Application {
                         playerService.resume();
                     }
                 }
+                case O -> playerService.stop();
                 case D -> playerService.playNext();
                 case A -> playerService.playPrev();
-                case E -> playerService.skipForward(config.getPreferredSkipSeconds());
-                case Q -> playerService.skipBackward(config.getPreferredSkipSeconds());
+                case E -> playerService.skipForward(config.getPlayerConfig().getPreferredSkipSeconds());
+                case Q -> playerService.skipBackward(config.getPlayerConfig().getPreferredSkipSeconds());
                 case W -> audioPlayer.setVolume(Math.min
-                        (100, audioPlayer.getVolume() + config.getPreferredVolumeModifier()));
+                        (100, audioPlayer.getVolume() + config.getPlayerConfig().getPreferredVolumeModifier()));
                 case S -> audioPlayer.setVolume(Math.max
-                        (0, audioPlayer.getVolume() - config.getPreferredVolumeModifier()));
+                        (0, audioPlayer.getVolume() - config.getPlayerConfig().getPreferredVolumeModifier()));
                 case M -> {
                     if (audioPlayer.getVolume() != 0) {
                         oldVolume = audioPlayer.getVolume();
@@ -236,15 +240,16 @@ public final class MainApplication extends Application {
                         playerService.getCurrentTrack().setFavorite(!isFav);
                     }
                 }
-                case B -> controller.handelSwitchingBack();
+                case B -> controller.switchBack();
+                case N -> controller.switchNext();
                 case F11 -> stage.setFullScreen(!stage.isFullScreen());
                 case F5 -> root.fireEvent(new RefreshEvent());
             }
         });
         scene.setOnMousePressed(event -> {
             switch (event.getButton()) {
-                case FORWARD -> playerService.playNext();
-                case BACK -> playerService.playPrev();
+                case FORWARD -> controller.switchNext();
+                case BACK -> controller.switchBack();
                 case MIDDLE -> {
                     if (audioPlayer.getState() == PlaybackState.PLAYING) {
                         playerService.pause();
@@ -271,9 +276,10 @@ public final class MainApplication extends Application {
         ConfigStorage.save(appContext.config());
 
         if (mediaService != null && trackStorage != null) {
-            trackStorage.saveAll(mediaService.getTracks());
+            trackStorage.UpdateAll(mediaService.getTracks());
             if (!startupTracks.isEmpty()) trackStorage.saveAll(startupTracks);
         }
+
         logger.debug("TrackStorage snapshot write-back took {} ms", (System.nanoTime() - t) / 1_000_000.0);
         t = System.nanoTime();
 

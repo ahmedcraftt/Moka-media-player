@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.nio.file.Path;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -36,6 +37,11 @@ public class AudioPlayer {
         notifyTrackChanged();
 
         engine.play(trackPath.toUri(), this::playNext);
+
+        track.setLastPlayed(LocalDateTime.now());
+        System.out.println("playing " + track.getTitle());
+        System.out.println(System.identityHashCode(track));
+        System.out.println("last-played " + track.getLastPlayedAsString());
 
         if (track.getMetadata().getDurationInSeconds() <= 0) {
             track.getMetadata().setDurationInSeconds(engine.getDuration());

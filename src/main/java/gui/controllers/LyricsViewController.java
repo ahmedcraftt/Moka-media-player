@@ -6,11 +6,13 @@ import gui.main.AppContext;
 import javafx.animation.FadeTransition;
 import javafx.animation.ParallelTransition;
 import javafx.animation.TranslateTransition;
-import javafx.scene.control.ScrollPane;
+import javafx.geometry.Side;
+import javafx.scene.control.*;
 import javafx.scene.effect.BlurType;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
+import javafx.scene.text.TextAlignment;
 import javafx.scene.text.TextFlow;
 import javafx.util.Duration;
 import platform.OS;
@@ -19,8 +21,6 @@ import platform.OSDetector;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.TextArea;
 
 import java.awt.Desktop;
 import java.io.IOException;
@@ -42,7 +42,13 @@ public class LyricsViewController {
     private TextFlow tflLyricsView;
 
     @FXML
-    private Button btnSave, btnEdit, btnSearch;
+    private Button btnSave, btnEdit, btnSearch, btnAlignment;
+
+    @FXML
+    private ContextMenu cxmMenu;
+
+    @FXML
+    private MenuItem miLeft, miRight, miCenter;
 
     private SwitchMode currentSwitchMode = SwitchMode.VIEW;
 
@@ -66,40 +72,9 @@ public class LyricsViewController {
 
     public void setAppContext(AppContext appContext) {
         this.appContext = appContext;
-        tflLyricsView.setTextAlignment(appContext.config().getTextAlignment());
-        searchEngine = appContext.config().getSearchEngine();
+        tflLyricsView.setTextAlignment(appContext.config().getUIConfig().getLyricsTextAlignment());
+        searchEngine = appContext.config().getSearchConfig().getPreferredSearchEngine();
         handleSave();
-    }
-
-    private void loadTrackLyrics() {
-
-        Metadata data = track.getMetadata();
-
-        txtLyrics.setText(data.getLyrics());
-
-        taLyricsEditor.setText(data.getLyrics());
-
-        oldLyrics = data.getLyrics();
-    }
-
-    private void handleSave() {
-        btnSave.setOnAction(event -> {
-            if (track == null) {
-                return;
-            }
-
-            Metadata metadata = track.getMetadata();
-
-            metadata.setLyrics(taLyricsEditor.getText().trim());
-
-            appContext.metadataManager().write(track);
-
-            txtLyrics.setText(metadata.getLyrics());
-
-            oldLyrics = metadata.getLyrics();
-
-            switchToViewMode();
-        });
     }
 
     public void handelEdit(ActionEvent event) {
@@ -151,8 +126,57 @@ public class LyricsViewController {
 
     }
 
+    private void handleAlignmentBtn() {
+        btnAlignment.setOnAction(event ->
+                cxmMenu.show(btnAlignment, Side.BOTTOM, 0, 0));
+    }
+
+    private void handleMenuOptions() {
+        miLeft.setOnAction(event -> tflLyricsView.setTextAlignment(TextAlignment.LEFT));
+        miCenter.setOnAction(event -> tflLyricsView.setTextAlignment(TextAlignment.CENTER));
+        miRight.setOnAction(event -> tflLyricsView.setTextAlignment(TextAlignment.RIGHT));
+    }
+
+    private void loadTrackLyrics() {
+
+        Metadata data = track.getMetadata();
+
+        txtLyrics.setText(data.getLyrics());
+
+        taLyricsEditor.setText(data.getLyrics());
+
+        oldLyrics = data.getLyrics();
+    }
+
+    private void handleSave() {
+        btnSave.setOnAction(event -> {
+            if (track == null) {
+                return;
+            }
+
+            Metadata metadata = track.getMetadata();
+
+            metadata.setLyrics(taLyricsEditor.getText().trim());
+
+            appContext.metadataManager().write(track);
+
+            txtLyrics.setText(metadata.getLyrics());
+
+            oldLyrics = metadata.getLyrics();
+
+            switchToViewMode();
+        });
+    }
+
     @FXML
     private void initialize() {
+        setupLyricsText();
+
+        handleAlignmentBtn();
+        handleMenuOptions();
+    }
+
+    private void setupLyricsText() {
         tflLyricsView.getChildren().setAll(txtLyrics);
 
         txtLyrics.getStyleClass().add("lyrics-text");
