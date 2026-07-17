@@ -29,14 +29,6 @@ public class TrackMapper {
 
         logger.debug("Mapping metadata ID: {}", track.getMetadata().getId());
 
-        if (track.getFilePath()
-                .equals(Path.of("/home/Ahmed/Music/Fandroid Music - CUPHEAD RAP SONG ► Cover by Caleb Hyles ＂You Signed a Contract＂.opus"))) {
-            System.out.println("found " + track.getTitle());
-            System.out.println(System.identityHashCode(track));
-            System.out.println("last played " + track.getLastPlayedAsString());
-
-        }
-
         String lastPlayed;
         if (track.getLastPlayed() != null) {
             lastPlayed = track.getLastPlayed().toString();
@@ -69,13 +61,6 @@ public class TrackMapper {
         if (strLastPlayed == null || strLastPlayed.isBlank() || strLastPlayed.equals("none")) {
             lastPlayed = null;
         } else lastPlayed = LocalDateTime.parse(dto.lastPlayed());
-
-        if (dto.path()
-                .equals("/home/Ahmed/Music/Fandroid Music - CUPHEAD RAP SONG ► Cover by Caleb Hyles ＂You Signed a Contract＂.opus")) {
-            System.out.println("found " + dto.path());
-            System.out.println("last played " + dto.lastPlayed());
-
-        }
 
         return new Track(
                 metadata,

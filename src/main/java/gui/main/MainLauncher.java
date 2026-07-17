@@ -12,6 +12,7 @@ public final class MainLauncher {
     static final long START_TIME = System.nanoTime();
 
     public static void main(String[] args) {
+        System.out.println("Dev Mode:" + Boolean.getBoolean("moka.dev"));
         MainApplication.launch(MainApplication.class, args);
     }
 }

@@ -46,9 +46,10 @@ natives
 # Data base
 *.db
 
-*misc
+#misc
 src/main/java/Tests
 .directory
 jpackage.txt
 jlink.log
+test-runtime
 logs
