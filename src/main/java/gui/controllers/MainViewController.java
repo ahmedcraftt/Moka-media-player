@@ -73,7 +73,6 @@ public class MainViewController {
     public void setAppContext(AppContext appContext) {
         this.appContext = appContext;
         this.viewLoader = new ViewLoader(appContext);
-        initializeLibrary();
         init();
     }
 
@@ -153,6 +152,7 @@ public class MainViewController {
         setUpMenuOptions();
         setUpProgressSlider();
         updateRepeatButton();
+        initializeLibrary();
         Task<Void> task = getQueueLoadingTask();
         Thread thread = new Thread(task);
         thread.setDaemon(true);

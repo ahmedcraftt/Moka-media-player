@@ -5,7 +5,12 @@ public class MediaScanException extends RuntimeException {
         super(message);
     }
 
-    public MediaScanException(Exception e) {
-        super(e);
+    public MediaScanException(String message, Throwable cause) {
+        super(message, cause);
     }
+
+    public MediaScanException(Throwable cause) {
+        super(cause);
+    }
+
 }

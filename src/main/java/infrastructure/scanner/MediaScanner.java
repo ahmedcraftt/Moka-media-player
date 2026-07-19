@@ -7,7 +7,9 @@ import domain.model.media.TrackSyncState;
 import infrastructure.classifier.TrackClassifier;
 import infrastructure.media.DataResolver;
 import infrastructure.media.FiledataManager;
+import infrastructure.media.LyricsEmbedder;
 import infrastructure.media.MetadataManager;
+import infrastructure.storage.DatabaseManager;
 import infrastructure.storage.TrackStorage;
 import infrastructure.storage.MetadataStorage;
 import infrastructure.storage.ArtworkStorage;
@@ -17,6 +19,8 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.*;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.*;
 import java.util.concurrent.*;
 
@@ -28,13 +32,12 @@ public class MediaScanner {
             "mp3", "flac", "wav", "m4a", "ogg", "aac", "opus", "wma", "alac"
     );
 
-    private final Object dbLock = new Object();
-
     private final MetadataManager metadataManager;
     private final FiledataManager filedataManager;
     private final TrackStorage trackStorage;
     private final MetadataStorage metadataStorage;
     private final ArtworkStorage artworkStorage;
+    private final LyricsEmbedder lyricsEmbedder;
     private final DataResolver resolver = new DataResolver();
 
     public MediaScanner(
@@ -42,27 +45,35 @@ public class MediaScanner {
             FiledataManager filedataManager,
             TrackStorage trackStorage,
             MetadataStorage metadataStorage,
-            ArtworkStorage artworkStorage
+            ArtworkStorage artworkStorage, LyricsEmbedder lyricsEmbedder
     ) {
         this.metadataManager = metadataManager;
         this.filedataManager = filedataManager;
         this.trackStorage = trackStorage;
         this.metadataStorage = metadataStorage;
         this.artworkStorage = artworkStorage;
+        this.lyricsEmbedder = lyricsEmbedder;
     }
 
     public Track scan(File file) {
         Path path = file.toPath();
-        if (!isAudioFile(path)) throw new IllegalArgumentException("Not a audio file");
+        if (!isAudioFile(path)) throw new MediaScanException("Not an audio file");
         Track track = new Track(path);
         metadataManager.read(track);
         filedataManager.read(track);
         scanForArtwork(track);
         track.setType(TrackClassifier.classify(path, track.getMetadata()));
+        try (Connection connection = DatabaseManager.connect()) {
+            trackStorage.save(track, connection);
+        } catch (SQLException e) {
+            logger.error("Error loading track from path: {}", path, e);
+        }
+
         return track;
     }
 
     public List<Track> scan(List<Path> paths) {
+        long start = System.currentTimeMillis();
         if (paths == null || paths.isEmpty()) {
             return Collections.emptyList();
         }
@@ -72,9 +83,8 @@ public class MediaScanner {
 
         try {
             List<TrackSyncResult> results = processAll(paths, pool);
-
+            long time = System.currentTimeMillis();
             persist(results);
-
             return results.stream()
                     .map(TrackSyncResult::track)
                     .toList();
@@ -101,11 +111,8 @@ public class MediaScanner {
         try {
             List<Path> paths = discover(root);
             return scan(paths);
-        } catch (MediaScanException e) {
-            logger.error("Media scanner critically failed on root path: {}", root, e.getCause());
-            throw e;
-        } catch (Exception e) {
-            logger.error("Media scanner critically failed during path discovery on root: {}", root, e);
+        } catch (IOException e) {
+            logger.error("Media scanner critically failed during path discovery on root: {}", root);
             throw new MediaScanException(e);
         }
     }
@@ -122,9 +129,6 @@ public class MediaScanner {
             String artworkFileName = artworkHash + ".jpg";
             String diskPath;
 
-            logger.debug("Processing artwork injection -> Title: '{}', Hash: {}, Existing Path: {}",
-                    track.getMetadata().getTitle(), artworkHash, track.getMetadata().getArtworkPath());
-
             try {
                 diskPath = artworkStorage.saveArtwork(rawArtworkBytes, artworkFileName);
             } catch (IOException e) {
@@ -137,7 +141,8 @@ public class MediaScanner {
     }
 
     private void persist(List<TrackSyncResult> results) {
-        synchronized (dbLock) {
+        try (Connection connection = DatabaseManager.connect()) {
+            connection.setAutoCommit(false);
             for (TrackSyncResult result : results) {
                 Track track = result.track();
                 if (track == null) continue;
@@ -148,15 +153,16 @@ public class MediaScanner {
 
                 Metadata md = track.getMetadata();
                 if (result.metadataChanged()) {
-                    metadataStorage.update(md);
-                    logger.debug("Persist updated metadata: {}", md.toText());
+                    metadataStorage.update(md, connection);
                 } else {
-                    int id = metadataStorage.saveAndGetId(md);
+                    int id = metadataStorage.saveAndGetId(md, connection);
                     md.setId(id);
                 }
-
-                trackStorage.save(track);
+                trackStorage.save(track, connection);
             }
+            connection.commit();
+        } catch (SQLException e) {
+            logger.error("Failed to create connection to database.", e);
         }
     }
 
@@ -205,36 +211,39 @@ public class MediaScanner {
     }
 
     private void processTrack(Track track, Path path, TrackSyncState state) {
+        readTrack(track);
+        handleMetadataId(track);
+        handleTrackType(track, path, state);
+        scanForArtwork(track);
+        resolveMissingFields(track);
+    }
 
-        int existingMetadataId = track.getMetadata() != null ? track.getMetadata().getId() : 0;
-
-        logger.debug("Metadata state before engine read: {}", track.getMetadata().toText());
-        filedataManager.read(track);
-        try {
-            metadataManager.read(track);
-        } catch (Exception e) {
-            logger.warn("Skipping reading unreadable audio: {}", path);
-        }
-        logger.debug("Metadata state after engine read: {}", track.getMetadata().toText());
-
-        if (existingMetadataId > 0 && track.getMetadata() != null) {
-            track.getMetadata().setId(existingMetadataId);
-        }
-
+    private void handleTrackType(Track track, Path path, TrackSyncState state) {
         if (!state.exists()) {
             track.setType(TrackClassifier.classify(path, track.getMetadata()));
         } else {
             track.setType(MediaType.StringToMediaType(state.mediaType()));
         }
+    }
 
-        scanForArtwork(track);
+    private void readTrack(Track track) {
+        lyricsEmbedder.embedLyrics(track);
+        filedataManager.read(track);
+        metadataManager.read(track);
+    }
 
-        Metadata metadata = track.getMetadata();
-        if (metadata != null) {
-            metadata.setDurationInSeconds(resolver.resolveMissingDuration(track));
-            metadata.setTitle(resolver.resolveMissingTitle(track));
+    private void handleMetadataId(Track track) {
+        int existingMetadataId = track.getMetadata() != null ? track.getMetadata().getId() : 0;
+
+        if (existingMetadataId > 0 && track.getMetadata() != null) {
+            track.getMetadata().setId(existingMetadataId);
         }
+    }
 
+    private void resolveMissingFields(Track track) {
+        Metadata metadata = track.getMetadata();
+        metadata.setDurationInSeconds(resolver.resolveMissingDuration(track));
+        metadata.setTitle(resolver.resolveMissingTitle(track));
     }
 
     private List<Path> discover(Path root) throws IOException {
@@ -258,5 +267,6 @@ public class MediaScanner {
     }
 
     private record TrackSyncResult(Track track, boolean exists, boolean metadataChanged) {
+
     }
 }

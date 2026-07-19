@@ -18,8 +18,18 @@
         <HBox alignment="TOP_RIGHT" spacing="4.0">
             <children>
                 <Button fx:id="btnSave" mnemonicParsing="false" text="save" visible="false"/>
-                <Button fx:id="btnSearch" mnemonicParsing="false" onAction="#handelSearch"
-                        text="search for lyrics on web"/>
+                <Button fx:id="btnLyrics" mnemonicParsing="false" text="Add your lyrics">
+                    <contextMenu>
+                        <ContextMenu fx:id="cxmLyrics">
+                            <items>
+                                <MenuItem fx:id="miSearch" mnemonicParsing="false" onAction="#handelSearch"
+                                          text="search for lyrics on web"/>
+                                <MenuItem fx:id="miProvideFile" mnemonicParsing="false" onAction="#handleProvidedFile"
+                                          text="I have a .lrc file"/>
+                            </items>
+                        </ContextMenu>
+                    </contextMenu>
+                </Button>
                 <Button fx:id="btnAlignment" mnemonicParsing="false" text=" ☰ ">
                     <contextMenu>
                         <ContextMenu fx:id="cxmMenu">

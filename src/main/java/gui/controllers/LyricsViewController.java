@@ -14,6 +14,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.scene.text.TextFlow;
+import javafx.stage.FileChooser;
 import javafx.util.Duration;
 import platform.OS;
 import platform.OSDetector;
@@ -21,8 +22,10 @@ import platform.OSDetector;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import platform.UnSupportedOSException;
 
 import java.awt.Desktop;
+import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -34,21 +37,16 @@ public class LyricsViewController {
 
     @FXML
     private ScrollPane spLyricsContainer;
-
     @FXML
     private TextArea taLyricsEditor;
-
     @FXML
     private TextFlow tflLyricsView;
-
     @FXML
-    private Button btnSave, btnEdit, btnSearch, btnAlignment;
-
+    private Button btnSave, btnEdit, btnLyrics, btnAlignment;
     @FXML
-    private ContextMenu cxmMenu;
-
+    private ContextMenu cxmMenu, cxmLyrics;
     @FXML
-    private MenuItem miLeft, miRight, miCenter;
+    private MenuItem miLeft, miRight, miCenter, miSearch, miProvideFile;
 
     private SwitchMode currentSwitchMode = SwitchMode.VIEW;
 
@@ -91,6 +89,10 @@ public class LyricsViewController {
         if (track != null) searchWeb("lyrics:" + track.getTitle());
     }
 
+    public void handleProvidedFile(ActionEvent event) {
+        if (track != null) Platform.runLater(this::pickFile);
+    }
+
     public void searchWeb(String query) {
 
         String encodedQuery = URLEncoder.encode(query, StandardCharsets.UTF_8);
@@ -106,7 +108,9 @@ public class LyricsViewController {
 
         String finalUrl = url;
 
-        if (OSDetector.getOS() == OS.WINDOWS || OSDetector.getOS() == OS.MAC) {
+        OS os = OSDetector.getOS();
+
+        if (os == OS.WINDOWS || os == OS.MAC) {
             Platform.runLater(() -> {
                 try {
                     Desktop.getDesktop().browse(new URI(finalUrl));
@@ -114,7 +118,7 @@ public class LyricsViewController {
                     throw new RuntimeException(e);
                 }
             });
-        } else if (OSDetector.getOS() == OS.LINUX) {
+        } else if (os == OS.LINUX) {
             CompletableFuture.runAsync(() -> {
                 try {
                     new ProcessBuilder("xdg-open", finalUrl).start();
@@ -122,8 +126,33 @@ public class LyricsViewController {
                     e.printStackTrace();
                 }
             });
-        }
+        } else throw new UnSupportedOSException("OS is not supported");
+    }
 
+    private void pickFile() {
+        FileChooser fileChooser = new FileChooser();
+
+        fileChooser.setTitle("Select a File");
+
+        fileChooser.setInitialDirectory(
+                new File(System.getProperty("user.home"))
+        );
+
+        fileChooser.getExtensionFilters().addAll(
+                new FileChooser.ExtensionFilter("Lyrics Files", "*.lrc", "*.txt"),
+                new FileChooser.ExtensionFilter("All Files", "*.*")
+        );
+
+        File file = fileChooser.showOpenDialog(btnLyrics.getScene().getWindow());
+
+        if (file == null) return;
+
+        appContext.lyricsEmbedder().embedLyrics(track, file.toPath());
+    }
+
+    private void handleLyricsBtn() {
+        btnLyrics.setOnAction(event ->
+                cxmLyrics.show(btnLyrics, Side.BOTTOM, 0, 0));
     }
 
     private void handleAlignmentBtn() {
@@ -171,8 +200,8 @@ public class LyricsViewController {
     @FXML
     private void initialize() {
         setupLyricsText();
-
         handleAlignmentBtn();
+        handleLyricsBtn();
         handleMenuOptions();
     }
 
@@ -208,6 +237,7 @@ public class LyricsViewController {
     }
 
     private void editModeTransaction() {
+
         TranslateTransition out = new TranslateTransition(Duration.millis(250), tflLyricsView);
         out.setFromX(0);
         out.setToX(-30);

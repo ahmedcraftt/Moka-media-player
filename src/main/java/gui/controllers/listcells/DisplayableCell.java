@@ -5,8 +5,9 @@ import domain.model.media.Displayable;
 import domain.model.media.Playlist;
 import domain.model.media.Track;
 import domain.model.metadata.Metadata;
+import gui.controllers.FilterMode;
 import gui.utils.ArtworkCache;
-import gui.utils.TimeFormater;
+import gui.utils.TimeFormatter;
 import javafx.css.PseudoClass;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
@@ -32,6 +33,7 @@ public class DisplayableCell extends ListCell<Displayable> {
     protected static Image defaultArtwork;
 
     private final PlayerService playerService;
+    private FilterMode filterMode;
 
     public DisplayableCell(PlayerService playerService) {
         this.playerService = playerService;
@@ -108,16 +110,17 @@ public class DisplayableCell extends ListCell<Displayable> {
             String artist = (metadata != null && metadata.getArtist() != null)
                     ? metadata.getArtist()
                     : "Unknown artist";
-
+            String info = TimeFormatter.formatDuration(duration) + " • " + artist;
             lblTitle.setText(displayTitle);
-            lblInfo.setText(TimeFormater.formatTime(duration) + " • " + artist);
+
+            lblInfo.setText(info);
 
         } else if (item instanceof Playlist playlist) {
             int totalTracks = playlist.size();
 
             lblTitle.setText(playlist.getTitle() + " " +
                     totalTracks + " " + (totalTracks == 1 ? "track" : "tracks " +
-                    TimeFormater.formatTime(playlist.getTotalDurationSeconds()))
+                    TimeFormatter.formatDuration(playlist.getTotalDurationSeconds()))
             );
 
             if (playlist.getTracks() != null && !playlist.getTracks().isEmpty()) {

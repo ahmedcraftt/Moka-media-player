@@ -39,9 +39,6 @@ public class AudioPlayer {
         engine.play(trackPath.toUri(), this::playNext);
 
         track.setLastPlayed(LocalDateTime.now());
-        System.out.println("playing " + track.getTitle());
-        System.out.println(System.identityHashCode(track));
-        System.out.println("last-played " + track.getLastPlayedAsString());
 
         if (track.getMetadata().getDurationInSeconds() <= 0) {
             track.getMetadata().setDurationInSeconds(engine.getDuration());

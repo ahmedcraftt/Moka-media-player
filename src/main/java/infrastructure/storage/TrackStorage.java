@@ -36,7 +36,7 @@ public class TrackStorage {
         }
     }
 
-    public void save(Track track) {
+    public void save(Track track, Connection connection) {
         TrackDTO dto = TrackMapper.toDTO(track);
 
         String sql = """
@@ -58,21 +58,19 @@ public class TrackStorage {
                 """;
 
         try (
-                Connection connection = DatabaseManager.connect();
                 PreparedStatement statement = connection.prepareStatement(sql)
         ) {
             connection.setAutoCommit(false);
             mapDtoToStatement(statement, dto);
             statement.executeUpdate();
-            connection.commit();
         } catch (SQLException e) {
             logger.error("Failed to save track data for path: {}", dto.path(), e);
         }
     }
 
-    public void saveAll(List<Track> tracks) {
+    public void saveAll(List<Track> tracks, Connection connection) {
         for (Track track : tracks) {
-            save(track);
+            save(track, connection);
         }
     }
 
@@ -120,7 +118,7 @@ public class TrackStorage {
         }
     }
 
-    public void update(Track track) {
+    public void update(Track track, Connection connection) {
         TrackDTO dto = TrackMapper.toDTO(track);
 
         String sql = """
@@ -140,9 +138,9 @@ public class TrackStorage {
                 """;
 
         try (
-                Connection connection = DatabaseManager.connect();
                 PreparedStatement statement = connection.prepareStatement(sql)
         ) {
+            connection.setAutoCommit(false);
             statement.setInt(1, dto.metadataId());
             statement.setInt(2, dto.favorite() ? 1 : 0);
             statement.setInt(3, dto.timesPlayed());
@@ -155,7 +153,7 @@ public class TrackStorage {
             statement.setString(10, dto.fileType());
             statement.setString(11, dto.lastPlayed());
             statement.setString(12, dto.path());
-            metadataStorage.update(track.getMetadata());
+            metadataStorage.update(track.getMetadata(), connection);
 
             statement.executeUpdate();
         } catch (SQLException e) {
@@ -163,9 +161,9 @@ public class TrackStorage {
         }
     }
 
-    public void UpdateAll(List<Track> tracks) {
+    public void UpdateAll(List<Track> tracks, Connection connection) {
         for (Track track : tracks) {
-            update(track);
+            update(track, connection);
         }
     }
 

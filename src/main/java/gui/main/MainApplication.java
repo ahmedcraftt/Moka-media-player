@@ -11,6 +11,7 @@ import infrastructure.audio.AudioEngine;
 import infrastructure.audio.AudioPlayer;
 import domain.audio.PlaybackState;
 import gui.controllers.MainViewController;
+import infrastructure.storage.DatabaseManager;
 import infrastructure.storage.MetadataStorage;
 import infrastructure.storage.TrackStorage;
 
@@ -29,6 +30,8 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -108,16 +111,16 @@ public final class MainApplication extends Application {
 
         primaryStage = stage;
 
-        logger.debug(getParameters().getRaw().toString());
+        logger.info(getParameters().getRaw().toString());
 
         long t = System.nanoTime();
 
         trackStorage.initialize();
-        logger.debug("Track storage subsystem initialized in {} ms", (System.nanoTime() - t) / 1_000_000.0);
+        logger.info("Track storage subsystem initialized in {} ms", (System.nanoTime() - t) / 1_000_000.0);
         t = System.nanoTime();
 
         metadataStorage.initialize();
-        logger.debug("Metadata storage subsystem initialized in {} ms", (System.nanoTime() - t) / 1_000_000.0);
+        logger.info("Metadata storage subsystem initialized in {} ms", (System.nanoTime() - t) / 1_000_000.0);
         t = System.nanoTime();
 
         FXMLLoader loader = new FXMLLoader(MainApplication.class.getResource("/views/main-view.fxml"));
@@ -127,7 +130,7 @@ public final class MainApplication extends Application {
         t = System.nanoTime();
 
         controller.setAppContext(appContext);
-        logger.debug("MainViewController Dependency injection took {} ms", (System.nanoTime() - t) / 1_000_000.0);
+        logger.info("MainViewController Dependency injection took {} ms", (System.nanoTime() - t) / 1_000_000.0);
 
         Image icon = new Image(
                 Objects.requireNonNull(
@@ -274,11 +277,17 @@ public final class MainApplication extends Application {
         appContext.player().stop();
 
         ConfigStorage.save(appContext.config());
-
-        if (mediaService != null && trackStorage != null) {
-            trackStorage.UpdateAll(mediaService.getTracks());
-            if (!startupTracks.isEmpty()) trackStorage.saveAll(startupTracks);
+        try (Connection connection = DatabaseManager.connect()) {
+            connection.setAutoCommit(false);
+            if (mediaService != null && trackStorage != null) {
+                trackStorage.UpdateAll(mediaService.getTracks(), connection);
+                if (!startupTracks.isEmpty()) trackStorage.saveAll(startupTracks, connection);
+            }
+            connection.commit();
+        } catch (SQLException e) {
+            logger.error("Error while Saving tracks.", e);
         }
+
 
         logger.debug("TrackStorage snapshot write-back took {} ms", (System.nanoTime() - t) / 1_000_000.0);
         t = System.nanoTime();

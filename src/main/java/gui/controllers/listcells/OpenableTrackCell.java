@@ -1,6 +1,7 @@
 package gui.controllers.listcells;
 
 import application.service.PlayerService;
+import domain.model.media.Displayable;
 import domain.model.media.Track;
 import gui.utils.ViewLoader;
 

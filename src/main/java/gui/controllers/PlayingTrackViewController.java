@@ -6,6 +6,7 @@ import domain.model.media.Track;
 import gui.utils.DialogFactory;
 import gui.main.AppContext;
 
+import infrastructure.storage.DatabaseManager;
 import javafx.animation.Animation;
 import javafx.animation.Interpolator;
 import javafx.animation.RotateTransition;
@@ -30,6 +31,8 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
@@ -128,7 +131,12 @@ public class PlayingTrackViewController {
 
                     if (brandNewDiskPath != null) {
                         currentTrack.getMetadata().setArtworkPath(brandNewDiskPath);
-                        appContext.trackStorage().update(currentTrack);
+                        try (Connection connection = DatabaseManager.connect()) {
+                            appContext.trackStorage().update(currentTrack, connection);
+                            connection.commit();
+                        } catch (SQLException e) {
+
+                        }
 
                         logger.info("Successfully updated artwork for track '{}' to local path: {}",
                                 currentTrack.getTitle(), brandNewDiskPath);

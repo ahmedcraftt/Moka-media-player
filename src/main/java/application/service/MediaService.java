@@ -4,10 +4,13 @@ import domain.model.library.Library;
 import domain.model.library.MediaLibrary;
 import domain.model.media.Playlist;
 import domain.model.media.Track;
+import infrastructure.media.LyricsEmbedder;
 import infrastructure.scanner.MediaScanner;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.nio.file.Path;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -18,6 +21,7 @@ public class MediaService {
     private final MediaScanner scanner;
     private final MediaLibrary mediaLibrary;
     private final LibraryService libraryService;
+    private final LyricsEmbedder lyricsEmbedder;
 
     private List<Playlist> cachedAlbums = new ArrayList<>();
     private List<Playlist> cachedArtists = new ArrayList<>();
@@ -25,22 +29,21 @@ public class MediaService {
 
     public MediaService(MediaScanner scanner,
                         MediaLibrary mediaLibrary,
-                        LibraryService libraryService) {
+                        LibraryService libraryService,
+                        LyricsEmbedder lyricsEmbedder) {
         this.scanner = scanner;
         this.mediaLibrary = mediaLibrary;
         this.libraryService = libraryService;
+        this.lyricsEmbedder = lyricsEmbedder;
     }
 
     public void loadActiveLibrary() {
-        reloadActiveLibrary();
-    }
+        long start = System.nanoTime();
 
-    public void refreshActiveLibrary() {
-        reloadActiveLibrary();
-    }
-
-    private void reloadActiveLibrary() {
         Library activeLibrary = libraryService.getActiveLibrary();
+
+        logger.debug("Loading active library in ms {}", (System.nanoTime() - start) / 1_000_000);
+        long time = System.nanoTime();
 
         if (activeLibrary == null) {
             logger.warn("No active library selected.");
@@ -56,11 +59,16 @@ public class MediaService {
             }
         }
 
+        logger.debug("Scanning tracks in {} ms", (System.nanoTime() - time) / 1_000_000);
+        time = System.nanoTime();
+
         mediaLibrary.clear();
         mediaLibrary.addAll(new ArrayList<>(uniqueTracks));
         rebuildMetadataCaches();
-    }
+        logger.debug("Rebuilt cache in {} ms", (System.nanoTime() - time) / 1_000_000);
 
+        logger.debug("loadActiveLibrary() took {} seconds", (System.nanoTime() - start) / 1_000_000_000.0f);
+    }
 
     public void rebuildMetadataCaches() {
 
@@ -113,6 +121,14 @@ public class MediaService {
                     return genrePlaylist;
                 })
                 .collect(Collectors.toList());
+    }
+
+    public void embedLyrics(Track track, Path lrcPath) {
+        lyricsEmbedder.embedLyrics(track, lrcPath);
+    }
+
+    public void embedLyrics(List<Track> tracks, Path lrcFolder) {
+        lyricsEmbedder.embedLyrics(tracks);
     }
 
 

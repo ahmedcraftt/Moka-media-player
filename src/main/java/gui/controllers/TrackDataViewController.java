@@ -5,6 +5,7 @@ import domain.model.metadata.Metadata;
 import domain.model.media.MediaType;
 import domain.model.media.Track;
 import gui.main.AppContext;
+import infrastructure.storage.DatabaseManager;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -15,6 +16,8 @@ import javafx.stage.Stage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.time.Year;
 
 public class TrackDataViewController {
@@ -201,7 +204,12 @@ public class TrackDataViewController {
 
         appContext.metadataManager().write(track);
 
-        appContext.trackStorage().update(track);
+        try (Connection connection = DatabaseManager.connect()) {
+            appContext.trackStorage().update(track, connection);
+            connection.commit();
+        } catch (SQLException e) {
+            logger.warn("Failed to save track data: '{}'", track.getFiledata().getFileName());
+        }
 
         if (!oldGenre.equals(metadata.getGenre()) ||
                 !oldArtist.equals(metadata.getArtist()) ||

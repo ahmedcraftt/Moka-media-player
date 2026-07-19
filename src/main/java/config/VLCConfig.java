@@ -1,9 +1,6 @@
 package config;
 
-import platform.ArchDetector;
-import platform.CpuArch;
-import platform.OS;
-import platform.OSDetector;
+import platform.*;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,7 +35,7 @@ public final class VLCConfig {
             default -> "natives/mac/intel";
         };
 
-        default -> throw new UnsupportedOperationException("Unsupported operating system.");
+        default -> throw new UnSupportedOSException("Unsupported operating system.");
     };
 
     private static String vlcNativesPath = DEFAULT_NATIVES_PATH;
@@ -71,5 +68,6 @@ public final class VLCConfig {
         } catch (URISyntaxException e) {
             throw new RuntimeException("Failed to locate application directory.", e);
         }
+
     }
 }

@@ -10,10 +10,10 @@ public final class UIConfig {
     private static final int DEFAULT_WIDTH = 400;
     private static final int DEFAULT_HEIGHT = 400;
     private static final int DEFAULT_SPEED = 64;
+    private static final int DEFAULT_CUTOFF_Days = 30;
     private static final ViewMode DEFAULT_STARTING_VIEW_MODE = ViewMode.TRACKS;
     private static final TextAlignment DEFAULT_TEXT_ALIGNMENT = TextAlignment.CENTER;
     private static final SortByModes DEFAULT_STARTING_SORT_BY_MODE = SortByModes.TITLE;
-    private static final LocalDateTime DEFAULT_CUTOFF_TIME = LocalDateTime.now().minusDays(30);
 
     private boolean tracksBtnVisibility = true;
     private boolean songsBtnVisibility = true;
@@ -27,11 +27,11 @@ public final class UIConfig {
     private int artworkImageWidth = DEFAULT_WIDTH;
     private int artworkImageHeight = DEFAULT_HEIGHT;
     private int artworkRotationSpeed = DEFAULT_SPEED;
+    private int cutoffDays = DEFAULT_CUTOFF_Days;
 
     private ViewMode startingViewMode = DEFAULT_STARTING_VIEW_MODE;
     private TextAlignment lyricsTextAlignment = DEFAULT_TEXT_ALIGNMENT;
     private SortByModes startingSortByMode = DEFAULT_STARTING_SORT_BY_MODE;
-    private LocalDateTime cutoff = DEFAULT_CUTOFF_TIME;
 
     public boolean isTracksBtnVisibility() {
         return tracksBtnVisibility;
@@ -145,11 +145,11 @@ public final class UIConfig {
         this.startingSortByMode = startingSortByMode;
     }
 
-    public LocalDateTime getCutoff() {
-        return cutoff;
+    public int getCutoffDays() {
+        return cutoffDays;
     }
 
-    public void setCutoff(LocalDateTime cutoff) {
-        this.cutoff = cutoff;
+    public void setCutoffDays(int cutoffDays) {
+        this.cutoffDays = cutoffDays;
     }
 }

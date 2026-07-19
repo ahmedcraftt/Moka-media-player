@@ -12,6 +12,7 @@ import infrastructure.audio.AudioPlayer;
 import infrastructure.audio.VLCJAudioEngine;
 import infrastructure.media.FiledataManager;
 import infrastructure.media.JaudiotaggerManager;
+import infrastructure.media.LyricsEmbedder;
 import infrastructure.media.MetadataManager;
 import infrastructure.scanner.MediaScanner;
 import infrastructure.storage.ArtworkStorage;
@@ -19,6 +20,7 @@ import infrastructure.storage.MetadataStorage;
 import infrastructure.storage.TrackStorage;
 
 public final class AppContext {
+
     private final MediaService mediaService;
     private final AudioPlayer audioPlayer;
     private final LibraryService libraryService;
@@ -33,22 +35,36 @@ public final class AppContext {
     private final FiledataManager filedataManager;
     private final AudioEngine audioEngine;
     private final AppConfig config;
+    private final LyricsEmbedder lyricsEmbedder;
 
     public AppContext() {
         filedataManager = new FiledataManager();
         metadataManager = new JaudiotaggerManager();
         artStorage = new ArtworkStorage();
         metadataStorage = new MetadataStorage();
-        trackStorage = new TrackStorage(metadataStorage);
-        scanner = new MediaScanner(metadataManager, filedataManager, trackStorage, metadataStorage, artStorage);
         mediaLibrary = new MediaLibrary();
         libraryService = new LibraryService();
-        mediaService = new MediaService(scanner, mediaLibrary, libraryService);
         audioEngine = new VLCJAudioEngine();
+        config = ConfigStorage.load();
+        trackStorage = new TrackStorage(metadataStorage);
+        lyricsEmbedder = new LyricsEmbedder(metadataManager);
+        scanner = new MediaScanner(
+                metadataManager,
+                filedataManager,
+                trackStorage,
+                metadataStorage,
+                artStorage,
+                lyricsEmbedder
+        );
+        mediaService = new MediaService(
+                scanner,
+                mediaLibrary,
+                libraryService,
+                lyricsEmbedder
+        );
         audioPlayer = new AudioPlayer(audioEngine);
         playerService = new PlayerService(audioPlayer);
-        config = ConfigStorage.load();
-        appState = new AppState(config());
+        appState = new AppState(config);
     }
 
     public AppConfig config() {
@@ -107,20 +123,8 @@ public final class AppContext {
         return scanner;
     }
 
-    @Override
-    public String toString() {
-        return "AppContext[" +
-                "mediaService=" + mediaService + ", " +
-                "player=" + audioPlayer + ", " +
-                "libraryService=" + libraryService + ", " +
-                "playerService=" + playerService + ", " +
-                "metadataManager=" + metadataManager + ", " +
-                "mediaLibrary=" + mediaLibrary + ", " +
-                "appState=" + appState + ", " +
-                "artStorage=" + artStorage + ", " +
-                "metadataStorage=" + metadataStorage + ", " +
-                "trackStorage=" + trackStorage + ", " +
-                "scanner=" + scanner + ']';
+    public LyricsEmbedder lyricsEmbedder() {
+        return lyricsEmbedder;
     }
 
 }

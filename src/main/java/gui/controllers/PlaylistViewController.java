@@ -67,6 +67,8 @@ public class PlaylistViewController {
 
     private SortByModes currentSortMode = SortByModes.TITLE;
 
+    private FilterMode currentFilterMode = null;
+
     public void setUIContext(AppContext appContext) {
         this.appContext = appContext;
         loadPlaylists();
@@ -113,6 +115,9 @@ public class PlaylistViewController {
     }
 
     private void triggerSortPipeline() {
+        if (currentFilterMode != null) {
+            return;
+        }
         List<Displayable> visibleItems = listView.getItems();
         if (!visibleItems.isEmpty() && visibleItems.getFirst() instanceof Track) {
             sortCurrentTracks();
@@ -151,6 +156,7 @@ public class PlaylistViewController {
     }
 
     private void sortCurrentTracks() {
+        if (currentFilterMode != null) return;
         AppState appState = appContext.appState();
         List<Track> tracks = listView.getItems().stream()
                 .filter(Track.class::isInstance)
@@ -185,6 +191,7 @@ public class PlaylistViewController {
 
     @FXML
     private void handleDelete() {
+        if (selectedItem == null) return;
         switch (selectedItem) {
             case Track track -> {
                 listView.getItems().remove(selectedItem);
@@ -215,7 +222,12 @@ public class PlaylistViewController {
 
     private void setUpListView() {
         listView.setCellFactory(lv ->
-                new OpenableDisplayableCell(appContext.playerService(), viewLoader, onSaveSuccess));
+                new OpenableDisplayableCell(
+                        appContext.playerService(),
+                        viewLoader,
+                        onSaveSuccess,
+                        () -> currentFilterMode
+                ));
         listView.setOnMouseClicked(event -> {
             Displayable item = listView.getSelectionModel().getSelectedItem();
             if (item != null) {
@@ -254,20 +266,18 @@ public class PlaylistViewController {
         playerService.playSelectedTrack();
     }
 
-    private void openPlaylist(Playlist p) {
-        openList(p.getTracks());
-        this.currentPlaylist = p;
+    private void openPlaylist(Playlist playlist) {
+        openList(playlist.getTracks());
+        currentFilterMode = null;
+        this.currentPlaylist = playlist;
     }
 
     private void openList(List<Track> list) {
         PlayerService playerService = appContext.playerService();
         ObservableList<Displayable> tracks = FXCollections.observableArrayList();
         tracks.setAll(list != null ? list : List.of());
-        if (playerService != null) {
-            playerService.setCurrentList(list);
-        }
+        playerService.setCurrentList(list);
         Platform.runLater(() -> {
-
             listView.getSelectionModel().clearSelection();
             listView.setItems(tracks);
             appContext.appState().setCurrentView(tracks);
@@ -300,33 +310,34 @@ public class PlaylistViewController {
     }
 
     private void setupButtons() {
-        btnFavorites.setOnAction(e -> setupButton(FilterMode.FAVORITE));
-        btnRecentlyAdded.setOnAction(e -> setupButton(FilterMode.RECENTLY_ADDED));
-        btnMostPlayed.setOnAction(e -> setupButton(FilterMode.MOST_PLAYED));
-        btnRecentlyPlayed.setOnAction(e -> setupButton(FilterMode.RECENTLY_PLAYED));
+        btnFavorites.setOnAction(e -> setupFilterButton(FilterMode.FAVORITE));
+        btnRecentlyAdded.setOnAction(e -> setupFilterButton(FilterMode.RECENTLY_ADDED));
+        btnMostPlayed.setOnAction(e -> setupFilterButton(FilterMode.MOST_PLAYED));
+        btnRecentlyPlayed.setOnAction(e -> setupFilterButton(FilterMode.RECENTLY_PLAYED));
         btnAdd.setOnAction(e -> createPlaylist());
-
-        btnBack.setOnAction(event -> {
-            if (tfSearchBar != null) {
-                tfSearchBar.clear();
-            }
-            applyFilterAndSortPlaylists();
-            appContext.appState().setCurrentView(FXCollections.emptyObservableList());
-        });
+        btnBack.setOnAction(e -> handleBack());
     }
 
-    private void setupButton(FilterMode mode) {
+    private void setupFilterButton(FilterMode mode) {
+        currentFilterMode = mode;
         List<Track> tracks = appContext.mediaService().getTracks();
-        LocalDateTime cutoff = appContext.config().getUIConfig().getCutoff();
+        int cutoffDays = appContext.config().getUIConfig().getCutoffDays();
+        LocalDateTime cutoff = LocalDateTime.now().minusDays(cutoffDays);
 
         if (tracks == null) return;
         List<Track> filtered = List.of();
         switch (mode) {
-            case FAVORITE -> filtered = tracks.stream().filter(Track::isFavorite).toList();
-            case RECENTLY_ADDED ->
-                    filtered = tracks.stream().sorted(Comparator.comparing(Track::getDateAdded).reversed()).toList();
-            case MOST_PLAYED ->
-                    filtered = tracks.stream().sorted(Comparator.comparingInt(Track::getTimesPlayed).reversed()).toList();
+            case FAVORITE -> filtered = tracks.stream()
+                    .filter(Track::isFavorite)
+                    .sorted(Comparator.comparing(Track::getTitle).reversed())
+                    .toList();
+            case RECENTLY_ADDED -> filtered = tracks.stream()
+                    .sorted(Comparator.comparing(Track::getDateAdded).reversed())
+                    .toList();
+            case MOST_PLAYED -> filtered = tracks.stream()
+                    .filter(track -> track.getTimesPlayed() > 0)
+                    .sorted(Comparator.comparingInt(Track::getTimesPlayed).reversed())
+                    .toList();
             case RECENTLY_PLAYED -> filtered = tracks.stream()
                     .filter(track -> track.getLastPlayed() != null)
                     .filter(track -> track.getLastPlayed().isAfter(cutoff))
@@ -334,6 +345,15 @@ public class PlaylistViewController {
                     .toList();
         }
         openList(filtered);
+    }
+
+    private void handleBack() {
+        if (tfSearchBar != null) {
+            tfSearchBar.clear();
+        }
+        currentFilterMode = null;
+        appContext.appState().clearCurrentView();
+        applyFilterAndSortPlaylists();
     }
 
     private void createPlaylist() {

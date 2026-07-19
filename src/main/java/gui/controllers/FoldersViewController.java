@@ -163,7 +163,7 @@ public class FoldersViewController {
 
         masterList.add(folder);
 
-        mediaService.refreshActiveLibrary();
+        mediaService.loadActiveLibrary();
     }
 
     private void deleteFolder() {
@@ -201,7 +201,7 @@ public class FoldersViewController {
 
             lvFoldersList.getSelectionModel().clearSelection();
 
-            mediaService.refreshActiveLibrary();
+            mediaService.loadActiveLibrary();
         }
 
     }

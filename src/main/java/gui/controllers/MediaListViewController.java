@@ -14,7 +14,6 @@ import javafx.scene.layout.AnchorPane;
 import javafx.stage.FileChooser;
 
 import java.io.File;
-import java.nio.file.Path;
 import java.util.*;
 
 
@@ -84,9 +83,7 @@ public class MediaListViewController {
     }
 
     private void handleAdd() {
-        btnAdd.setOnAction(event -> {
-            addTrack();
-        });
+        btnAdd.setOnAction(event -> addTrack());
     }
 
     private void addTrack() {
@@ -107,12 +104,16 @@ public class MediaListViewController {
 
         File file = fileChooser.showOpenDialog(btnAdd.getScene().getWindow());
 
+        if (file == null) return;
+
         Track added = appContext.mediaScanner().scan(file);
         MediaService mediaService = appContext.mediaService();
         PlayerService playerService = appContext.playerService();
+
         if (added != null && !mediaService.getTracks().contains(added)) {
             mediaService.addTrack(added);
         }
+
         playerService.setSelectTrack(added);
         playerService.playSelectedTrack();
 

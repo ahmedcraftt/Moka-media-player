@@ -11,7 +11,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.List;
 
 public class MetadataStorage {
 
@@ -57,7 +56,6 @@ public class MetadataStorage {
                 }
             }
         } catch (SQLException e) {
-            // 3. Replaced critical err print stream with an error log level
             logger.error("CRITICAL: Failed to initialize Metadata storage subsystem.", e);
         }
     }
@@ -100,7 +98,7 @@ public class MetadataStorage {
     }
 
 
-    public int saveAndGetId(Metadata metadata) {
+    public int saveAndGetId(Metadata metadata, Connection connection) {
         MetadataDTO dto = MetadataMapper.toDTO(metadata);
         logger.debug("Saving metadata for track title: '{}'{}'", dto.title(), dto.genre());
         String sql = """
@@ -110,7 +108,6 @@ public class MetadataStorage {
                  VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?)
                 """;
         try (
-                Connection connection = DatabaseManager.connect();
                 PreparedStatement statement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)
         ) {
             connection.setAutoCommit(false);
@@ -121,7 +118,6 @@ public class MetadataStorage {
                 if (generatedKeys.next()) {
                     logger.debug("Metadata identity mapping verified: domain ID = {}, generated DB ID = {}",
                             metadata.getId(), generatedKeys.getInt(1));
-                    connection.commit();
                     return generatedKeys.getInt(1);
                 }
             }
@@ -176,7 +172,7 @@ public class MetadataStorage {
         return null;
     }
 
-    public void update(Metadata metadata) {
+    public void update(Metadata metadata, Connection connection) {
         MetadataDTO dto = MetadataMapper.toDTO(metadata);
 
         String sql = """
@@ -188,9 +184,9 @@ public class MetadataStorage {
                 """;
 
         try (
-                Connection connection = DatabaseManager.connect();
                 PreparedStatement statement = connection.prepareStatement(sql)
         ) {
+            connection.setAutoCommit(false);
             mapDtoToStatement(statement, dto);
             statement.setInt(15, dto.id());
 

@@ -3,7 +3,7 @@ package gui.controllers.listcells;
 import domain.model.media.Track;
 import domain.model.metadata.Metadata;
 import gui.utils.ArtworkCache;
-import gui.utils.TimeFormater;
+import gui.utils.TimeFormatter;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.image.Image;
@@ -70,7 +70,7 @@ public class TrackCell extends ListCell<Track> {
         String artist = (metadata != null && metadata.getArtist() != null)
                 ? metadata.getArtist()
                 : "Unknown Artist";
-        getLblArtist().setText(TimeFormater.formatTime(duration) + " • " + artist);
+        getLblArtist().setText(TimeFormatter.formatDuration(duration) + " • " + artist);
 
         if (metadata != null) {
             artworkView.setImage(
