@@ -18,12 +18,21 @@ public final class ConfigStorage {
             .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeAdapter())
             .setPrettyPrinting()
             .create();
-    private static final Path BASE_DIR =
-            Path.of(
-                    System.getProperty("user.home"),
-                    ".moka_music_player",
-                    "configs"
-            );
+    private static final Path BASE_DIR;
+
+    static {
+        if (Boolean.getBoolean("moka.dev")) {
+            BASE_DIR = Path.of("configs");
+        } else {
+            BASE_DIR =
+                    Path.of(
+                            System.getProperty("user.home"),
+                            ".moka_music_player",
+                            "configs"
+                    );
+        }
+    }
+
 
     private ConfigStorage() {
     }

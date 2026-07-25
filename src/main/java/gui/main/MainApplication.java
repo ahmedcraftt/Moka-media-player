@@ -5,8 +5,9 @@ import application.service.PlayerService;
 import config.AppConfig;
 import config.storage.ConfigStorage;
 import domain.model.media.Track;
-import gui.controllers.RefreshEvent;
-import gui.controllers.ViewMode;
+import gui.controllers.events.RefreshEvent;
+import gui.models.ViewMode;
+import gui.controllers.events.UpdateEvent;
 import infrastructure.audio.AudioEngine;
 import infrastructure.audio.AudioPlayer;
 import domain.audio.PlaybackState;
@@ -148,6 +149,7 @@ public final class MainApplication extends Application {
         stage.setFullScreenExitHint("");
 
         root.addEventHandler(RefreshEvent.REFRESH, event -> controller.handleRefresh());
+        root.addEventHandler(UpdateEvent.UPDATE, event -> controller.handleUpdate());
 
         stage.show();
 

@@ -4,6 +4,7 @@ import domain.model.metadata.Filedata;
 import domain.model.metadata.Metadata;
 import domain.model.media.MediaType;
 import domain.model.media.Track;
+import gui.controllers.events.RefreshEvent;
 import gui.main.AppContext;
 import infrastructure.storage.DatabaseManager;
 import javafx.event.ActionEvent;

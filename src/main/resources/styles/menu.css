@@ -22,6 +22,31 @@
     -fx-text-fill: #1a1410;
 }
 
+.activated-item {
+    -fx-background-color: linear-gradient(to bottom,
+    #f8d98c 0%,
+    #d8a64a 45%,
+    #9a642f 100%);
+
+    -fx-background-radius: 12;
+    -fx-border-radius: 12;
+
+    -fx-border-color: #f4d37a;
+    -fx-border-width: 1.5;
+
+    -fx-text-fill: #2a1a0d;
+    -fx-font-weight: bold;
+
+    -fx-effect: dropshadow(
+            gaussian,
+            rgba(235, 190, 90, 0.45),
+            12,
+            0.4,
+            0,
+            2
+    );
+}
+
 .menu-button .arrow {
     -fx-scale-x: 1.2;
     -fx-scale-y: 1.2;

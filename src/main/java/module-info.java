@@ -49,4 +49,8 @@ module org.example.moka_music_player {
     opens domain.model.metadata to com.google.gson, javafx.base;
     opens domain.model.library to com.google.gson, javafx.base;
     opens config to com.google.gson, javafx.base, java.base;
+    exports gui.controllers.events;
+    opens gui.controllers.events to javafx.fxml;
+    exports gui.models;
+    opens gui.models to javafx.fxml;
 }

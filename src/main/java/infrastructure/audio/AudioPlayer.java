@@ -34,7 +34,8 @@ public class AudioPlayer {
         queue.setCurrentTrack(track);
 
         currentTrack.incrementTimesPlayed();
-        notifyTrackChanged();
+
+        notifyNavigationChanged();
 
         engine.play(trackPath.toUri(), this::playNext);
 
@@ -60,7 +61,6 @@ public class AudioPlayer {
 
     public void playNext() {
         logger.debug("playNext() triggered under mode: {}", repeatMode);
-
         switch (repeatMode) {
             case LOOP_CURRENT_ONE -> {
                 if (currentTrack != null) {
@@ -95,7 +95,6 @@ public class AudioPlayer {
 
     public void playPrev() {
         if (currentTrack == null) return;
-
         if (engine.getCurrentTime() < 3000) {
             Track prevTrack = queue.prev();
             if (prevTrack != null) {
@@ -123,6 +122,7 @@ public class AudioPlayer {
             queue.setCurrentTrack(null);
             state = PlaybackState.STOPPED;
             notifyPlaybackStateChanged();
+            notifyNavigationChanged();
         }
     }
 
@@ -156,6 +156,7 @@ public class AudioPlayer {
 
     public void removeTrackFromQueue(Track track) {
         queue.remove(track);
+        notifyNavigationChanged();
     }
 
     public void setVolume(int volume) {
@@ -206,6 +207,14 @@ public class AudioPlayer {
         listeners.forEach(l -> l.onTrackChanged(currentTrack));
     }
 
+    private void notifyNextTrackChanged() {
+        listeners.forEach(l -> l.onNextTrack(peekNext()));
+    }
+
+    private void notifyPreviousTrackChanged() {
+        listeners.forEach(l -> l.onPreviousTrack(peekPrevious()));
+    }
+
     private void notifyPlaybackStateChanged() {
         listeners.forEach(l -> l.onPlaybackStateChanged(state));
     }
@@ -220,6 +229,12 @@ public class AudioPlayer {
 
     private void notifyRepeatChanged(RepeatMode repeat) {
         listeners.forEach(l -> l.onRepeatChanged(repeat));
+    }
+
+    private void notifyNavigationChanged() {
+        notifyTrackChanged();
+        notifyNextTrackChanged();
+        notifyPreviousTrackChanged();
     }
 
     public RepeatMode getRepeatMode() {

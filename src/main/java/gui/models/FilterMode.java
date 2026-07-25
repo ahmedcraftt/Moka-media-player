@@ -1,4 +1,4 @@
-package gui.controllers;
+package gui.models;
 
 public enum FilterMode {
     FAVORITE,

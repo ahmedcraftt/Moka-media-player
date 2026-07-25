@@ -24,6 +24,12 @@ public class PlayerService {
     private final ObjectProperty<Track> currentTrack =
             new SimpleObjectProperty<>();
 
+    private final ObjectProperty<Track> nextTrack =
+            new SimpleObjectProperty<>();
+
+    private final ObjectProperty<Track> previousTrack =
+            new SimpleObjectProperty<>();
+
     private final ObjectProperty<PlaybackState> playbackState =
             new SimpleObjectProperty<>(PlaybackState.STOPPED);
 
@@ -60,6 +66,16 @@ public class PlayerService {
             @Override
             public void onTrackChanged(Track newTrack) {
                 Platform.runLater(() -> currentTrack.set(newTrack));
+            }
+
+            @Override
+            public void onNextTrack(Track newTrack) {
+                Platform.runLater(() -> nextTrack.set(newTrack));
+            }
+
+            @Override
+            public void onPreviousTrack(Track newTrack) {
+                Platform.runLater(() -> previousTrack.set(newTrack));
             }
 
             @Override
@@ -146,6 +162,14 @@ public class PlayerService {
     public void skipBackward(int i) {
         player.skipBackward(i);
     }
+
+    public Track peekNext() {
+        return player.peekNext();
+    }
+
+    public Track peekPrevious() {
+        return player.peekPrevious();
+    }
     // =========================
     // Properties
     // =========================
@@ -168,6 +192,14 @@ public class PlayerService {
 
     public ObjectProperty<Track> selectedTrackProperty() {
         return selectedTrack;
+    }
+
+    public ObjectProperty<Track> nextTrackProperty() {
+        return nextTrack;
+    }
+
+    public ObjectProperty<Track> previousTrackProperty() {
+        return previousTrack;
     }
 
     public ObjectProperty<RepeatMode> repeatProperty() {

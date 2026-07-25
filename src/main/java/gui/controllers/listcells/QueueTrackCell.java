@@ -2,7 +2,7 @@ package gui.controllers.listcells;
 
 import application.service.PlayerService;
 import domain.model.media.Track;
-import gui.controllers.RefreshEvent;
+import gui.controllers.events.RefreshEvent;
 import gui.utils.ViewLoader;
 import javafx.scene.control.MenuButton;
 import javafx.scene.control.MenuItem;

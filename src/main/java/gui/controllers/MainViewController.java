@@ -3,9 +3,12 @@ package gui.controllers;
 import application.service.LibraryService;
 import application.service.MediaService;
 import application.service.PlayerService;
+import config.PlayerConfig;
 import config.UIConfig;
 import domain.model.media.Playlist;
 import domain.model.media.Track;
+import gui.models.TabsLocation;
+import gui.models.ViewMode;
 import gui.utils.DialogFactory;
 import gui.main.AppContext;
 import gui.utils.ViewLoader;
@@ -16,6 +19,9 @@ import javafx.animation.*;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.geometry.Side;
+import javafx.scene.Node;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.util.Duration;
 import domain.model.library.Library;
 
@@ -47,16 +53,21 @@ public class MainViewController {
     @FXML
     private Button btnAlbum, btnFolders, btnFastForward, btnFastBackward, btnRepeat;
     @FXML
-    private Button btnFavorite, btnShuffle, btnLyrics;
+    private Button btnFavorite, btnShuffle, btnLyrics, btnSettings;
     @FXML
     private ContextMenu cxmRepeatMenu;
     @FXML
     private MenuItem miPlayOne, miLoopOne, miPlayQueue, miLoopQueue;
-
-    @FXML private Label currentTrack;
+    @FXML
+    private Label lblCurrentTrack, lblNextTrack;
     @FXML private Slider volumeSlider;
     @FXML private Slider progressSlider;
-    @FXML private AnchorPane contentArea;
+    @FXML
+    private AnchorPane apCenterArea;
+    @FXML
+    private VBox vbLeft, vbRight, vbMedia, vbControls;
+    @FXML
+    private HBox hbTop, hbMedia;
 
     private AppContext appContext;
     private ViewLoader viewLoader;
@@ -69,6 +80,8 @@ public class MainViewController {
 
     private final Deque<ViewMode> viewModeStack = new ArrayDeque<>();
     private final Deque<ViewMode> pastViewStack = new ArrayDeque<>();
+
+    private final List<Node> children = new ArrayList<>();
 
     public void setAppContext(AppContext appContext) {
         this.appContext = appContext;
@@ -88,6 +101,17 @@ public class MainViewController {
         Platform.runLater(() -> switchViewMode(currentViewMode));
     }
 
+    public void handleUpdate() {
+        PlayerConfig playerConfig = appContext.config().getPlayerConfig();
+        UIConfig uiConfig = appContext.config().getUIConfig();
+        Platform.runLater(() -> {
+            btnFastForward.setText(playerConfig.getPreferredSkipSeconds() + " ⏩");
+            btnFastBackward.setText("⏪ " + playerConfig.getPreferredSkipSeconds());
+            setupButtonsVisibility();
+            switchTabsLocation();
+        });
+    }
+
     public void switchViewMode(ViewMode viewMode) {
         MediaService mediaService = appContext.mediaService();
         switch (viewMode) {
@@ -103,7 +127,7 @@ public class MainViewController {
             case LYRICS -> loadLyricsView();
             case FOLDERS -> loadFoldersView();
             case QUEUE -> loadQueueView();
-            case SETTINGS -> IO.println("Settings not implemented yet");
+            case SETTINGS -> loadSettingsView();
         }
     }
 
@@ -137,16 +161,24 @@ public class MainViewController {
     private void initialize() {
         setButtonsEnabled(true);
         setUpViewButtons();
+        hbTop.managedProperty().bind(hbTop.visibleProperty());
+        hbMedia.managedProperty().bind(hbMedia.visibleProperty());
+        vbLeft.managedProperty().bind(vbLeft.visibleProperty());
+        vbRight.managedProperty().bind(vbRight.visibleProperty());
+        vbControls.managedProperty().bind(vbControls.visibleProperty());
+        vbMedia.managedProperty().bind(vbMedia.visibleProperty());
+        children.addAll(vbMedia.getChildren());
     }
 
     private void init() {
         skipSeconds = appContext.config().getPlayerConfig().getPreferredSkipSeconds();
         currentViewMode = appContext.config().getUIConfig().getStartingViewMode();
+        switchTabsLocation();
         setupButtonsVisibility();
         updatePlayButton();
         updateFavoriteButton();
         updateShuffleButton();
-        setupLabel();
+        setupLabels();
         setUpVolumeSlider();
         setUpControlButtons();
         setUpMenuOptions();
@@ -159,6 +191,34 @@ public class MainViewController {
         thread.start();
     }
 
+    private void switchTabsLocation() {
+        TabsLocation location = appContext.config().getUIConfig().getPreferredTabsLocation();
+        hbMedia.getChildren().clear();
+        vbMedia.getChildren().clear();
+        switch (location) {
+            case TOP -> {
+                hbMedia.getChildren().addAll(children);
+                hbMedia.setVisible(true);
+                hbTop.setVisible(true);
+                vbMedia.setVisible(false);
+                vbLeft.setVisible(false);
+            }
+
+            case LEFT -> {
+                vbMedia.getChildren().addAll(children);
+                vbMedia.setVisible(true);
+                vbLeft.setVisible(true);
+                hbMedia.setVisible(false);
+                hbTop.setVisible(false);
+            }
+
+            default -> {
+                throw new IllegalStateException("Unexpected value: " + location);
+            }
+
+        }
+    }
+
     private void setupButtonsVisibility() {
         UIConfig config = appContext.config().getUIConfig();
         btnTracks.setVisible(config.isTracksBtnVisibility());
@@ -169,6 +229,14 @@ public class MainViewController {
         btnGenres.setVisible(config.isGenresBtnVisibility());
         btnAlbum.setVisible(config.isAlbumsBtnVisibility());
         btnPlaylist.setVisible(config.isPlaylistsBtnVisibility());
+        btnTracks.managedProperty().bind(btnTracks.visibleProperty());
+        btnSongs.managedProperty().bind(btnSongs.visibleProperty());
+        btnBooks.managedProperty().bind(btnBooks.visibleProperty());
+        btnPodcasts.managedProperty().bind(btnPodcasts.visibleProperty());
+        btnArtists.managedProperty().bind(btnArtists.visibleProperty());
+        btnGenres.managedProperty().bind(btnGenres.visibleProperty());
+        btnAlbum.managedProperty().bind(btnAlbum.visibleProperty());
+        btnPlaylist.managedProperty().bind(btnPlaylist.visibleProperty());
     }
 
     private void updatePlayButton() {
@@ -224,6 +292,7 @@ public class MainViewController {
         btnFolders.setOnAction(event -> loadView(ViewMode.FOLDERS));
         btnLyrics.setOnAction(event -> loadView(ViewMode.LYRICS));
         btnQueue.setOnAction(event -> loadView(ViewMode.QUEUE));
+        btnSettings.setOnAction(event -> loadView(ViewMode.SETTINGS));
     }
 
     private void loadView(ViewMode mode) {
@@ -304,13 +373,19 @@ public class MainViewController {
         return task;
     }
 
-    public void setupLabel() {
+    public void setupLabels() {
         PlayerService playerService = appContext.playerService();
-        currentTrack.textProperty().bind(
+        lblCurrentTrack.textProperty().bind(
                 Bindings.createStringBinding(() -> {
                     Track track = playerService.getCurrentTrack();
                     return track == null ? "---" : track.getTitle();
                 }, playerService.currentTrackProperty())
+        );
+        lblNextTrack.textProperty().bind(
+                Bindings.createStringBinding(() -> {
+                    Track track = playerService.nextTrackProperty().get();
+                    return track == null ? ">> ---" : ">> " + track.getTitle();
+                }, playerService.nextTrackProperty())
         );
     }
 
@@ -456,11 +531,22 @@ public class MainViewController {
         }
     }
 
+    private void loadSettingsView() {
+        try {
+            FXMLLoader loader = loadView("/views/settings-view.fxml");
+            SettingsViewController settingsViewController = loader.getController();
+            currentViewMode = ViewMode.SETTINGS;
+            settingsViewController.setAppContext(appContext);
+        } catch (IOException e) {
+            logger.error("CRITICAL: Could not load settings-view.fxml", e);
+        }
+    }
+
     private FXMLLoader loadView(String resource) throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource(resource));
         Parent view = loader.load();
 
-        contentArea.getChildren().setAll(view);
+        apCenterArea.getChildren().setAll(view);
         AnchorPane.setTopAnchor(view, 0.0);
         AnchorPane.setBottomAnchor(view, 0.0);
         AnchorPane.setLeftAnchor(view, 0.0);

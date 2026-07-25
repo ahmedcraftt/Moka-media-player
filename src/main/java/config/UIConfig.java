@@ -1,10 +1,9 @@
 package config;
 
-import gui.controllers.SortByModes;
-import gui.controllers.ViewMode;
+import gui.models.SortByModes;
+import gui.models.TabsLocation;
+import gui.models.ViewMode;
 import javafx.scene.text.TextAlignment;
-
-import java.time.LocalDateTime;
 
 public final class UIConfig {
     private static final int DEFAULT_WIDTH = 400;
@@ -14,6 +13,7 @@ public final class UIConfig {
     private static final ViewMode DEFAULT_STARTING_VIEW_MODE = ViewMode.TRACKS;
     private static final TextAlignment DEFAULT_TEXT_ALIGNMENT = TextAlignment.CENTER;
     private static final SortByModes DEFAULT_STARTING_SORT_BY_MODE = SortByModes.TITLE;
+    private static final TabsLocation DEFAULT_TABS_LOCATION = TabsLocation.LEFT;
 
     private boolean tracksBtnVisibility = true;
     private boolean songsBtnVisibility = true;
@@ -32,6 +32,7 @@ public final class UIConfig {
     private ViewMode startingViewMode = DEFAULT_STARTING_VIEW_MODE;
     private TextAlignment lyricsTextAlignment = DEFAULT_TEXT_ALIGNMENT;
     private SortByModes startingSortByMode = DEFAULT_STARTING_SORT_BY_MODE;
+    private TabsLocation preferredTabsLocation = DEFAULT_TABS_LOCATION;
 
     public boolean isTracksBtnVisibility() {
         return tracksBtnVisibility;
@@ -151,5 +152,13 @@ public final class UIConfig {
 
     public void setCutoffDays(int cutoffDays) {
         this.cutoffDays = cutoffDays;
+    }
+
+    public TabsLocation getPreferredTabsLocation() {
+        return preferredTabsLocation;
+    }
+
+    public void setPreferredTabsLocation(TabsLocation preferredTabsLocation) {
+        this.preferredTabsLocation = preferredTabsLocation;
     }
 }

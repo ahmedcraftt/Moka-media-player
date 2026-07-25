@@ -1,4 +1,4 @@
-package gui.controllers;
+package gui.controllers.events;
 
 import javafx.event.Event;
 import javafx.event.EventType;

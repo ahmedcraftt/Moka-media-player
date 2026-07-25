@@ -6,6 +6,10 @@ public interface PlaybackListener {
 
     void onTrackChanged(Track track);
 
+    void onNextTrack(Track track);
+
+    void onPreviousTrack(Track track);
+
     void onPlaybackStateChanged(PlaybackState state);
 
     void onVolumeChanged(int newVolume);

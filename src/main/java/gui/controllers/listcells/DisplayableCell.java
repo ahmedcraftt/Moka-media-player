@@ -5,7 +5,7 @@ import domain.model.media.Displayable;
 import domain.model.media.Playlist;
 import domain.model.media.Track;
 import domain.model.metadata.Metadata;
-import gui.controllers.FilterMode;
+import gui.models.FilterMode;
 import gui.utils.ArtworkCache;
 import gui.utils.TimeFormatter;
 import javafx.css.PseudoClass;

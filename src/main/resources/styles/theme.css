@@ -10,6 +10,10 @@
     -fx-background-color: #221a16;
 }
 
+.clear-box {
+    -fx-background-color: Transparent;
+}
+
 .label {
     -fx-letter-spacing: 0px;
     -fx-text-fill: #f2e6d9;
@@ -17,7 +21,7 @@
     -fx-opacity: 0.95;
 }
 
-#contentArea {
+.content-area {
     -fx-background-color: radial-gradient(center 30% 30%, radius 80%, #1a1410, #120e0b);
 }
 

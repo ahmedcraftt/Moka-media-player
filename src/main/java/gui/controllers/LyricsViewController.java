@@ -3,6 +3,7 @@ package gui.controllers;
 import domain.model.metadata.Metadata;
 import domain.model.media.Track;
 import gui.main.AppContext;
+import gui.models.SearchEngine;
 import javafx.animation.FadeTransition;
 import javafx.animation.ParallelTransition;
 import javafx.animation.TranslateTransition;

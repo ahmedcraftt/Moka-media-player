@@ -2,6 +2,7 @@ package gui.controllers;
 
 import domain.model.media.Playlist;
 import domain.model.media.Track;
+import gui.controllers.events.RefreshEvent;
 import gui.controllers.listcells.PlayListCreationCell;
 import javafx.collections.transformation.FilteredList;
 import javafx.event.ActionEvent;

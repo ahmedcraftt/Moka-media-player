@@ -2,48 +2,115 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
-<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.CheckMenuItem?>
+<?import javafx.scene.control.ContextMenu?>
+<?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.ScrollPane?>
-<?import javafx.scene.control.Slider?>
-<?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.VBox?>
 
-
-<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
-      stylesheets="@../styles/main.css" xmlns="http://javafx.com/javafx/25.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<VBox fx:id="root" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
+      styleClass="clear-box" stylesheets="@../styles/main.css" xmlns="http://javafx.com/javafx/25.0.1"
+      xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.controllers.SettingsViewController">
     <children>
-        <ScrollPane>
+        <ScrollPane vbarPolicy="ALWAYS">
             <content>
                 <AnchorPane minHeight="0.0" minWidth="0.0">
                     <children>
-                        <VBox spacing="8.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
-                              AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                        <VBox spacing="12.0" styleClass="clear-box" AnchorPane.bottomAnchor="0.0"
+                              AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                             <children>
-                                <Slider/>
-                                <Button mnemonicParsing="false" text="Button"/>
-                                <Button mnemonicParsing="false" text="Button"/>
-                                <Button mnemonicParsing="false" text="Button"/>
-                                <Button mnemonicParsing="false" text="Button"/>
-                                <Button mnemonicParsing="false" text="Button"/>
-                                <Button mnemonicParsing="false" text="Button"/>
-                                <CheckBox mnemonicParsing="false" text="CheckBox"/>
-                                <CheckBox mnemonicParsing="false" text="CheckBox"/>
-                                <CheckBox mnemonicParsing="false" text="CheckBox"/>
-                                <CheckBox mnemonicParsing="false" text="CheckBox"/>
-                                <CheckBox mnemonicParsing="false" text="CheckBox"/>
-                                <CheckBox mnemonicParsing="false" text="CheckBox"/>
-                                <CheckBox mnemonicParsing="false" text="CheckBox"/>
-                                <CheckBox mnemonicParsing="false" text="CheckBox"/>
-                                <CheckBox mnemonicParsing="false" text="CheckBox"/>
-                                <TextField/>
-                                <TextField/>
-                                <TextField/>
-                                <Button mnemonicParsing="false" text="Button"/>
-                                <Button mnemonicParsing="false" text="Button"/>
+                                <Button fx:id="btnHideTabs" mnemonicParsing="false" text="Hide Tabs ">
+                                    <contextMenu>
+                                        <ContextMenu fx:id="cxmHideTabs">
+                                            <items>
+                                                <CheckMenuItem fx:id="cmiTracks" mnemonicParsing="false" text="Tracks"/>
+                                                <CheckMenuItem fx:id="cmiSongs" mnemonicParsing="false" text="Songs"/>
+                                                <CheckMenuItem fx:id="cmiPodcasts" mnemonicParsing="false"
+                                                               text="Podcasts"/>
+                                                <CheckMenuItem fx:id="cmiBooks" mnemonicParsing="false"
+                                                               text="Audio Books"/>
+                                                <CheckMenuItem fx:id="cmiAlbums" mnemonicParsing="false" text="Albums"/>
+                                                <CheckMenuItem fx:id="cmiArtists" mnemonicParsing="false"
+                                                               text="Artists"/>
+                                                <CheckMenuItem fx:id="cmiGenres" mnemonicParsing="false" text="Genres"/>
+                                                <CheckMenuItem fx:id="cmiPlaylist" mnemonicParsing="false"
+                                                               text="Playlists"/>
+                                            </items>
+                                        </ContextMenu>
+                                    </contextMenu>
+                                </Button>
+                                <Button fx:id="btnTabsLocation" mnemonicParsing="false" text="Tabs Location">
+                                    <contextMenu>
+                                        <ContextMenu fx:id="cxmTabsLocation">
+                                            <items>
+                                                <MenuItem fx:id="miLeftSide" mnemonicParsing="false" text="Left"/>
+                                                <MenuItem fx:id="miTopSide" mnemonicParsing="false" text="Top"/>
+                                            </items>
+                                        </ContextMenu>
+                                    </contextMenu>
+                                </Button>
+                                <Button fx:id="btnSkip" mnemonicParsing="false" text="Skip">
+                                    <contextMenu>
+                                        <ContextMenu fx:id="cxmSkip">
+                                            <items>
+                                                <MenuItem fx:id="miFive" mnemonicParsing="false" text="5"/>
+                                                <MenuItem fx:id="miTen" mnemonicParsing="false" text="10"/>
+                                                <MenuItem fx:id="miFifteen" mnemonicParsing="false" text="15"/>
+                                                <MenuItem fx:id="miTwenty" mnemonicParsing="false" text="20"/>
+                                            </items>
+                                        </ContextMenu>
+                                    </contextMenu>
+                                </Button>
+                                <Button fx:id="btnVolumeModifier" mnemonicParsing="false" text="Volume Modifier">
+                                    <contextMenu>
+                                        <ContextMenu fx:id="cxmVolumeModifier">
+                                            <items>
+                                                <MenuItem fx:id="miFiveVolume" mnemonicParsing="false" text="5"/>
+                                                <MenuItem fx:id="miTenVolume" mnemonicParsing="false" text="10"/>
+                                                <MenuItem fx:id="miFifteenVolume" mnemonicParsing="false" text="15"/>
+                                                <MenuItem fx:id="miTwentyVolume" mnemonicParsing="false" text="20"/>
+                                            </items>
+                                        </ContextMenu>
+                                    </contextMenu>
+                                </Button>
+                                <Button fx:id="btnVolume" layoutX="14.0" layoutY="94.0" mnemonicParsing="false"
+                                        text="Volume">
+                                    <contextMenu>
+                                        <ContextMenu fx:id="cxmVolume">
+                                            <items>
+                                                <MenuItem fx:id="miFifty" mnemonicParsing="false" text="50"/>
+                                                <MenuItem fx:id="miHundred" mnemonicParsing="false" text="100"/>
+                                            </items>
+                                        </ContextMenu>
+                                    </contextMenu>
+                                </Button>
+                                <Button fx:id="btnLyricsAlignment" mnemonicParsing="false" text="Lyrics Alignmen">
+                                    <contextMenu>
+                                        <ContextMenu fx:id="cxmLyricsAlignment">
+                                            <items>
+                                                <MenuItem fx:id="miLeft" mnemonicParsing="false" text="Left"/>
+                                                <MenuItem fx:id="miCenter" mnemonicParsing="false" text="Center"/>
+                                                <MenuItem fx:id="miRight" mnemonicParsing="false" text="Right"/>
+                                            </items>
+                                        </ContextMenu>
+                                    </contextMenu>
+                                </Button>
+                                <Button fx:id="btnSearch" mnemonicParsing="false" text="Search Engine">
+                                    <contextMenu>
+                                        <ContextMenu fx:id="cxmSearch">
+                                            <items>
+                                                <MenuItem fx:id="miGoogle" mnemonicParsing="false" text="GOOGLE"/>
+                                                <MenuItem fx:id="miDuck" mnemonicParsing="false" text="DUCK DUCK GO"/>
+                                                <MenuItem fx:id="miBing" mnemonicParsing="false" text="BING"/>
+                                                <MenuItem fx:id="miBrave" mnemonicParsing="false" text="BRAVE"/>
+                                            </items>
+                                        </ContextMenu>
+                                    </contextMenu>
+                                </Button>
                             </children>
                             <padding>
-                                <Insets bottom="4.0" left="4.0" right="4.0" top="4.0"/>
+                                <Insets bottom="4.0" left="4.0" right="4.0" top="8.0"/>
                             </padding>
                         </VBox>
                     </children>
