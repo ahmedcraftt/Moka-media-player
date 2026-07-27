@@ -1,6 +1,7 @@
 package application.service;
 
 import domain.audio.RepeatMode;
+import domain.audio.TrackListener;
 import domain.model.media.Track;
 import domain.audio.PlaybackListener;
 import domain.audio.PlaybackState;
@@ -36,8 +37,14 @@ public class PlayerService {
     private final ObjectProperty<RepeatMode> repeat =
             new SimpleObjectProperty<>(RepeatMode.STOP_WHEN_QUEUE_END);
 
+    private final ObjectProperty<String> title =
+            new SimpleObjectProperty<>();
+
     private final BooleanProperty playing =
             new SimpleBooleanProperty(false);
+
+    private final BooleanProperty favorite =
+            new SimpleBooleanProperty();
 
     private final DoubleProperty volume =
             new SimpleDoubleProperty();
@@ -65,7 +72,23 @@ public class PlayerService {
 
             @Override
             public void onTrackChanged(Track newTrack) {
-                Platform.runLater(() -> currentTrack.set(newTrack));
+                if (newTrack == null) return;
+                Platform.runLater(() -> {
+                    newTrack.addListener(new TrackListener() {
+
+                        @Override
+                        public void onFavoriteChanged(boolean newFavorite) {
+                            Platform.runLater(() -> favorite.set(newFavorite));
+                        }
+
+                        @Override
+                        public void onTitleChanged(String newTitle) {
+                            Platform.runLater(() -> title.set(newTitle));
+                        }
+                    });
+                    currentTrack.set(newTrack);
+                    favorite.set(newTrack.isFavorite());
+                });
             }
 
             @Override
@@ -105,7 +128,10 @@ public class PlayerService {
             public void onRepeatChanged(RepeatMode newRepeat) {
                 Platform.runLater(() -> repeat.set(newRepeat));
             }
+
+
         });
+
     }
 
     // =========================
@@ -212,6 +238,14 @@ public class PlayerService {
 
     public BooleanProperty shuffleProperty() {
         return shuffle;
+    }
+
+    public BooleanProperty favoriteProperty() {
+        return favorite;
+    }
+
+    public ObjectProperty<String> titleProperty() {
+        return title;
     }
 
     // =========================

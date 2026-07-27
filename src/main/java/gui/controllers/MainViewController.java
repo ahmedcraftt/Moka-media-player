@@ -7,8 +7,8 @@ import config.PlayerConfig;
 import config.UIConfig;
 import domain.model.media.Playlist;
 import domain.model.media.Track;
-import gui.models.TabsLocation;
-import gui.models.ViewMode;
+import gui.model.TabsLocation;
+import gui.model.ViewMode;
 import gui.utils.DialogFactory;
 import gui.main.AppContext;
 import gui.utils.ViewLoader;
@@ -251,6 +251,9 @@ public class MainViewController {
         appContext.playerService().currentTrackProperty().addListener((obs, oldTrack, newTrack) -> {
             if (newTrack != null) {
                 setBtnFavoriteStyle(newTrack.isFavorite());
+                appContext.playerService().favoriteProperty().addListener((observable, oldValue, newValue) -> {
+                    setBtnFavoriteStyle(newValue);
+                });
             } else {
                 setBtnFavoriteStyle(false);
             }

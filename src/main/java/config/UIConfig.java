@@ -1,8 +1,8 @@
 package config;
 
-import gui.models.SortByModes;
-import gui.models.TabsLocation;
-import gui.models.ViewMode;
+import gui.model.SortByModes;
+import gui.model.TabsLocation;
+import gui.model.ViewMode;
 import javafx.scene.text.TextAlignment;
 
 public final class UIConfig {

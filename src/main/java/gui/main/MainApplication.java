@@ -6,11 +6,11 @@ import config.AppConfig;
 import config.storage.ConfigStorage;
 import domain.model.media.Track;
 import gui.controllers.events.RefreshEvent;
-import gui.models.ViewMode;
+import gui.model.ViewMode;
 import gui.controllers.events.UpdateEvent;
+import gui.utils.KeyAssignmentHandler;
 import infrastructure.audio.AudioEngine;
 import infrastructure.audio.AudioPlayer;
-import domain.audio.PlaybackState;
 import gui.controllers.MainViewController;
 import infrastructure.storage.DatabaseManager;
 import infrastructure.storage.MetadataStorage;
@@ -38,7 +38,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
-import static domain.audio.RepeatMode.*;
 import static gui.main.MainLauncher.*;
 
 /**
@@ -140,7 +139,8 @@ public final class MainApplication extends Application {
         );
 
         Scene scene = new Scene(root, 1080, 750);
-        setupKeyBindings(root, controller, scene, stage);
+
+        KeyAssignmentHandler.setupKeyBindings(appContext, root, controller, scene, stage);
 
         stage.setTitle("Moka Player ☕");
         stage.getIcons().add(icon);
@@ -197,75 +197,6 @@ public final class MainApplication extends Application {
         }
     }
 
-    private void setupKeyBindings(Parent root, MainViewController controller, Scene scene, Stage stage) {
-        PlayerService playerService = appContext.playerService();
-        AudioPlayer audioPlayer = appContext.player();
-        AppConfig config = appContext.config();
-        scene.setOnKeyPressed(event -> {
-            switch (event.getCode()) {
-                case P -> playerService.playSelectedTrack();
-                case U, SPACE -> {
-                    if (audioPlayer.getState() == PlaybackState.PLAYING) {
-                        playerService.pause();
-                    } else {
-                        playerService.resume();
-                    }
-                }
-                case O -> playerService.stop();
-                case D -> playerService.playNext();
-                case A -> playerService.playPrev();
-                case E -> playerService.skipForward(config.getPlayerConfig().getPreferredSkipSeconds());
-                case Q -> playerService.skipBackward(config.getPlayerConfig().getPreferredSkipSeconds());
-                case W -> audioPlayer.setVolume(Math.min
-                        (100, audioPlayer.getVolume() + config.getPlayerConfig().getPreferredVolumeModifier()));
-                case S -> audioPlayer.setVolume(Math.max
-                        (0, audioPlayer.getVolume() - config.getPlayerConfig().getPreferredVolumeModifier()));
-                case M -> {
-                    if (audioPlayer.getVolume() != 0) {
-                        oldVolume = audioPlayer.getVolume();
-                        audioPlayer.setVolume(0);
-                    } else {
-                        audioPlayer.setVolume(oldVolume);
-                    }
-                }
-                case H -> playerService.shuffle();
-                case R -> {
-                    var nextMode = switch (audioPlayer.getRepeatMode()) {
-                        case STOP_WHEN_QUEUE_END -> LOOP_CURRENT_QUEUE;
-                        case LOOP_CURRENT_QUEUE -> LOOP_CURRENT_ONE;
-                        case LOOP_CURRENT_ONE -> PLAY_ONE;
-                        case PLAY_ONE -> STOP_WHEN_QUEUE_END;
-                    };
-                    audioPlayer.setRepeatMode(nextMode);
-                    logger.debug("Repeat mode changed to: {}", nextMode);
-                }
-                case F -> {
-                    if (playerService.getCurrentTrack() != null) {
-                        boolean isFav = playerService.getCurrentTrack().isFavorite();
-                        playerService.getCurrentTrack().setFavorite(!isFav);
-                    }
-                }
-                case B -> controller.switchBack();
-                case N -> controller.switchNext();
-                case F11 -> stage.setFullScreen(!stage.isFullScreen());
-                case F5 -> root.fireEvent(new RefreshEvent());
-            }
-        });
-        scene.setOnMousePressed(event -> {
-            switch (event.getButton()) {
-                case FORWARD -> controller.switchNext();
-                case BACK -> controller.switchBack();
-                case MIDDLE -> {
-                    if (audioPlayer.getState() == PlaybackState.PLAYING) {
-                        playerService.pause();
-                    } else {
-                        playerService.resume();
-                    }
-                }
-            }
-        });
-    }
-
     @Override
     public void stop() throws Exception {
         TrackStorage trackStorage = appContext.trackStorage();
@@ -313,6 +244,7 @@ public final class MainApplication extends Application {
 
         super.stop();
     }
+
 
     @Override
     public void init() {

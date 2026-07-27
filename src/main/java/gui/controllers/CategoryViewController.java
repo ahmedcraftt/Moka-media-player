@@ -8,8 +8,8 @@ import domain.model.media.Track;
 import gui.controllers.listcells.DisplayableCell;
 
 import gui.main.AppContext;
-import gui.models.SortByModes;
-import gui.models.ViewMode;
+import gui.model.SortByModes;
+import gui.model.ViewMode;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;

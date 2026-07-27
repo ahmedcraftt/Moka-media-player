@@ -71,16 +71,18 @@ public final class VLCConfig {
     }
 
     public static void init() {
-
         try {
-            Path appDir = Path.of(
+            Path jarPath = Path.of(
                     VLCConfig.class
                             .getProtectionDomain()
                             .getCodeSource()
                             .getLocation()
                             .toURI()
-            ).getParent();
+            );
 
+            Path appDir = Files.isDirectory(jarPath)
+                    ? jarPath
+                    : jarPath.getParent();
             Path vlcPath;
 
             if (Boolean.getBoolean("moka.dev")) {
@@ -98,10 +100,8 @@ public final class VLCConfig {
             } else {
                 logger.warn("Bundled VLC binaries not found at layout: {}. Falling back to standard system VLC paths.", vlcPath);
             }
-
         } catch (URISyntaxException e) {
-            throw new RuntimeException("Failed to locate application directory.", e);
+            throw new RuntimeException(e);
         }
-
     }
 }

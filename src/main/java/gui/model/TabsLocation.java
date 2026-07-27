@@ -1,4 +1,4 @@
-package gui.models;
+package gui.model;
 
 public enum TabsLocation {
     LEFT,

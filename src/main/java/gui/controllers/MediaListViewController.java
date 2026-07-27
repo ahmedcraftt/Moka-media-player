@@ -8,7 +8,7 @@ import gui.controllers.events.RefreshEvent;
 import gui.controllers.listcells.MediaTrackCell;
 import gui.main.AppContext;
 
-import gui.models.SortByModes;
+import gui.model.SortByModes;
 import gui.utils.ViewLoader;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;

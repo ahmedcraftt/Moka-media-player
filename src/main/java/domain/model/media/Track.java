@@ -1,7 +1,9 @@
 package domain.model.media;
 
+import domain.audio.TrackListener;
 import domain.model.metadata.Filedata;
 import domain.model.metadata.Metadata;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -10,11 +12,15 @@ import java.nio.file.Path;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 public class Track implements AudioSource, Displayable {
 
     private static final Logger logger = LoggerFactory.getLogger(Track.class);
+
+    private final List<TrackListener> listeners = new ArrayList<>();
 
     private final Filedata filedata;
     private final Metadata metadata;
@@ -69,6 +75,14 @@ public class Track implements AudioSource, Displayable {
         logger.debug("Metadata state: {}", this.metadata.toText());
     }
 
+    public void addListener(TrackListener listener) {
+        listeners.add(listener);
+    }
+
+    public void removeListener(TrackListener listener) {
+        listeners.remove(listener);
+    }
+
     @Override
     public boolean isFavorite() {
         return favorite;
@@ -92,6 +106,7 @@ public class Track implements AudioSource, Displayable {
     @Override
     public void setFavorite(boolean favorite) {
         this.favorite = favorite;
+        notifyFavoriteChanged(favorite);
     }
 
     @Override
@@ -106,6 +121,11 @@ public class Track implements AudioSource, Displayable {
     @Override
     public String getTitle() {
         return metadata.getTitle();
+    }
+
+    public void setTitle(String title) {
+        metadata.setTitle(title);
+        notifyTitleChanged(title);
     }
 
     public String getFileName() {
@@ -184,6 +204,7 @@ public class Track implements AudioSource, Displayable {
         return String.format("%s (%d)", this.getTitle(), metadata.getDurationInSeconds());
     }
 
+
     public String toText() {
         return "Track{" +
                 "\nfavorite=" + favorite +
@@ -193,6 +214,14 @@ public class Track implements AudioSource, Displayable {
                 ", \ntimesPlayed=" + timesPlayed +
                 ", \ndateAdded=" + dateAdded +
                 '}';
+    }
+
+    private void notifyFavoriteChanged(boolean favorite) {
+        listeners.forEach(l -> l.onFavoriteChanged(favorite));
+    }
+
+    private void notifyTitleChanged(String title) {
+        listeners.forEach(l -> l.onTitleChanged(title));
     }
 
 }

@@ -203,40 +203,6 @@ public class AudioPlayer {
         listeners.remove(listener);
     }
 
-    private void notifyTrackChanged() {
-        listeners.forEach(l -> l.onTrackChanged(currentTrack));
-    }
-
-    private void notifyNextTrackChanged() {
-        listeners.forEach(l -> l.onNextTrack(peekNext()));
-    }
-
-    private void notifyPreviousTrackChanged() {
-        listeners.forEach(l -> l.onPreviousTrack(peekPrevious()));
-    }
-
-    private void notifyPlaybackStateChanged() {
-        listeners.forEach(l -> l.onPlaybackStateChanged(state));
-    }
-
-    private void notifyVolumeChanged(int vol) {
-        listeners.forEach(l -> l.onVolumeChanged(vol));
-    }
-
-    private void notifyShuffleChanged(boolean shuffle) {
-        listeners.forEach(l -> l.onShuffleChanged(shuffle));
-    }
-
-    private void notifyRepeatChanged(RepeatMode repeat) {
-        listeners.forEach(l -> l.onRepeatChanged(repeat));
-    }
-
-    private void notifyNavigationChanged() {
-        notifyTrackChanged();
-        notifyNextTrackChanged();
-        notifyPreviousTrackChanged();
-    }
-
     public RepeatMode getRepeatMode() {
         return repeatMode;
     }
@@ -274,5 +240,39 @@ public class AudioPlayer {
 
     public boolean isShuffle() {
         return queue.isShuffleEnabled();
+    }
+
+    private void notifyTrackChanged() {
+        listeners.forEach(l -> l.onTrackChanged(currentTrack));
+    }
+
+    private void notifyNextTrackChanged() {
+        listeners.forEach(l -> l.onNextTrack(peekNext()));
+    }
+
+    private void notifyPreviousTrackChanged() {
+        listeners.forEach(l -> l.onPreviousTrack(peekPrevious()));
+    }
+
+    private void notifyPlaybackStateChanged() {
+        listeners.forEach(l -> l.onPlaybackStateChanged(state));
+    }
+
+    private void notifyVolumeChanged(int vol) {
+        listeners.forEach(l -> l.onVolumeChanged(vol));
+    }
+
+    private void notifyShuffleChanged(boolean shuffle) {
+        listeners.forEach(l -> l.onShuffleChanged(shuffle));
+    }
+
+    private void notifyRepeatChanged(RepeatMode repeat) {
+        listeners.forEach(l -> l.onRepeatChanged(repeat));
+    }
+
+    private void notifyNavigationChanged() {
+        notifyTrackChanged();
+        notifyNextTrackChanged();
+        notifyPreviousTrackChanged();
     }
 }

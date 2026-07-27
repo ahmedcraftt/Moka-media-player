@@ -1,4 +1,4 @@
-package gui.models;
+package gui.model;
 
 public enum ViewMode {
     TRACKS, SONGS, BOOKS, PODCASTS, PLAYLIST, ARTISTS, GENRE, ALBUM, SETTINGS, TRACK, LYRICS, FOLDERS, QUEUE

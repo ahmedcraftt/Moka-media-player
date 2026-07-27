@@ -3,8 +3,8 @@ package application.service;
 import config.AppConfig;
 import domain.model.media.Displayable;
 
-import gui.models.SortByModes;
-import gui.models.ViewMode;
+import gui.model.SortByModes;
+import gui.model.ViewMode;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 

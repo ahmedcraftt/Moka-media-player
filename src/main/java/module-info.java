@@ -51,6 +51,6 @@ module org.example.moka_music_player {
     opens config to com.google.gson, javafx.base, java.base;
     exports gui.controllers.events;
     opens gui.controllers.events to javafx.fxml;
-    exports gui.models;
-    opens gui.models to javafx.fxml;
+    exports gui.model;
+    opens gui.model to javafx.fxml;
 }

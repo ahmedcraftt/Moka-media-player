@@ -4,7 +4,7 @@ import application.service.PlayerService;
 import domain.model.media.Displayable;
 import domain.model.media.Playlist;
 import domain.model.media.Track;
-import gui.models.FilterMode;
+import gui.model.FilterMode;
 import gui.utils.TimeFormatter;
 import gui.utils.ViewLoader;
 import javafx.scene.control.Button;

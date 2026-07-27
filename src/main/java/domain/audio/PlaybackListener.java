@@ -17,4 +17,5 @@ public interface PlaybackListener {
     void onShuffleChanged(boolean shuffle);
 
     void onRepeatChanged(RepeatMode repeat);
+
 }

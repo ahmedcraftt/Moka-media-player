@@ -6,8 +6,8 @@ import config.SearchConfig;
 import config.UIConfig;
 import gui.controllers.events.UpdateEvent;
 import gui.main.AppContext;
-import gui.models.SearchEngine;
-import gui.models.TabsLocation;
+import gui.model.SearchEngine;
+import gui.model.TabsLocation;
 
 import javafx.fxml.FXML;
 import javafx.geometry.Side;

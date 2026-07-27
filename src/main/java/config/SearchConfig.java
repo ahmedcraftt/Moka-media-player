@@ -1,6 +1,6 @@
 package config;
 
-import gui.models.SearchEngine;
+import gui.model.SearchEngine;
 
 public final class SearchConfig {
     private static final SearchEngine DEFAULT_SEARCH_ENGINE = SearchEngine.GOOGLE;
