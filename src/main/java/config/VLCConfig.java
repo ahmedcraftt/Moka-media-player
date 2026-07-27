@@ -18,29 +18,56 @@ public final class VLCConfig {
     private static CpuArch arch = ArchDetector.getArch();
 
     private static final String DEFAULT_NATIVES_PATH = switch (os) {
+
         case WINDOWS -> switch (arch) {
             case ARM32, ARM64 -> "natives/windows/Arm";
             case x86_64 -> "natives/windows/X86_64";
-            default -> "natives/windows/X86_32";
+            case x86_32 -> "natives/windows/X86_32";
+            default -> throw new UnsupportedCpuArchitectureException("Unsupported architecture");
         };
 
         case LINUX -> switch (arch) {
             case ARM32, ARM64 -> "natives/linux/Arm";
             case x86_64 -> "natives/linux/X86_64";
-            default -> "natives/linux/X86_32";
+            case x86_32 -> "natives/linux/X86_32";
+            default -> throw new UnsupportedCpuArchitectureException("Unsupported architecture");
         };
 
         case MAC -> switch (arch) {
             case ARM32, ARM64 -> "natives/mac/apple-silicon";
-            default -> "natives/mac/intel";
+            case x86_64, x86_32 -> "natives/mac/intel";
+            default -> throw new UnsupportedCpuArchitectureException("Unsupported architecture");
         };
 
         default -> throw new UnSupportedOSException("Unsupported operating system.");
+
+    };
+
+    private static final String DEV_NATIVES_PATH = switch (os) {
+        case WINDOWS -> switch (arch) {
+            case ARM64, ARM32 -> "/home/Ahmed/IdeaProjects/java-mediaplayer/natives/windows/Arm";
+            case x86_64 -> "/home/Ahmed/IdeaProjects/java-mediaplayer/natives/windows/X86_64";
+            case x86_32 -> "/home/Ahmed/IdeaProjects/java-mediaplayer/natives/windows/X86_32";
+            default -> throw new UnsupportedCpuArchitectureException("Unsupported architecture");
+        };
+        case LINUX -> switch (arch) {
+            case ARM64, ARM32 -> "/home/Ahmed/IdeaProjects/java-mediaplayer/natives/linux/Arm";
+            case x86_64 -> "/home/Ahmed/IdeaProjects/java-mediaplayer/natives/linux/X86_64";
+            case x86_32 -> "/home/Ahmed/IdeaProjects/java-mediaplayer/natives/linux/X86_32";
+            default -> throw new UnsupportedCpuArchitectureException("Unsupported architecture");
+        };
+        case MAC -> switch (arch) {
+            case ARM64, ARM32 -> "/home/Ahmed/IdeaProjects/java-mediaplayer/mac/apple-silicon";
+            case x86_32, x86_64 -> "/home/Ahmed/IdeaProjects/java-mediaplayer/mac/intel";
+            default -> throw new UnsupportedCpuArchitectureException("Unsupported architecture");
+        };
+        default -> throw new UnsupportedCpuArchitectureException("Unsupported operating system.");
     };
 
     private static String vlcNativesPath = DEFAULT_NATIVES_PATH;
 
     private VLCConfig() {
+
     }
 
     public static void init() {
@@ -54,7 +81,14 @@ public final class VLCConfig {
                             .toURI()
             ).getParent();
 
-            Path vlcPath = appDir.resolve(vlcNativesPath);
+            Path vlcPath;
+
+            if (Boolean.getBoolean("moka.dev")) {
+                vlcPath = Path.of(DEV_NATIVES_PATH);
+            } else vlcPath = appDir.resolve(vlcNativesPath);
+
+            System.out.println("OS:" + os.name() + "-" + arch.name());
+            System.out.println("natives:" + vlcPath);
 
             if (Files.exists(vlcPath.resolve("plugins"))) {
                 System.setProperty("jna.library.path", vlcPath.toString());

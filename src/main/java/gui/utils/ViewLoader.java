@@ -11,6 +11,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
+import javafx.scene.layout.AnchorPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import org.slf4j.Logger;
@@ -33,18 +34,20 @@ public final class ViewLoader {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/track-data-view.fxml"));
         Parent root = loader.load();
         TrackDataViewController controller = loader.getController();
+
         controller.setUIContext(appContext);
         controller.setTrack(track);
         controller.setOnSaveSuccessCallback(onSaveSuccessCallback);
 
-        Stage stage = new Stage();
-        stage.initOwner(MainApplication.primaryStage);
-        stage.initModality(Modality.NONE);
         Image icon = new Image(
                 Objects.requireNonNull(
                         MediaListViewController.class.getResourceAsStream("/assets/icons/app-icon.png")
                 )
         );
+
+        Stage stage = new Stage();
+        stage.initOwner(MainApplication.primaryStage);
+        stage.initModality(Modality.NONE);
         stage.getIcons().add(icon);
         stage.setTitle("Track info");
         stage.setScene(new Scene(root));
@@ -69,6 +72,19 @@ public final class ViewLoader {
         stage.setTitle("Track info");
         stage.setScene(new Scene(root));
         stage.showAndWait();
+    }
+
+    public FXMLLoader loadView(String resource, AnchorPane anchorPane) throws IOException {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource(resource));
+        Parent view = loader.load();
+
+        anchorPane.getChildren().setAll(view);
+        AnchorPane.setTopAnchor(view, 0.0);
+        AnchorPane.setBottomAnchor(view, 0.0);
+        AnchorPane.setLeftAnchor(view, 0.0);
+        AnchorPane.setRightAnchor(view, 0.0);
+
+        return loader;
     }
 
 }

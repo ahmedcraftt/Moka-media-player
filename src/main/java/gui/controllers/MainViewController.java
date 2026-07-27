@@ -443,7 +443,7 @@ public class MainViewController {
 
     private void loadMediaView(List<Track> tracks) {
         try {
-            FXMLLoader loader = loadView("/views/mediaList-view.fxml");
+            FXMLLoader loader = viewLoader.loadView("/views/mediaList-view.fxml", apCenterArea);
             mediaListViewController = loader.getController();
             mediaListViewController.setAppContext(appContext);
             mediaListViewController.setViewLoader(viewLoader);
@@ -455,7 +455,7 @@ public class MainViewController {
 
     private void loadPlaylistView() {
         try {
-            FXMLLoader loader = loadView("/views/playlist-view.fxml");
+            FXMLLoader loader = viewLoader.loadView("/views/playlist-view.fxml", apCenterArea);
             PlaylistViewController playlistController = loader.getController();
             playlistController.setUIContext(appContext);
             playlistController.setViewLoader(viewLoader);
@@ -470,7 +470,7 @@ public class MainViewController {
 
     private void loadCategoryView(List<Playlist> categoryList, ViewMode mode) {
         try {
-            FXMLLoader loader = loadView("/views/category-view.fxml");
+            FXMLLoader loader = viewLoader.loadView("/views/category-view.fxml", apCenterArea);
             CategoryViewController categoryViewController = loader.getController();
             categoryViewController.setUiContext(appContext);
             categoryViewController.setData(categoryList, mode);
@@ -482,7 +482,7 @@ public class MainViewController {
 
     private void loadPlayingTrackView() {
         try {
-            FXMLLoader loader = loadView("/views/playing-track-view.fxml");
+            FXMLLoader loader = viewLoader.loadView("/views/playing-track-view.fxml", apCenterArea);
             PlayingTrackViewController playingTrackViewController = loader.getController();
             playingTrackViewController.setUiContext(appContext);
             currentViewMode = ViewMode.TRACK;
@@ -493,7 +493,7 @@ public class MainViewController {
 
     private void loadFoldersView() {
         try {
-            FXMLLoader loader = loadView("/views/folders-view.fxml");
+            FXMLLoader loader = viewLoader.loadView("/views/folders-view.fxml", apCenterArea);
             FoldersViewController foldersViewController = loader.getController();
             foldersViewController.setLibraryService(appContext.libraryService());
             foldersViewController.setMediaService(appContext.mediaService());
@@ -506,7 +506,7 @@ public class MainViewController {
     private void loadLyricsView() {
         try {
             PlayerService playerService = appContext.playerService();
-            FXMLLoader loader = loadView("/views/lyrics-view.fxml");
+            FXMLLoader loader = viewLoader.loadView("/views/lyrics-view.fxml", apCenterArea);
             LyricsViewController lyricsViewController = loader.getController();
             if (playerService.getCurrentTrack() != null) {
                 lyricsViewController.setTrack(playerService.getCurrentTrack());
@@ -520,7 +520,7 @@ public class MainViewController {
 
     private void loadQueueView() {
         try {
-            FXMLLoader loader = loadView("/views/queued-tracks-view.fxml");
+            FXMLLoader loader = viewLoader.loadView("/views/queued-tracks-view.fxml", apCenterArea);
             QueuedTracksViewController queuedTracksViewController = loader.getController();
             currentViewMode = ViewMode.QUEUE;
             queuedTracksViewController.setAppContext(appContext);
@@ -533,26 +533,13 @@ public class MainViewController {
 
     private void loadSettingsView() {
         try {
-            FXMLLoader loader = loadView("/views/settings-view.fxml");
+            FXMLLoader loader = viewLoader.loadView("/views/settings-view.fxml", apCenterArea);
             SettingsViewController settingsViewController = loader.getController();
             currentViewMode = ViewMode.SETTINGS;
             settingsViewController.setAppContext(appContext);
         } catch (IOException e) {
             logger.error("CRITICAL: Could not load settings-view.fxml", e);
         }
-    }
-
-    private FXMLLoader loadView(String resource) throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource(resource));
-        Parent view = loader.load();
-
-        apCenterArea.getChildren().setAll(view);
-        AnchorPane.setTopAnchor(view, 0.0);
-        AnchorPane.setBottomAnchor(view, 0.0);
-        AnchorPane.setLeftAnchor(view, 0.0);
-        AnchorPane.setRightAnchor(view, 0.0);
-
-        return loader;
     }
 
     private void initializeLibrary() {

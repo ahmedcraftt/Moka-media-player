@@ -38,7 +38,9 @@ build/
 .DS_Store
 
 # Build
-package-input
+package-input-linux
+package-input-mac
+package-input-windows
 target/out/
 *.jar
 natives
