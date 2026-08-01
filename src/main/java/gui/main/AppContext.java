@@ -14,6 +14,7 @@ import infrastructure.media.FiledataManager;
 import infrastructure.media.JaudiotaggerManager;
 import infrastructure.media.LyricsEmbedder;
 import infrastructure.media.MetadataManager;
+import infrastructure.scanner.DesktopMediaScanner;
 import infrastructure.scanner.MediaScanner;
 import infrastructure.storage.ArtworkStorage;
 import infrastructure.storage.MetadataStorage;
@@ -48,7 +49,7 @@ public final class AppContext {
         config = ConfigStorage.load();
         trackStorage = new TrackStorage(metadataStorage);
         lyricsEmbedder = new LyricsEmbedder(metadataManager);
-        scanner = new MediaScanner(
+        scanner = new DesktopMediaScanner(
                 metadataManager,
                 filedataManager,
                 trackStorage,

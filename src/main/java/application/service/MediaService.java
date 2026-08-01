@@ -5,8 +5,8 @@ import domain.model.library.MediaLibrary;
 import domain.model.media.Playlist;
 import domain.model.media.Track;
 import infrastructure.media.LyricsEmbedder;
-import infrastructure.scanner.MediaScanner;
 
+import infrastructure.scanner.MediaScanner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

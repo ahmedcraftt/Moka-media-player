@@ -6,7 +6,7 @@
 @import "player.css";
 @import "texts.css";
 @import "scroll-pane.css";
-@import "alerts.css";
+@import "dialogs.css";
 
 .root {
     -fx-font-family: "Segoe UI", "Helvetica Neue", sans-serif;

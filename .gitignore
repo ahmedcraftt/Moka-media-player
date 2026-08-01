@@ -49,7 +49,7 @@ natives
 *.db
 
 #misc
-src/main/java/Tests
+src/main/java/tests
 .directory
 jpackage.txt
 jlink.log

@@ -10,6 +10,7 @@ module org.example.moka_music_player {
     requires jaudiotagger;
     requires com.google.gson;
     requires org.slf4j;
+    requires ch.qos.logback.classic;
     requires java.desktop;
     requires java.sql;
     requires uk.co.caprica.vlcj;
@@ -33,6 +34,7 @@ module org.example.moka_music_player {
     exports platform;
     exports bootstrap;
     exports domain.audio;
+    exports tests;
 
     // Open packages for reflection
     opens gui.main to javafx.fxml;

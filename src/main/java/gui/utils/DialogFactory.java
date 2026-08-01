@@ -1,9 +1,7 @@
 package gui.utils;
 
-import javafx.scene.control.Alert;
-import javafx.scene.control.Dialog;
-import javafx.scene.control.DialogPane;
-import javafx.scene.control.TextInputDialog;
+import javafx.scene.Node;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
@@ -23,7 +21,19 @@ public final class DialogFactory {
         return alert;
     }
 
+    public static Alert warnings(String title, String header, Node content) {
+        Alert alert = new Alert(Alert.AlertType.WARNING);
+        setData(alert, title, header, content);
+        return alert;
+    }
+
     public static Alert error(String title, String header, String content) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        setData(alert, title, header, content);
+        return alert;
+    }
+
+    public static Alert error(String title, String header, Node content) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         setData(alert, title, header, content);
         return alert;
@@ -31,19 +41,29 @@ public final class DialogFactory {
 
     public static TextInputDialog textInputDialog(String title, String header) {
         TextInputDialog dialog = new TextInputDialog();
-        setData(dialog, title, header, null);
+        setData(dialog, title, header);
         return dialog;
     }
 
-    private static void setData(Dialog<?> dialog, String title, String header, String content) {
+    private static void setData(Dialog<?> dialog, String title, String header) {
         dialog.setTitle(title);
         dialog.setHeaderText(header);
-        dialog.setContentText(content);
         style(dialog);
+    }
+
+    private static void setData(Dialog<?> dialog, String title, String header, String content) {
+        setData(dialog, title, header);
+        dialog.setContentText(content);
+    }
+
+    private static void setData(Dialog<?> dialog, String title, String header, Node content) {
+        setData(dialog, title, header);
+        dialog.getDialogPane().setContent(content);
     }
 
     private static void style(Dialog<?> dialog) {
         DialogPane pane = dialog.getDialogPane();
+        pane.setMinSize(300, 300);
         boolean add = pane.getStylesheets().add(
                 Objects.requireNonNull(DialogFactory.class.getResource("/styles/main.css")).toExternalForm()
         );

@@ -1,6 +1,6 @@
 package platform;
 
-public class OSDetector {
+public final class OSDetector {
 
     public static OS getOS() {
         String os = System.getProperty("os.name").toLowerCase();

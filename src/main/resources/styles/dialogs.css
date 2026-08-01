@@ -23,6 +23,7 @@
     -fx-background-color: #3a2a22;
     -fx-text-fill: #f2e6d9;
     -fx-background-radius: 8;
+    -fx-font-size: 14px;
 }
 
 .dialog-pane .button:hover {
@@ -31,6 +32,17 @@
 
 .dialog-pane .button:pressed {
     -fx-background-color: #7a4f3a;
+}
+
+.dialog-pane .details-button {
+    -fx-background-color: #3a2a22;
+    -fx-text-fill: #f2e6d9;
+    -fx-background-radius: 8;
+    -fx-font-size: 14px;
+}
+
+.dialog-pane .details-button .arrow {
+    -fx-background-color: #f2e6d9;
 }
 
 .dialog-pane > .graphic-container {

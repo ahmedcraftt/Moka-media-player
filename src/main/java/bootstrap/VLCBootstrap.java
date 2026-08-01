@@ -1,8 +1,11 @@
 package bootstrap;
 
 import config.VLCConfig;
+import gui.utils.DialogLauncher;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import uk.co.caprica.vlcj.factory.MediaPlayerFactory;
 import uk.co.caprica.vlcj.factory.discovery.NativeDiscovery;
 
@@ -11,7 +14,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public final class VLCBootstrap {
 
     private static final Logger logger = LoggerFactory.getLogger(VLCBootstrap.class);
-
     private static final AtomicBoolean initialized = new AtomicBoolean(false);
 
     public static void init() {
@@ -21,26 +23,28 @@ public final class VLCBootstrap {
 
         try {
             VLCConfig.init();
-
-            if (System.getProperty("jna.library.path") == null) {
-                logger.info("Bundled paths not found. Running system native discovery...");
-                new NativeDiscovery().discover();
-            }
-
-            try {
-                MediaPlayerFactory factory = new MediaPlayerFactory();
-                logger.info("VLC Native Engine loaded from: {}", factory.nativeLibraryPath());
-                factory.release();
-            } catch (UnsatisfiedLinkError e) {
-                throw new RuntimeException("JNA could not link to libvlc.so even after discovery. " +
-                        "Ensure vlc-devel is installed and --enable-native-access is set.", e);
-            }
-
-            logger.debug("jna.library.path is currently resolved to: {}", System.getProperty("jna.library.path"));
-            logger.info("VLC initialized successfully!");
-
         } catch (Exception e) {
-            logger.error("VLC initialization sequence crashed unexpectedly.", e);
+            logger.error("VLCConfig initialization encountered an error. Attempting system discovery fallback...", e);
+        }
+
+        logger.info("jna.library.path = {}", System.getProperty("jna.library.path"));
+
+        if (System.getProperty("jna.library.path") == null) {
+            logger.info("Bundled paths not found. Running system native discovery...");
+            boolean found = new NativeDiscovery().discover();
+            logger.info("System native VLC discovery success: {}", found);
+        }
+
+        try {
+            MediaPlayerFactory factory = new MediaPlayerFactory();
+            logger.info("VLC Native Engine loaded from: {}", factory.nativeLibraryPath());
+            factory.release();
+            logger.info("VLC initialized successfully!");
+        } catch (Throwable t) {
+            logger.error("Failed to initialize VLC native libraries", t);
+            DialogLauncher.showVlcMissingDialog(t);
+            throw new RuntimeException("VLC native libraries could not be loaded.", t);
         }
     }
+
 }

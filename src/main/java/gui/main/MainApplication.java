@@ -8,10 +8,13 @@ import domain.model.media.Track;
 import gui.controllers.events.RefreshEvent;
 import gui.model.ViewMode;
 import gui.controllers.events.UpdateEvent;
+import gui.utils.DialogFactory;
+import gui.utils.DialogLauncher;
 import gui.utils.KeyAssignmentHandler;
 import infrastructure.audio.AudioEngine;
 import infrastructure.audio.AudioPlayer;
 import gui.controllers.MainViewController;
+import infrastructure.media.DataResolver;
 import infrastructure.storage.DatabaseManager;
 import infrastructure.storage.MetadataStorage;
 import infrastructure.storage.TrackStorage;
@@ -21,6 +24,7 @@ import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
@@ -91,12 +95,14 @@ public final class MainApplication extends Application {
 
     private final AppContext appContext = new AppContext();
 
-    private int oldVolume;
-
     public static Stage primaryStage;
 
     @Override
     public void start(Stage stage) throws IOException {
+
+        if (!DataResolver.isFFprobeInstalled()) {
+            DialogLauncher.showFFProbeMissingDialog();
+        }
 
         AppConfig config = appContext.config();
         TrackStorage trackStorage = appContext.trackStorage();
@@ -106,8 +112,6 @@ public final class MainApplication extends Application {
         audioPlayer.setRepeatMode(config.getPlayerConfig().getPreferredRepeatMode());
         audioPlayer.setShuffle(config.getPlayerConfig().isShuffle());
         audioPlayer.setVolume(config.getPlayerConfig().getPreferredVolumeLevel());
-
-        oldVolume = audioPlayer.getVolume();
 
         primaryStage = stage;
 

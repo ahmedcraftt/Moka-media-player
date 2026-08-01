@@ -3,6 +3,7 @@ package infrastructure.media;
 import domain.model.media.Track;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.file.Path;
 
@@ -67,5 +68,20 @@ public class DataResolver {
         if (lastDot == -1) return fileName;
 
         return fileName.substring(0, lastDot);
+    }
+
+    public static boolean isFFprobeInstalled() {
+        try {
+            Process process = new ProcessBuilder("ffprobe", "-version")
+                    .redirectErrorStream(true)
+                    .start();
+
+            int exitCode = process.waitFor();
+
+            return exitCode == 0;
+
+        } catch (IOException | InterruptedException e) {
+            return false;
+        }
     }
 }
