@@ -1,5 +1,6 @@
 package gui.controllers;
 
+import domain.model.metadata.Language;
 import domain.model.metadata.Metadata;
 import domain.model.media.Track;
 import gui.main.AppContext;
@@ -7,6 +8,7 @@ import gui.model.SearchEngine;
 import javafx.animation.FadeTransition;
 import javafx.animation.ParallelTransition;
 import javafx.animation.TranslateTransition;
+import javafx.geometry.NodeOrientation;
 import javafx.geometry.Side;
 import javafx.scene.control.*;
 import javafx.scene.effect.BlurType;
@@ -67,6 +69,7 @@ public class LyricsViewController {
         }
 
         loadTrackLyrics();
+        setupLyricsText();
     }
 
     public void setAppContext(AppContext appContext) {
@@ -149,6 +152,18 @@ public class LyricsViewController {
         if (file == null) return;
 
         appContext.lyricsEmbedder().embedLyrics(track, file.toPath());
+
+        updateLyrics();
+
+    }
+
+    private void updateLyrics() {
+        Platform.runLater(() -> {
+            String lyrics = track.getMetadata().getLyrics();
+            if (lyrics != null && !lyrics.isBlank()) {
+                txtLyrics.setText(lyrics);
+            }
+        });
     }
 
     private void handleLyricsBtn() {
@@ -172,6 +187,13 @@ public class LyricsViewController {
         Metadata data = track.getMetadata();
 
         txtLyrics.setText(data.getLyrics());
+
+        if (Language.detectMainScript(txtLyrics.getText()) == Character.UnicodeScript.ARABIC) {
+            txtLyrics.getStyleClass().add("arabic-script-text");
+            txtLyrics.setNodeOrientation(NodeOrientation.RIGHT_TO_LEFT);
+            tflLyricsView.setNodeOrientation(NodeOrientation.RIGHT_TO_LEFT);
+            System.out.println(txtLyrics.getFont());
+        } else txtLyrics.getStyleClass().add("lyrics-text");
 
         taLyricsEditor.setText(data.getLyrics());
 
@@ -200,7 +222,6 @@ public class LyricsViewController {
 
     @FXML
     private void initialize() {
-        setupLyricsText();
         handleAlignmentBtn();
         handleLyricsBtn();
         handleMenuOptions();
@@ -208,8 +229,6 @@ public class LyricsViewController {
 
     private void setupLyricsText() {
         tflLyricsView.getChildren().setAll(txtLyrics);
-
-        txtLyrics.getStyleClass().add("lyrics-text");
 
         txtLyrics.wrappingWidthProperty().bind(
                 tflLyricsView.widthProperty().subtract(24)
@@ -281,14 +300,16 @@ public class LyricsViewController {
 
         viewModeTransaction();
 
-        spLyricsContainer.setEffect(new DropShadow(
+        spLyricsContainer.setEffect(
+                new DropShadow(
                 BlurType.GAUSSIAN,
                 Color.rgb(200, 155, 109, 0.25),
                 12,
                 0.3,
                 0,
                 0
-        ));
+                )
+        );
     }
 
     private void viewModeTransaction() {

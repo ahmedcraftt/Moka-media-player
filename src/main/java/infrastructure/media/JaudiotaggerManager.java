@@ -1,7 +1,9 @@
 package infrastructure.media;
 
+import domain.model.media.Video;
 import domain.model.metadata.Metadata;
 import domain.model.media.Track;
+import domain.model.metadata.VideoMetadata;
 import infrastructure.scanner.MediaScanException;
 import org.jaudiotagger.audio.AudioFileIO;
 import org.jaudiotagger.audio.AudioHeader;
@@ -96,6 +98,7 @@ public class JaudiotaggerManager implements MetadataManager {
                 metadata.setSeries(tag.getFirst(FieldKey.ALBUM));
                 metadata.setSeriesArtist(tag.getFirst(FieldKey.ALBUM_ARTIST));
                 metadata.setTrackNumber(safeParseInt(tag.getFirst(FieldKey.TRACK)));
+
             }
 
         } catch (Exception e) {

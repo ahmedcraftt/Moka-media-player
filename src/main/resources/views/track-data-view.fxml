@@ -188,7 +188,7 @@
 
             <children>
 
-                <Button fx:id="btnSave" mnemonicParsing="false" onAction="#handleSave" text="Save"/>
+                <Button fx:id="btnSave" mnemonicParsing="false" text="Save"/>
 
                 <Button fx:id="btnCancel" mnemonicParsing="false" onAction="#handleCancel" text="Cancel"/>
 

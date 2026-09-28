@@ -5,6 +5,7 @@ import domain.model.metadata.Metadata;
 import domain.model.media.MediaType;
 import domain.model.media.Track;
 import gui.controllers.events.RefreshEvent;
+import gui.controllers.events.UpdateEvent;
 import gui.main.AppContext;
 import infrastructure.storage.DatabaseManager;
 import javafx.event.ActionEvent;
@@ -90,20 +91,31 @@ public class TrackDataViewController {
 
     private AppContext appContext;
 
+    private Track track;
+
     public void setOnSaveSuccessCallback(Runnable onSaveSuccessCallback) {
         this.onSaveSuccessCallback = onSaveSuccessCallback;
     }
 
     public void setTrack(Track track) {
         if (track == null) return;
-        loadTrackData(track);
+        this.track = track;
     }
 
     public void setUIContext(AppContext appContext) {
         this.appContext = appContext;
     }
 
-    private void loadTrackData(Track track) {
+    public void init() {
+        loadTrackData();
+        btnSave.setOnAction(event -> saveTrackData());
+    }
+
+    @FXML
+    private void initialize() {
+    }
+
+    private void loadTrackData() {
 
         // File data
 
@@ -158,11 +170,10 @@ public class TrackDataViewController {
 
     }
 
-    @FXML
-    public void handleSave(ActionEvent event) {
-        Track track = appContext.playerService().getCurrentTrack();
+    private void saveTrackData() {
 
         if (track == null) {
+            logger.info("The track is null dumbass");
             return;
         }
 
@@ -172,6 +183,28 @@ public class TrackDataViewController {
         String oldAlbum = metadata.getSeries();
         String oldGenre = metadata.getGenre();
 
+        writeMetadata(metadata);
+
+        updateDB();
+
+        if (!oldGenre.equals(metadata.getGenre()) ||
+                !oldArtist.equals(metadata.getArtist()) ||
+                !oldAlbum.equals(metadata.getSeries())) {
+            appContext.mediaService().rebuildMetadataCaches();
+        }
+
+        Stage stage = (Stage) btnSave.getScene().getWindow();
+        stage.getScene().getRoot().fireEvent(new RefreshEvent());
+        stage.getScene().getRoot().fireEvent(new UpdateEvent());
+
+        if (onSaveSuccessCallback != null) {
+            onSaveSuccessCallback.run();
+        }
+
+        closeWindow();
+    }
+
+    private void writeMetadata(Metadata metadata) {
         String yearText = tfYear.getText().trim();
 
         if (!yearText.isBlank()) {
@@ -183,7 +216,9 @@ public class TrackDataViewController {
         }
         String number = tfAlbumNumber.getText().trim();
 
+        System.out.println(tfType.getText());
         track.setType(MediaType.StringToMediaType(tfType.getText()));
+        System.out.println(track.getType().getTitle());
 
         logger.debug("Track media type updated to: {}", track.getType());
 
@@ -204,28 +239,15 @@ public class TrackDataViewController {
         }
 
         appContext.metadataManager().write(track);
+    }
 
+    private void updateDB() {
         try (Connection connection = DatabaseManager.connect()) {
             appContext.trackStorage().update(track, connection);
             connection.commit();
         } catch (SQLException e) {
             logger.warn("Failed to save track data: '{}'", track.getFiledata().getFileName());
         }
-
-        if (!oldGenre.equals(metadata.getGenre()) ||
-                !oldArtist.equals(metadata.getArtist()) ||
-                !oldAlbum.equals(metadata.getSeries())) {
-            appContext.mediaService().rebuildMetadataCaches();
-        }
-
-        Stage stage = (Stage) btnSave.getScene().getWindow();
-        stage.getScene().getRoot().fireEvent(new RefreshEvent());
-
-        if (onSaveSuccessCallback != null) {
-            onSaveSuccessCallback.run();
-        }
-
-        closeWindow();
     }
 
     @FXML

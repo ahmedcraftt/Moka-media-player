@@ -4,6 +4,12 @@
     -fx-fill: #f2e6d9;
 }
 
+.arabic-script-text {
+    -fx-font-family: "Noto Sans Arabic";
+    -fx-font-size: 15px;
+    -fx-fill: #f2e6d9;
+}
+
 .lyrics-flow {
     -fx-line-spacing: 5;
     -fx-padding: 8 12;

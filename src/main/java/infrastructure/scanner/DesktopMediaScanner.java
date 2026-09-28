@@ -1,5 +1,6 @@
 package infrastructure.scanner;
 
+import domain.model.media.Video;
 import domain.model.metadata.Metadata;
 import domain.model.media.MediaType;
 import domain.model.media.Track;
@@ -28,8 +29,14 @@ public class DesktopMediaScanner implements MediaScanner {
 
     private static final Logger logger = LoggerFactory.getLogger(DesktopMediaScanner.class);
 
-    private static final Set<String> SUPPORTED_EXTENSIONS = Set.of(
+    private static final Set<String> AUDIO_EXTENSIONS = Set.of(
             "mp3", "flac", "wav", "m4a", "ogg", "aac", "opus", "wma", "alac"
+    );
+    private static final Set<String> VIDEO_EXTENSIONS = Set.of("mp4", "mkv", "avi", "mov", "flv",
+            "webm", "wmv", "mpeg", "mpg", "m2v", "m2ts", "ts", "vob", "ogv",
+            "3gp", "3g2", "asf", "rm", "rmvb", "divx", "f4v", "m4v", "mxf",
+            "nsv", "dat", "bik", "evo", "h264", "h265", "hevc", "yuv", "ivf",
+            "mj2", "mjpeg", "mjpg"
     );
 
     private final MetadataManager metadataManager;
@@ -58,8 +65,13 @@ public class DesktopMediaScanner implements MediaScanner {
 
     public Track scan(File file) {
         Path path = file.toPath();
-        if (!isAudioFile(path)) throw new MediaScanException("Not an audio file");
-        Track track = new Track(path);
+        if (!isAudioFile(path) && !isVideoFile(path)) throw new MediaScanException("Not an audio file");
+        Track track;
+
+        if (isVideoFile(path)) {
+            track = new Video(path);
+        } else track = new Track(path);
+
         metadataManager.read(track);
         filedataManager.read(track);
         scanForArtwork(track);
@@ -142,12 +154,20 @@ public class DesktopMediaScanner implements MediaScanner {
     }
 
     public boolean isAudioFile(Path path) {
+        return isSupportedExtension(path, AUDIO_EXTENSIONS);
+    }
+
+    public boolean isVideoFile(Path path) {
+        return isSupportedExtension(path, VIDEO_EXTENSIONS);
+    }
+
+    private boolean isSupportedExtension(Path path, Set<String> extensions) {
         String name = path.getFileName().toString().toLowerCase();
         int dot = name.lastIndexOf('.');
         if (dot == -1) return false;
 
         String ext = name.substring(dot + 1);
-        return SUPPORTED_EXTENSIONS.contains(ext);
+        return extensions.contains(ext);
     }
 
     private void persist(List<TrackSyncResult> results) {
@@ -260,7 +280,7 @@ public class DesktopMediaScanner implements MediaScanner {
         try (var paths = Files.walk(root)) {
             return paths
                     .filter(Files::isRegularFile)
-                    .filter(this::isAudioFile)
+                    .filter(path -> isAudioFile(path) || isVideoFile(path))
                     .map(Path::toAbsolutePath)
                     .map(Path::normalize)
                     .toList();

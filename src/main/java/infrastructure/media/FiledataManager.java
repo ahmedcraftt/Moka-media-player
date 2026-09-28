@@ -1,7 +1,9 @@
 package infrastructure.media;
 
+import domain.model.media.Video;
 import domain.model.metadata.Filedata;
 import domain.model.media.Track;
+import domain.model.metadata.VideoMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,6 +34,10 @@ public class FiledataManager {
             data.setLastAccessed(toLocalDate(attributes.lastAccessTime()));
             data.setFileSize(attributes.size());
             data.setFileType(Files.probeContentType(path));
+
+            if (track instanceof Video video) {
+                VideoMetadata videoMetadata = new VideoMetadata();
+            }
 
             logger.debug("track data: {}", data);
 

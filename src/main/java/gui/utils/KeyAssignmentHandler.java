@@ -9,6 +9,7 @@ import gui.main.AppContext;
 import infrastructure.audio.AudioPlayer;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.TextInputControl;
 import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
 
@@ -87,6 +88,7 @@ public final class KeyAssignmentHandler {
     private static void specialKeyBindings(AppContext appContext, Scene scene) {
         PlayerService playerService = appContext.playerService();
         scene.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
+            if (event.getTarget() instanceof TextInputControl) return;
             switch (event.getCode()) {
                 case SPACE -> {
                     togglePlayPause(appContext);

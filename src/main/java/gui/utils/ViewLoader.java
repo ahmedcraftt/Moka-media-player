@@ -35,9 +35,14 @@ public final class ViewLoader {
         Parent root = loader.load();
         TrackDataViewController controller = loader.getController();
 
+        if (track == null) {
+            logger.warn("Track is null");
+        }
+
         controller.setUIContext(appContext);
         controller.setTrack(track);
         controller.setOnSaveSuccessCallback(onSaveSuccessCallback);
+        controller.init();
 
         Image icon = new Image(
                 Objects.requireNonNull(

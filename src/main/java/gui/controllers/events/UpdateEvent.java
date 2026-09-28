@@ -9,8 +9,8 @@ public class UpdateEvent extends Event {
     public UpdateEvent(EventType<? extends Event> eventType) {
         super(eventType);
     }
-
     public UpdateEvent() {
         super(UPDATE);
     }
+
 }

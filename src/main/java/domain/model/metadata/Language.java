@@ -40,6 +40,30 @@ public class Language {
         return language;
     }
 
+    public static Character.UnicodeScript detectMainScript(String text) {
+        int arabic = 0;
+        int latin = 0;
+
+        for (int cp : text.codePoints().toArray()) {
+            Character.UnicodeScript script = Character.UnicodeScript.of(cp);
+
+            switch (script) {
+                case ARABIC -> arabic++;
+                case LATIN -> latin++;
+            }
+        }
+
+        if (arabic > latin) {
+            return Character.UnicodeScript.ARABIC;
+        }
+
+        if (latin > arabic) {
+            return Character.UnicodeScript.LATIN;
+        }
+
+        return Character.UnicodeScript.UNKNOWN;
+    }
+
     private String normalizeLanguage(String lang) {
         lang = lang.trim().toLowerCase();
 

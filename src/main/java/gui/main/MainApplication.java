@@ -8,7 +8,6 @@ import domain.model.media.Track;
 import gui.controllers.events.RefreshEvent;
 import gui.model.ViewMode;
 import gui.controllers.events.UpdateEvent;
-import gui.utils.DialogFactory;
 import gui.utils.DialogLauncher;
 import gui.utils.KeyAssignmentHandler;
 import infrastructure.audio.AudioEngine;
@@ -24,11 +23,10 @@ import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
-
 import javafx.stage.Window;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
