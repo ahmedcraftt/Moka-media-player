@@ -1,0 +1,28 @@
+app-id: org.example.MokaMusicPlayer
+
+runtime: org.freedesktop.Platform
+runtime-version: "25.08"
+sdk: org.freedesktop.Sdk
+
+command: moka
+
+finish-args:
+  - --share=ipc
+  - --socket=wayland
+  - --socket=x11
+  - --device=dri
+  - --filesystem=xdg-music
+
+modules:
+  - name: moka
+    buildsystem: simple
+
+    build-commands:
+      - cp -r app/* /app/
+      - install -Dm755 moka /app/bin/moka
+
+    sources:
+      - type: dir
+        path: ../target
+      - type: file
+        path: moka

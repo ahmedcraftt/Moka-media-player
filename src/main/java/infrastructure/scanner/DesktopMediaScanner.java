@@ -65,12 +65,8 @@ public class DesktopMediaScanner implements MediaScanner {
 
     public Track scan(File file) {
         Path path = file.toPath();
-        if (!isAudioFile(path) && !isVideoFile(path)) throw new MediaScanException("Not an audio file");
-        Track track;
-
-        if (isVideoFile(path)) {
-            track = new Video(path);
-        } else track = new Track(path);
+        if (!isAudioFile(path)) throw new MediaScanException("Not an audio file");
+        Track track = new Track(path);
 
         metadataManager.read(track);
         filedataManager.read(track);
@@ -280,7 +276,7 @@ public class DesktopMediaScanner implements MediaScanner {
         try (var paths = Files.walk(root)) {
             return paths
                     .filter(Files::isRegularFile)
-                    .filter(path -> isAudioFile(path) || isVideoFile(path))
+                    .filter(path -> isAudioFile(path))
                     .map(Path::toAbsolutePath)
                     .map(Path::normalize)
                     .toList();

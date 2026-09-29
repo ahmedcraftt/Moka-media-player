@@ -9,11 +9,11 @@ import domain.model.media.Playlist;
 import domain.model.media.Track;
 import gui.model.TabsLocation;
 import gui.model.ViewMode;
-import gui.utils.DialogFactory;
+
 import gui.main.AppContext;
-import gui.utils.ViewLoader;
 import infrastructure.audio.AudioPlayer;
 import domain.audio.RepeatMode;
+import gui.utils.*;
 
 import javafx.animation.*;
 import javafx.application.Platform;
@@ -22,6 +22,7 @@ import javafx.geometry.Side;
 import javafx.scene.Node;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.stage.DirectoryChooser;
 import javafx.util.Duration;
 import domain.model.library.Library;
 
@@ -33,6 +34,7 @@ import javafx.scene.layout.AnchorPane;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.*;
@@ -547,8 +549,7 @@ public class MainViewController {
     private void initializeLibrary() {
         LibraryService libraryService = appContext.libraryService();
         if (!libraryService.hasLibraries()) {
-            Optional<String> pathResult = getResult();
-            if (pathResult.isEmpty()) return;
+            Optional<Path> pathResult = getLibraryPath();
 
             TextInputDialog nameDialog = DialogFactory.textInputDialog(
                     "Library Setup",
@@ -560,7 +561,7 @@ public class MainViewController {
 
             Library library = libraryService.createLibrary(
                     nameResult.get(),
-                    Path.of(pathResult.get())
+                    pathResult.get()
             );
             libraryService.setActiveLibrary(library);
         }
@@ -572,18 +573,41 @@ public class MainViewController {
         appContext.mediaService().loadActiveLibrary();
     }
 
-    private static Optional<String> getResult() {
-        Alert alert = DialogFactory.warnings(
-                "No Libraries Found",
-                "No media libraries available",
-                "Please create your first library.");
-        alert.showAndWait();
+    private static Optional<Path> getLibraryPath() {
+        Dialog<Path> dialog = new Dialog<>();
+        dialog.setTitle("Library Setup");
+        dialog.setHeaderText("Select your media library folder");
 
-        TextInputDialog pathDialog = DialogFactory.textInputDialog(
-                "Library Setup",
-                "Enter the path of your media folder"
-        );
+        ButtonType confirm = new ButtonType("Select", ButtonBar.ButtonData.OK_DONE);
+        dialog.getDialogPane().getButtonTypes().addAll(confirm, ButtonType.CANCEL);
 
-        return pathDialog.showAndWait();
+        TextField pathField = new TextField();
+        pathField.setPromptText("Enter path manually");
+
+        Button browseButton = new Button("Browse...");
+
+        browseButton.setOnAction(e -> {
+            DirectoryChooser chooser = new DirectoryChooser();
+            chooser.setTitle("Select Media Library Folder");
+
+            File selected = chooser.showDialog(null);
+
+            if (selected != null) {
+                pathField.setText(selected.toPath().toString());
+            }
+        });
+
+        HBox input = new HBox(10, pathField, browseButton);
+        dialog.getDialogPane().setContent(input);
+
+        dialog.setResultConverter(button -> {
+            if (button == confirm && !pathField.getText().isBlank()) {
+                return Path.of(pathField.getText());
+            }
+            return null;
+        });
+
+        return dialog.showAndWait();
     }
+
 }

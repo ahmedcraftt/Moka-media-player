@@ -41,19 +41,11 @@ public final class VLCConfig {
         case null, default -> throw new UnSupportedOSException("Unsupported operating system.");
     };
 
-    private static final String DEV_NATIVES_PATH = "/home/Ahmed/IdeaProjects/java-mediaplayer/natives/linux/X86_64";
-
     private VLCConfig() {
     }
 
     public static void init() {
-        Path vlcPath;
-
-        if (Boolean.getBoolean("moka.dev")) {
-            vlcPath = Path.of(DEV_NATIVES_PATH);
-        } else {
-            vlcPath = locateNativesDirectory();
-        }
+        Path vlcPath = locateNativesDirectory();
 
         if (vlcPath != null && Files.exists(vlcPath)) {
             String absPath = vlcPath.toAbsolutePath().toString();

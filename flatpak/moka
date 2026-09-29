@@ -1,0 +1,7 @@
+#!/bin/sh
+
+export LD_LIBRARY_PATH=/app/natives/linux/X86_64:$LD_LIBRARY_PATH
+export VLC_PLUGIN_PATH=/app/natives/linux/X86_64/plugins
+
+exec /app/bin/java \
+-m org.example.moka_music_player/gui.main.MainLauncher
