@@ -3,6 +3,10 @@
 Moka Player is a desktop music player built with JavaFX and VLCJ.  
 It focuses on clean architecture, modular design, and media organization.
 
+## Sceenshots
+<img src="assets/Screenshot_20260929_185558.png" width="800">
+<img src="assets/Screenshot_20260929_190618.png" width="800">
+<img src="assets/Screenshot_20260929_190651.png" width="800">
 ---
 
 ## ⚠ Disclaimer
